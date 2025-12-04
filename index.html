@@ -882,19 +882,41 @@
                     }
                     isSearching.value = true;
                     searchError.value = '';
+                    
+                    // [修正] Nominatim API 查詢，並加入 User-Agent 標頭
+                    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}&limit=1`;
+
                     try {
-                        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}`);
+                        const response = await fetch(apiUrl, {
+                            headers: {
+                                // Nominatim 服務要求 User-Agent 標頭
+                                'User-Agent': 'MyIdolTrackerApp/1.0 (contact@example.com)' 
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                             throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
+                        }
+
                         const data = await response.json();
+
                         if (data && data.length > 0) {
                             form.value.lat = parseFloat(data[0].lat);
                             form.value.lng = parseFloat(data[0].lon);
+                            searchError.value = "定位成功！地圖標記已更新。";
                         } else {
-                            searchError.value = "找不到該地點，請嘗試更具體的名稱 (如: 台北市小巨蛋)";
+                            form.value.lat = null;
+                            form.value.lng = null;
+                            searchError.value = "找不到該地點的坐標，請嘗試更具體的名稱 (如: 台北小巨蛋)";
                         }
                     } catch (e) {
-                        searchError.value = "連線錯誤，請稍後再試";
+                        console.error("地圖定位錯誤:", e);
+                        searchError.value = `連線錯誤或請求被拒絕: ${e.message}。請稍後再試。`;
                     } finally {
                         isSearching.value = false;
+                        if (activeTab.value === 'map') {
+                            nextTick(() => { initMap(); });
+                        }
                     }
                 };
 
