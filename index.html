@@ -533,7 +533,19 @@
                     </ul>
                 </div>
 
-                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：[{"日期": "230422", "歌手": "Taemin", "活動名稱": "RE : ACT", "地點": "首爾蠶室", "expenses": [{"項目": "門票", "金額": 5800}]}]'></textarea>
+                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：
+[
+  {
+    "日期": "230422", 
+    "歌手": "Taemin", 
+    "活動名稱": "RE : ACT", 
+    "地點": "首爾蠶室", 
+    "expenses": [
+      {"項目": "門票", "金額": 5800}
+    ]
+  }
+]
+'></textarea>
                 <div class="flex gap-2"><button @click="showImportModal = false" class="flex-1 py-2 text-slate-500">取消</button><button @click="processImport" :style="{ backgroundColor: themeColor }" class="flex-1 text-white py-2 rounded-lg font-bold shadow-sm">匯入</button></div>
             </div>
         </div>
