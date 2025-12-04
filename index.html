@@ -525,16 +525,14 @@
                 
                 <div class="bg-slate-50 p-3 rounded-xl mb-3 text-xs text-slate-500 leading-relaxed border border-slate-100">
                     <p class="font-bold mb-1 text-slate-700">💡 如何使用：</p>
-                    請貼上標準的 <b>JSON 陣列</b>。支援的欄位包含：
+                    請貼上標準的 <b>JSON 陣列</b>。務必包含**日期**、**歌手**和**活動名稱**。
                     <ul class="list-disc list-inside mt-1 ml-1">
-                        <li><b>日期</b> (支援 230422 或 2023-04-22)</li>
-                        <li><b>歌手</b>、<b>活動名稱</b>、<b>地點</b></li>
-                        <li><b>expenses</b> (陣列，例: `[{"item": "門票", "amount": 5000}]`)</li>
+                        <li>日期：支援 `YYYY-MM-DD` 或六位數簡寫 `YYMMDD`。</li>
+                        <li>其他欄位：`地點`、`時間`、`expenses`（費用明細）。</li>
                     </ul>
-                    <p class="mt-2 text-slate-400 font-mono">範例：[{"日期":"240101", "歌手":"IU", "活動名稱":"演唱會", "地點":"台北", "expenses":[{"item": "門票", "amount": 5000}]}]</p>
                 </div>
 
-                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='[{"日期": 230422, "歌手": "Taemin", "活動名稱": "RE : ACT", "地點": "首爾"}]'></textarea>
+                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：[{"日期": "240101", "歌手": "IU", "活動名稱": "演唱會", "地點": "台北小巨蛋", "expenses": [{"item": "門票", "amount": 5000}]}]'></textarea>
                 <div class="flex gap-2"><button @click="showImportModal = false" class="flex-1 py-2 text-slate-500">取消</button><button @click="processImport" :style="{ backgroundColor: themeColor }" class="flex-1 text-white py-2 rounded-lg font-bold shadow-sm">匯入</button></div>
             </div>
         </div>
@@ -567,7 +565,7 @@
                 let map = null;
                 let markers = [];
 
-                // [修改] 移除預設貼紙陣列，改為讓用戶自由輸入
+                // 移除預設貼紙陣列，改為讓用戶自由輸入
                 const moodStickers = []; 
 
                 const defaultForm = {
@@ -953,6 +951,8 @@
                 const getDay = (d) => new Date(d).getDate();
                 const getMonth = (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()];
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
+                
+                // [修正] Google Maps 搜尋連結
                 const getMapLink = (l) => l ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
 
                 return {
