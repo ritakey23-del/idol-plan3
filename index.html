@@ -59,7 +59,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 1000px; opacity: 1; }
+        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 1200px; opacity: 1; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
 
         .slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease-out; }
@@ -136,7 +136,7 @@
             
             <!-- Tab: Home -->
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
-                <!-- Search -->
+                <!-- Search Bar -->
                 <div class="relative">
                     <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
                     <input v-model="searchQuery" type="text" placeholder="搜尋藝人、活動或地點..." 
@@ -264,7 +264,7 @@
                                     <span class="truncate">{{ event.location }}</span>
                                 </div>
 
-                                <!-- Row 4: Action Row (Dedicated) -->
+                                <!-- Row 4: Action Row -->
                                 <div class="flex items-center gap-2 pt-1">
                                     <button @click.stop="addToCalendar(event)" class="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors">
                                         <i class="ph ph-calendar-plus text-sm"></i> 加入日曆
@@ -560,7 +560,6 @@
                 const presetColors = ['#63b3b0', '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#1dd1a1'];
 
                 onMounted(() => {
-                    // Safe Load Logic
                     const savedEvents = localStorage.getItem('idolEvents');
                     if (savedEvents) {
                         try {
@@ -777,6 +776,33 @@
 
                 const closeModal = () => showModal.value = false;
 
+                const saveEvent = () => {
+                    if (!form.value.title || !form.value.date) return alert('請填寫活動名稱與日期 🥺');
+                    form.value.expenses = form.value.expenses.filter(e => e.item && e.item.trim() !== '');
+                    form.value.checklist = form.value.checklist.filter(c => c.text && c.text.trim() !== '');
+                    
+                    // Intelligent Color Saving: If chosen color matches theme, save as empty to allow dynamic theming
+                    if (form.value.color === themeColor.value) form.value.color = '';
+
+                    if (isEditing.value) {
+                        const idx = events.value.findIndex(e => e.id === form.value.id);
+                        if (idx !== -1) events.value[idx] = { ...form.value };
+                    } else {
+                        events.value.push({ ...form.value, id: Date.now().toString() });
+                    }
+                    closeModal();
+                };
+
+                const deleteEvent = (id) => {
+                    if(confirm('確定要刪除嗎？')) {
+                        events.value = events.value.filter(e => e.id !== id);
+                        if(expandedEventId.value === id) expandedEventId.value = null;
+                    }
+                };
+
+                const toggleThemeModal = () => showSettingsModal.value = !showSettingsModal.value;
+                const toggleSettingsModal = () => showSettingsModal.value = !showSettingsModal.value; // Add this
+
                 const searchCoordinates = async () => {
                     if (!form.value.location) {
                         searchError.value = "請先輸入地點名稱";
@@ -894,12 +920,17 @@
                                 let expenses = [];
                                 let price = d.price || d['票價'] || d['金額'] || 0;
                                 if (price > 0) expenses.push({ item: '門票', amount: price });
-                                return { id: Date.now()+Math.random(), title, artist, date: formattedDate, time, location, color, expenses, seat, memo, checklist: [], lat: null, lng: null, coverUrl: '', sticker: '' };
+
+                                return { 
+                                    id: Date.now() + Math.random().toString(), 
+                                    title, artist, date: formattedDate, time, location, color, 
+                                    expenses, seat, memo, checklist: [], lat: null, lng: null, coverUrl: '', sticker: '' 
+                                };
                             });
                             events.value = [...events.value, ...newEvts];
                             showImportModal.value = false;
                             alert(`成功匯入 ${newEvts.length} 筆！`);
-                        } else { alert('格式錯誤'); }
+                        } else { alert('格式錯誤：必須是陣列 (Array)'); }
                     } catch(e) { alert('JSON 格式錯誤'); }
                 };
 
@@ -924,4 +955,3 @@
     </script>
 </body>
 </html>
-
