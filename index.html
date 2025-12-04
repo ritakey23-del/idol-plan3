@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 
-    <!-- Leaflet -->
+    <!-- Leaflet (Map) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -72,6 +72,29 @@
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         #map-container { height: 100%; width: 100%; z-index: 1; }
         .leaflet-bottom { z-index: 400 !important; }
+
+        /* Ticket Styles */
+        .ticket-stub {
+            background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px);
+            background-position: 0 0, 0 0;
+            background-size: 100% 100%;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        .ticket-divider {
+            border-top: 2px dashed #e2e8f0;
+            position: relative;
+        }
+        .ticket-divider::before, .ticket-divider::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            width: 20px;
+            height: 20px;
+            background-color: #1e293b;
+            border-radius: 50%;
+        }
+        .ticket-divider::before { left: -30px; }
+        .ticket-divider::after { right: -30px; }
         
         /* Rescue Button */
         #rescue-btn {
@@ -92,21 +115,6 @@
         ⚠️ 畫面全白點我修復
     </button>
 
-    <script>
-        function forceReset() {
-            if(confirm('確定要清除所有資料並重置嗎？這能解決白畫面問題。')) {
-                localStorage.removeItem('idolEvents');
-                localStorage.removeItem('idolTheme');
-                window.location.reload();
-            }
-        }
-        window.onerror = function(msg) {
-            console.error("Global Error:", msg);
-            // 確保錯誤發生時，按鈕能顯示
-            document.getElementById('rescue-btn').style.display = 'block';
-        };
-    </script>
-
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
 
         <!-- Header -->
@@ -114,7 +122,8 @@
                 :style="{ backgroundColor: themeColor }">
             <div class="flex justify-between items-center mb-3">
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide">追星日記 ✨</h1>
+                    <!-- 自訂標題顯示 -->
+                    <h1 class="text-xl font-bold tracking-wide">{{ customTitle }}</h1>
                     <p class="text-white/80 text-xs opacity-90">{{ greetingMessage }}</p>
                 </div>
                 <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm cursor-pointer hover:bg-white/30 transition-colors" @click="toggleSettingsModal">
@@ -282,7 +291,7 @@
                                     </a>
                                 </div>
                                 
-                                <!-- Footer: Price & Actions -->
+                                <!-- Footer -->
                                 <div class="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-slate-100">
                                     <div class="flex items-center gap-2 text-slate-700">
                                         <i class="ph ph-wallet" :style="{ color: getEventColor(event) }"></i>
@@ -381,7 +390,7 @@
                     </div>
                 </div>
                  <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-crown text-yellow-500"></i> 本命排行榜</h3><span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-full">含見面/錄製/簽售</span></div>
+                    <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-crown text-yellow-500"></i> 本命排行榜</h3><span class="text-[10px] text-slate-500 px-2 py-1 rounded-full">含見面/錄製/簽售</span></div>
                     <div v-if="statsData.topArtists.length > 0" class="space-y-4">
                         <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" class="relative"><div class="flex justify-between text-sm mb-1 z-10 relative"><span class="font-bold text-slate-700"><span class="inline-block w-5 text-center mr-1" :class="{'text-yellow-500': index===0, 'text-slate-400': index>0}">#{{index+1}}</span>{{ artist.name }}</span><span class="text-slate-500">{{ artist.count }} 次見面</span></div><div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full transition-all duration-1000 ease-out" :style="{ width: (artist.count / statsData.maxArtistCount * 100) + '%', backgroundColor: artist.color }"></div></div></div>
                     </div>
@@ -393,7 +402,7 @@
                     <div v-if="statsData.series.length > 0" class="space-y-3">
                         <div v-for="item in statsData.series" :key="item.title" class="flex items-center justify-between border-b border-slate-50 pb-2 last:border-0"><span class="text-sm text-slate-600 truncate flex-1 pr-2 font-medium">{{ item.title }}</span><span class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">{{ item.count }} 場</span></div>
                     </div>
-                    <div v-else class="text-center text-slate-400 text-sm py-4">尚未達成重複參加同名大型活動的成就</div>
+                    <div v-else class="text-center text-slate-400 text-sm py-4">區間內無資料</div>
                 </div>
             </div>
         </main>
@@ -434,10 +443,29 @@
                         </div>
                         <div class="p-6 text-center space-y-4">
                             <div><div class="text-xs text-slate-400 uppercase tracking-widest mb-1">EVENT</div><h3 class="text-xl font-bold leading-tight">{{ ticketEvent.title }}</h3></div>
-                            <div class="flex justify-between items-center border-b border-slate-100 pb-4"><div class="text-left"><div class="text-[10px] text-slate-400 uppercase">DATE</div><div class="font-bold">{{ ticketEvent.date }}</div><div class="text-[10px] text-slate-500 mt-0.5">{{ ticketEvent.location }}</div></div><div class="text-right"><div class="text-[10px] text-slate-400 uppercase">TIME</div><div class="font-bold">{{ ticketEvent.time }}</div></div></div>
-                            <div class="flex justify-between items-center"><div class="text-left"><div class="text-[10px] text-slate-400 uppercase">SEAT</div><div class="font-bold text-primary" :style="{ color: getEventColor(ticketEvent) }">{{ ticketEvent.seat || '無座席資訊' }}</div></div>
-                            <!-- Ticket Price Only -->
-                            <div class="text-right"><div class="text-[10px] text-slate-400 uppercase">TICKET</div><div class="font-bold">${{ formatMoney(getTicketPrice(ticketEvent.expenses)) }}</div></div></div>
+                            <!-- FIXED: Date/Time/Location Layout -->
+                            <div class="flex justify-between items-stretch border-b border-slate-100 pb-4">
+                                <div class="flex-1 text-left min-w-0 pr-2">
+                                    <div class="text-[10px] text-slate-400 uppercase">DATE / TIME</div>
+                                    <div class="font-bold">{{ ticketEvent.date }}</div>
+                                    <div class="font-bold text-sm">{{ ticketEvent.time }}</div>
+                                </div>
+                                <div class="flex-1 text-right min-w-0 pl-2">
+                                    <div class="text-[10px] text-slate-400 uppercase">LOCATION</div>
+                                    <div class="font-bold text-sm">{{ ticketEvent.location }}</div>
+                                </div>
+                            </div>
+                            <!-- FIXED: SEAT / TICKET PRICE -->
+                            <div class="flex justify-between items-center">
+                                <div class="text-left">
+                                    <div class="text-[10px] text-slate-400 uppercase">SEAT</div>
+                                    <div class="font-bold text-primary" :style="{ color: getEventColor(ticketEvent) }">{{ ticketEvent.seat || '無座席資訊' }}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-slate-400 uppercase">TICKET PRICE</div>
+                                    <div class="font-bold">${{ formatMoney(getTicketPrice(ticketEvent.expenses)) }}</div>
+                                </div>
+                            </div>
                             <div v-if="ticketEvent.sticker" class="text-4xl absolute top-16 right-4 rotate-12 drop-shadow-md">{{ ticketEvent.sticker }}</div>
                         </div>
                         <div class="ticket-divider bg-[#f8fafc] -mx-2"></div>
@@ -452,12 +480,20 @@
         <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
                 <h3 class="font-bold text-lg mb-4 text-slate-700">資料與主題設定 ⚙️</h3>
+                
+                <!-- NEW: Title Setting -->
+                <div class="mb-6 border-b border-slate-100 pb-4">
+                    <p class="text-xs font-medium text-slate-500 mb-2">App 標題</p>
+                    <input type="text" v-model="customTitle" @input="updateAppTitle" placeholder="例如：我的追星天堂"
+                           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50 focus:border-primary/50">
+                </div>
+
                 <div class="mb-6">
                     <p class="text-xs text-slate-400 mb-2">全域主題色</p>
                     <div class="grid grid-cols-4 gap-3 mb-3">
                         <button v-for="color in presetColors" :key="color" @click="setTheme(color)" class="w-12 h-12 rounded-full shadow-sm transition-transform hover:scale-110 border-2" :class="themeColor === color ? 'border-slate-800' : 'border-transparent'" :style="{ backgroundColor: color }"></button>
                     </div>
-                    <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-xl"><span class="text-sm text-slate-500">自訂:</span><input type="color" v-model="themeColor" class="w-full h-8 cursor-pointer rounded bg-transparent"></div>
+                    <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-xl"><span class="text-sm text-slate-500">自訂:</span><input type="color" v-model="themeColor" @input="setTheme(themeColor)" class="w-full h-8 cursor-pointer rounded bg-transparent"></div>
                 </div>
                 <hr class="border-slate-100 my-4">
                 <div class="mb-4">
@@ -522,7 +558,19 @@
         <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md m-4">
                 <h3 class="font-bold text-lg mb-2 text-slate-700">批次匯入行程</h3>
-                <p class="text-xs text-slate-400 mb-4">支援 JSON 格式 (YYMMDD)</p>
+                
+                <!-- 匯入格式說明 -->
+                <div class="bg-slate-50 p-3 rounded-xl mb-3 text-xs text-slate-500 leading-relaxed border border-slate-100">
+                    <p class="font-bold mb-1 text-slate-700">💡 如何使用：</p>
+                    請貼上標準的 <b>JSON 陣列</b>。支援的欄位包含：
+                    <ul class="list-disc list-inside mt-1 ml-1">
+                        <li><b>日期</b> (支援 230422 或 2023-04-22)</li>
+                        <li><b>歌手</b>、<b>活動名稱</b>、<b>地點</b></li>
+                        <li><b>expenses</b> (陣列，例: `[{"item": "門票", "amount": 5000}]`)</li>
+                    </ul>
+                    <p class="mt-2 text-slate-400 font-mono">範例：[{"日期":"240101", "歌手":"IU", "活動名稱":"演唱會", "地點":"台北", "expenses":[{"item": "門票", "amount": 5000}]}]</p>
+                </div>
+
                 <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='[{"日期": 230422, "歌手": "Taemin", "活動名稱": "RE : ACT", "地點": "首爾"}]'></textarea>
                 <div class="flex gap-2"><button @click="showImportModal = false" class="flex-1 py-2 text-slate-500">取消</button><button @click="processImport" :style="{ backgroundColor: themeColor }" class="flex-1 text-white py-2 rounded-lg font-bold shadow-sm">匯入</button></div>
             </div>
@@ -549,14 +597,14 @@
                 const showModal = ref(false);
                 const showSettingsModal = ref(false); 
                 const showImportModal = ref(false);
-                const showTicketModal = ref(false); // New
-                const ticketEvent = ref({}); // New
+                const showTicketModal = ref(false); 
+                const ticketEvent = ref({}); 
                 const isEditing = ref(false);
                 const importJson = ref('');
                 let map = null;
                 let markers = [];
 
-                const moodStickers = ['😊','😭','🎉','❤️','🔥','✨','🎤','🎫','✈️'];
+                const moodStickers = ['😊','😭','🎉','❤️','🔥','✨','🎤','🎫','✈️', '推', '神', '(⁠•⁠‿⁠•⁠)','QAQ'];
 
                 const defaultForm = {
                     id: null, title: '', artist: '', date: '', time: '19:00', location: '', 
@@ -566,6 +614,9 @@
                 const form = ref({ ...defaultForm });
 
                 const presetColors = ['#63b3b0', '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#1dd1a1'];
+                
+                // 1. App Title State
+                const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');
 
                 onMounted(() => {
                     const savedEvents = localStorage.getItem('idolEvents');
@@ -579,22 +630,18 @@
                                     if(!e.memo) e.memo = '';
                                     if(!e.seat) e.seat = '';
                                     if(!e.color) e.color = themeColor.value; 
-                                    if(!e.coverUrl) e.coverUrl = '';
-                                    if(!e.sticker) e.sticker = '';
+                                    if(!e.coverUrl) e.coverUrl = ''; // Ensure field exists
+                                    if(!e.sticker) e.sticker = ''; // Ensure field exists
                                     return e;
                                 });
-                            } else {
-                                events.value = [];
-                            }
-                        } catch(e) { 
-                            console.error("Load error:", e); 
-                            events.value = [];
-                        }
+                            } else { events.value = []; }
+                        } catch(e) { events.value = []; }
                     }
                     const savedTheme = localStorage.getItem('idolTheme');
                     if (savedTheme) themeColor.value = savedTheme;
                 });
 
+                watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
                 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
                 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
                 
@@ -641,7 +688,11 @@
                             e.title.toLowerCase().includes(query) || 
                             e.artist.toLowerCase().includes(query) || 
                             e.location.toLowerCase().includes(query)
-                        );
+                        ).sort((a, b) => { 
+                            const diffA = Math.abs(new Date(a.date) - new Date(today));
+                            const diffB = Math.abs(new Date(b.date) - new Date(today));
+                            return diffA - diffB;
+                        });
                     }
 
                     return viewMode.value === 'upcoming' 
@@ -724,16 +775,14 @@
                 const mappedEventsCount = computed(() => events.value.filter(e => e.lat && e.lng).length);
                 const missingCoordsCount = computed(() => events.value.length - mappedEventsCount.value);
 
-                const calculateTotal = (expenses) => {
-                    if (!expenses || !Array.isArray(expenses)) return 0;
-                    return expenses.reduce((sum, i) => sum + (Number(i.amount)||0), 0);
-                };
+                const calculateTotal = (expenses) => expenses ? expenses.reduce((sum, i) => sum + (Number(i.amount)||0), 0) : 0;
                 
+                // Ticket Price Logic - Ticket Only
                 const getTicketPrice = (expenses) => {
                     if (!expenses || !Array.isArray(expenses)) return 0;
                     return expenses.reduce((sum, item) => {
                         const name = item.item ? item.item.toLowerCase() : '';
-                        if (name.includes('票') || name.includes('ticket') || name.includes('admission')) {
+                        if (name.includes('門票') || name.includes('ticket')) {
                             return sum + (Number(item.amount) || 0);
                         }
                         return sum;
@@ -748,8 +797,11 @@
                 const saveChecklistState = (event) => {};
                 const toggleExpand = (id) => expandedEventId.value = (expandedEventId.value === id) ? null : id;
                 const togglePrivacy = () => isPrivacyMode.value = !isPrivacyMode.value;
-                const setTheme = (c) => themeColor.value = c;
-                const updateCustomTheme = (e) => themeColor.value = e.target.value;
+                const setTheme = (c) => {
+                    themeColor.value = c;
+                    localStorage.setItem('idolTheme', c);
+                }
+                const updateCustomTheme = (e) => setTheme(e.target.value);
 
                 const openModal = () => {
                     isEditing.value = false;
@@ -760,10 +812,15 @@
 
                 const editEvent = (evt) => {
                     isEditing.value = true;
-                    form.value = JSON.parse(JSON.stringify(evt));
-                    if(!form.value.color) form.value.color = themeColor.value; 
-                    if(!form.value.expenses) form.value.expenses = [];
-                    if(!form.value.checklist) form.value.checklist = [];
+                    form.value = { 
+                        ...defaultForm, 
+                        ...JSON.parse(JSON.stringify(evt)),
+                        expenses: evt.expenses || [],
+                        checklist: evt.checklist || [],
+                        coverUrl: evt.coverUrl || '',
+                        sticker: evt.sticker || ''
+                    };
+                    searchError.value = '';
                     showModal.value = true;
                 };
 
@@ -794,6 +851,13 @@
 
                 const toggleThemeModal = () => showSettingsModal.value = !showSettingsModal.value;
                 const toggleSettingsModal = () => showSettingsModal.value = !showSettingsModal.value;
+
+                const updateAppTitle = () => {
+                    if (customTitle.value.trim() === '') {
+                        customTitle.value = '追星日記 ✨';
+                    }
+                    localStorage.setItem('appTitle', customTitle.value);
+                }
 
                 const searchCoordinates = async () => {
                     if (!form.value.location) {
@@ -928,14 +992,14 @@
                 const getMapLink = (l) => l ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
 
                 return {
-                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode,
+                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, ticketEvent, isEditing, form, importJson, searchQuery,
                     cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors, moodStickers,
                     openModal, editEvent, closeModal, saveEvent, deleteEvent, toggleThemeModal, toggleSettingsModal, setTheme, updateCustomTheme, processImport, 
                     toggleExpand, togglePrivacy, formatMoney, getDay, getMonth, getDaysDiff, getMapLink, 
                     calculateTotal, addExpenseItem, removeExpenseItem, addChecklistItem, removeChecklistItem, addDefaultChecklist, saveChecklistState,
                     getEventColor, emotionalSummary, availableYears, searchCoordinates, isSearching, searchError, mappedEventsCount, missingCoordsCount,
-                    downloadBackup, restoreBackup, idolNagging, addToCalendar, showTicket, getTicketPrice
+                    downloadBackup, restoreBackup, idolNagging, addToCalendar, showTicket, getTicketPrice, updateAppTitle
                 };
             }
         }).mount('#app');
