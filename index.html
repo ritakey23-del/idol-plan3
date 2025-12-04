@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 
-    <!-- Leaflet (Map) -->
+    <!-- Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -59,7 +59,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 1200px; opacity: 1; }
+        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 800px; opacity: 1; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
 
         .slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease-out; }
@@ -72,32 +72,40 @@
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         #map-container { height: 100%; width: 100%; z-index: 1; }
         .leaflet-bottom { z-index: 400 !important; }
-
-        /* Ticket Styles */
-        .ticket-stub {
-            background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px);
-            background-position: 0 0, 0 0;
-            background-size: 100% 100%;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        
+        /* Rescue Button */
+        #rescue-btn {
+            display: none; /* Vue 載入成功後會維持隱藏 */
+            position: fixed; top: 10px; left: 10px; z-index: 99999; 
+            background-color: #ef4444; color: white; padding: 8px 16px; 
+            border-radius: 8px; font-weight: bold; font-size: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;
+            cursor: pointer;
         }
-        .ticket-divider {
-            border-top: 2px dashed #e2e8f0;
-            position: relative;
-        }
-        .ticket-divider::before, .ticket-divider::after {
-            content: '';
-            position: absolute;
-            top: -10px;
-            width: 20px;
-            height: 20px;
-            background-color: #1e293b;
-            border-radius: 50%;
-        }
-        .ticket-divider::before { left: -30px; }
-        .ticket-divider::after { right: -30px; }
     </style>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
+
+    <!-- ⚠️ 強制重置按鈕 -->
+    <button onclick="forceReset()" id="rescue-btn"
+        style="position: fixed; top: 10px; left: 10px; z-index: 99999; background-color: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;">
+        ⚠️ 畫面全白點我修復
+    </button>
+
+    <script>
+        function forceReset() {
+            if(confirm('確定要清除所有資料並重置嗎？這能解決白畫面問題。')) {
+                localStorage.removeItem('idolEvents');
+                localStorage.removeItem('idolTheme');
+                window.location.reload();
+            }
+        }
+        window.onerror = function(msg) {
+            console.error("Global Error:", msg);
+            // 確保錯誤發生時，按鈕能顯示
+            document.getElementById('rescue-btn').style.display = 'block';
+        };
+    </script>
 
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
 
@@ -136,7 +144,7 @@
             
             <!-- Tab: Home -->
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
-                <!-- Search Bar -->
+                <!-- Search -->
                 <div class="relative">
                     <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
                     <input v-model="searchQuery" type="text" placeholder="搜尋藝人、活動或地點..." 
@@ -228,7 +236,7 @@
                                 </div>
                             </div>
 
-                            <!-- If Cover Image exists, show Date in body clearly -->
+                            <!-- If Cover Image exists -->
                             <div v-if="event.coverUrl" class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2 text-slate-700">
                                     <i class="ph ph-calendar-blank text-lg" :style="{ color: getEventColor(event) }"></i>
@@ -264,7 +272,7 @@
                                     <span class="truncate">{{ event.location }}</span>
                                 </div>
 
-                                <!-- Row 4: Action Row -->
+                                <!-- Row 4: Action Row (Dedicated) -->
                                 <div class="flex items-center gap-2 pt-1">
                                     <button @click.stop="addToCalendar(event)" class="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors">
                                         <i class="ph ph-calendar-plus text-sm"></i> 加入日曆
@@ -274,7 +282,7 @@
                                     </a>
                                 </div>
                                 
-                                <!-- Footer -->
+                                <!-- Footer: Price & Actions -->
                                 <div class="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-slate-100">
                                     <div class="flex items-center gap-2 text-slate-700">
                                         <i class="ph ph-wallet" :style="{ color: getEventColor(event) }"></i>
@@ -456,7 +464,7 @@
                     <p class="text-xs text-slate-400 mb-2">資料備份與轉移</p>
                     <div class="flex flex-col gap-2">
                         <button @click="downloadBackup" class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200"><i class="ph ph-download-simple text-lg"></i> 備份資料 (下載檔案)</button>
-                        <label class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200 cursor-pointer"><i class="ph ph-upload-simple text-lg"></i> 還原資料<input type="file" accept=".json" @change="restoreBackup" class="hidden"></label>
+                        <label class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200 cursor-pointer"><i class="ph ph-upload-simple text-lg"></i> 還原資料 (上傳檔案)<input type="file" accept=".json" @change="restoreBackup" class="hidden"></label>
                     </div>
                 </div>
                 <button @click="showSettingsModal = false" class="mt-2 text-sm text-slate-400 hover:text-slate-600">完成</button>
@@ -563,11 +571,9 @@
                     const savedEvents = localStorage.getItem('idolEvents');
                     if (savedEvents) {
                         try {
-                            // Robust loading logic with data repair
                             const parsed = JSON.parse(savedEvents);
                             if (Array.isArray(parsed)) {
                                 events.value = parsed.map(e => {
-                                    // Auto-repair missing fields to prevent white screen crash
                                     if(!e.expenses) e.expenses = (e.price > 0) ? [{item:'門票(舊)', amount:e.price}] : [];
                                     if(!e.checklist) e.checklist = [];
                                     if(!e.memo) e.memo = '';
@@ -578,13 +584,11 @@
                                     return e;
                                 });
                             } else {
-                                // Data corruption detected
-                                console.warn("Data corrupted, resetting array");
                                 events.value = [];
                             }
                         } catch(e) { 
                             console.error("Load error:", e); 
-                            events.value = []; // Reset on error
+                            events.value = [];
                         }
                     }
                     const savedTheme = localStorage.getItem('idolTheme');
@@ -638,14 +642,6 @@
                             e.artist.toLowerCase().includes(query) || 
                             e.location.toLowerCase().includes(query)
                         );
-                    }
-                    
-                    if (searchQuery.value) {
-                        return sorted.sort((a, b) => {
-                            const diffA = Math.abs(new Date(a.date) - new Date(today));
-                            const diffB = Math.abs(new Date(b.date) - new Date(today));
-                            return diffA - diffB;
-                        });
                     }
 
                     return viewMode.value === 'upcoming' 
@@ -729,17 +725,14 @@
                 const missingCoordsCount = computed(() => events.value.length - mappedEventsCount.value);
 
                 const calculateTotal = (expenses) => {
-                    // Safety check for broken data
                     if (!expenses || !Array.isArray(expenses)) return 0;
                     return expenses.reduce((sum, i) => sum + (Number(i.amount)||0), 0);
                 };
                 
-                // Ticket Price Logic - Ticket Only
                 const getTicketPrice = (expenses) => {
                     if (!expenses || !Array.isArray(expenses)) return 0;
                     return expenses.reduce((sum, item) => {
                         const name = item.item ? item.item.toLowerCase() : '';
-                        // Checks for "票" (ticket) or "ticket" or "admission"
                         if (name.includes('票') || name.includes('ticket') || name.includes('admission')) {
                             return sum + (Number(item.amount) || 0);
                         }
@@ -781,7 +774,6 @@
                     form.value.expenses = form.value.expenses.filter(e => e.item && e.item.trim() !== '');
                     form.value.checklist = form.value.checklist.filter(c => c.text && c.text.trim() !== '');
                     
-                    // Intelligent Color Saving: If chosen color matches theme, save as empty to allow dynamic theming
                     if (form.value.color === themeColor.value) form.value.color = '';
 
                     if (isEditing.value) {
@@ -801,7 +793,7 @@
                 };
 
                 const toggleThemeModal = () => showSettingsModal.value = !showSettingsModal.value;
-                const toggleSettingsModal = () => showSettingsModal.value = !showSettingsModal.value; // Add this
+                const toggleSettingsModal = () => showSettingsModal.value = !showSettingsModal.value;
 
                 const searchCoordinates = async () => {
                     if (!form.value.location) {
@@ -882,7 +874,7 @@
                         try {
                             const parsed = JSON.parse(e.target.result);
                             if (Array.isArray(parsed)) {
-                                if(confirm('確定要還原備份嗎？目前的資料將被覆蓋！')) {
+                                if(confirm('確定要還原備份嗎？')) {
                                     events.value = parsed;
                                     alert('還原成功！');
                                     showSettingsModal.value = false;
@@ -920,17 +912,12 @@
                                 let expenses = [];
                                 let price = d.price || d['票價'] || d['金額'] || 0;
                                 if (price > 0) expenses.push({ item: '門票', amount: price });
-
-                                return { 
-                                    id: Date.now() + Math.random().toString(), 
-                                    title, artist, date: formattedDate, time, location, color, 
-                                    expenses, seat, memo, checklist: [], lat: null, lng: null, coverUrl: '', sticker: '' 
-                                };
+                                return { id: Date.now()+Math.random(), title, artist, date: formattedDate, time, location, color, expenses, seat, memo, checklist: [], lat: null, lng: null, coverUrl: '', sticker: '' };
                             });
                             events.value = [...events.value, ...newEvts];
                             showImportModal.value = false;
                             alert(`成功匯入 ${newEvts.length} 筆！`);
-                        } else { alert('格式錯誤：必須是陣列 (Array)'); }
+                        } else { alert('格式錯誤'); }
                     } catch(e) { alert('JSON 格式錯誤'); }
                 };
 
