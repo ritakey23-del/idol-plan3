@@ -527,12 +527,13 @@
                     <p class="font-bold mb-1 text-slate-700">💡 如何使用：</p>
                     請貼上標準的 <b>JSON 陣列</b>。務必包含**日期**、**歌手**和**活動名稱**。
                     <ul class="list-disc list-inside mt-1 ml-1">
-                        <li>日期：支援 `YYYY-MM-DD` 或六位數簡寫 `YYMMDD`。</li>
-                        <li>其他欄位：`地點`、`時間`、`expenses`（費用明細）。</li>
+                        <li>**日期**：支援 `YYYY-MM-DD` 或六位數簡寫 `YYMMDD` (如 240101)。</li>
+                        <li>**費用**：請使用 `expenses` 欄位，格式為 `[{"項目": "門票", "金額": 5000}]`。</li>
+                        <li>其他可選欄位：`地點`、`時間`、`座位`、`應援色`、`心得`。</li>
                     </ul>
                 </div>
 
-                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：[{"日期": "240101", "歌手": "IU", "活動名稱": "演唱會", "地點": "台北小巨蛋", "expenses": [{"item": "門票", "amount": 5000}]}]'></textarea>
+                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：[{"日期": "230422", "歌手": "Taemin", "活動名稱": "RE : ACT", "地點": "首爾蠶室", "expenses": [{"項目": "門票", "金額": 5800}]}]'></textarea>
                 <div class="flex gap-2"><button @click="showImportModal = false" class="flex-1 py-2 text-slate-500">取消</button><button @click="processImport" :style="{ backgroundColor: themeColor }" class="flex-1 text-white py-2 rounded-lg font-bold shadow-sm">匯入</button></div>
             </div>
         </div>
@@ -920,6 +921,7 @@
                         const data = JSON.parse(importJson.value);
                         if (Array.isArray(data)) {
                             const newEvts = data.map(d => {
+                                // 處理欄位名稱兼容性
                                 let title = d.title || d['活動名稱'] || '未命名活動';
                                 let artist = d.artist || d['歌手'] || '';
                                 let location = d.location || d['地點'] || '';
@@ -931,13 +933,28 @@
                                 let formattedDate = new Date().toISOString().split('T')[0];
                                 if (rawDate) {
                                     const str = String(rawDate).trim();
+                                    // 230422 -> 2023-04-22
                                     if (/^\d{6}$/.test(str)) formattedDate = `20${str.substring(0, 2)}-${str.substring(2, 4)}-${str.substring(4, 6)}`;
+                                    // 20230422 -> 2023-04-22
                                     else if (/^\d{8}$/.test(str)) formattedDate = `${str.substring(0, 4)}-${str.substring(4, 6)}-${str.substring(6, 8)}`;
+                                    // 2023/04/22 or 2023-04-22
                                     else if (str.includes('-') || str.includes('/')) formattedDate = str.replace(/\//g, '-'); 
                                 }
+                                
                                 let expenses = [];
-                                let price = d.price || d['票價'] || d['金額'] || 0;
-                                if (price > 0) expenses.push({ item: '門票', amount: price });
+                                // 兼容舊的 price 或直接使用 expenses 陣列
+                                if (d.expenses && Array.isArray(d.expenses)) {
+                                     // 兼容 JSON 內使用中文（項目/金額）或英文（item/amount）
+                                    expenses = d.expenses.map(exp => ({
+                                        item: exp.item || exp['項目'] || '未分類',
+                                        amount: Number(exp.amount) || Number(exp['金額']) || 0
+                                    })).filter(exp => exp.amount > 0);
+                                } else {
+                                    // 兼容舊的 price 欄位
+                                    let price = d.price || d['票價'] || d['金額'] || 0;
+                                    if (price > 0) expenses.push({ item: '門票', amount: price });
+                                }
+                                
                                 return { id: Date.now()+Math.random(), title, artist, date: formattedDate, time, location, color, expenses, seat, memo, checklist: [], lat: null, lng: null, coverUrl: '', sticker: '' };
                             });
                             events.value = [...events.value, ...newEvts];
