@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>我的追星日記 🌟</title>
     
+    <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Phosphor Icons -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 
+    <!-- Leaflet (Map) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght=500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -104,6 +109,7 @@
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
 
+    <!-- ⚠️ 強制重置按鈕 -->
     <button onclick="forceReset()" id="rescue-btn"
         style="position: fixed; top: 10px; left: 10px; z-index: 99999; background-color: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;">
         ⚠️ 畫面全白點我修復
@@ -111,10 +117,12 @@
 
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
 
+        <!-- Header -->
         <header class="text-white pt-10 pb-4 px-5 shadow-lg rounded-b-[1.5rem] z-20 shrink-0 transition-colors duration-200"
                 :style="{ backgroundColor: themeColor }">
             <div class="flex justify-between items-center mb-3">
                 <div>
+                    <!-- 自訂標題顯示 -->
                     <h1 class="text-xl font-bold tracking-wide">{{ customTitle }}</h1>
                     <p class="text-white/80 text-xs opacity-90">{{ greetingMessage }}</p>
                 </div>
@@ -140,9 +148,12 @@
             </div>
         </header>
 
+        <!-- Main Content -->
         <main class="flex-1 overflow-y-auto no-scrollbar scroll-smooth w-full relative bg-slate-50">
             
+            <!-- Tab: Home -->
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
+                <!-- Search -->
                 <div class="relative">
                     <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
                     <input v-model="searchQuery" type="text" placeholder="搜尋藝人、活動或地點..." 
@@ -152,6 +163,7 @@
                     </button>
                 </div>
 
+                <!-- Toggle -->
                 <div class="flex bg-slate-200 p-1 rounded-full relative mb-2">
                     <div class="w-1/2 h-full absolute bg-white rounded-full shadow-sm transition-all duration-300 transform"
                          :class="viewMode === 'upcoming' ? 'translate-x-0' : 'translate-x-full'"></div>
@@ -167,6 +179,7 @@
                     </button>
                 </div>
 
+                <!-- Empty State -->
                 <div v-if="filteredEvents.length === 0" class="text-center py-12 px-4 opacity-80 flex flex-col items-center">
                     <div class="bg-slate-100 p-6 rounded-full mb-4">
                         <i class="ph ph-magnifying-glass text-5xl text-slate-300" v-if="searchQuery"></i>
@@ -190,11 +203,13 @@
                     <button v-else @click="searchQuery = ''" class="text-slate-500 underline text-sm">清除搜尋</button>
                 </div>
 
+                <!-- Event Cards -->
                 <transition-group name="fade" tag="div" class="space-y-4">
                     <div v-for="event in filteredEvents" :key="event.id" 
                          class="bg-white rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group transition-all duration-300"
                          :class="{'ring-2 ring-primary/30': expandedEventId === event.id}">
                         
+                        <!-- Cover Image -->
                         <div v-if="event.coverUrl" class="h-32 w-full bg-slate-100 relative overflow-hidden cursor-pointer" @click="toggleExpand(event.id)">
                             <img :src="event.coverUrl" class="w-full h-full object-cover opacity-95 hover:opacity-100 transition-opacity" alt="Event Cover" onerror="this.style.display='none'">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
@@ -211,6 +226,7 @@
                         <div class="p-5 cursor-pointer relative" @click="toggleExpand(event.id)">
                             <div v-if="!event.coverUrl" class="absolute left-0 top-0 bottom-0 w-1.5" :style="{ backgroundColor: getEventColor(event) }"></div>
                             
+                            <!-- Header (Only if no cover image) -->
                             <div v-if="!event.coverUrl" class="flex justify-between items-start mb-3 pl-2">
                                 <div>
                                     <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white mb-1 shadow-sm"
@@ -229,6 +245,7 @@
                                 </div>
                             </div>
 
+                            <!-- If Cover Image exists -->
                             <div v-if="event.coverUrl" class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2 text-slate-700">
                                     <i class="ph ph-calendar-blank text-lg" :style="{ color: getEventColor(event) }"></i>
@@ -238,6 +255,7 @@
                             </div>
 
                             <div class="pl-2 space-y-3 text-sm text-slate-600">
+                                <!-- Row 1: Time & Ticket -->
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
                                         <i class="ph ph-clock" :style="{ color: getEventColor(event) }"></i>
@@ -251,16 +269,19 @@
                                     </button>
                                 </div>
                                 
+                                <!-- Row 2: Seat Info -->
                                 <div v-if="event.seat" class="flex items-center gap-2 text-slate-500 text-xs">
                                     <i class="ph ph-chair shrink-0" :style="{ color: getEventColor(event) }"></i>
                                     {{ event.seat }}
                                 </div>
                                 
+                                <!-- Row 3: Location -->
                                 <div class="flex items-center gap-2 truncate pr-2">
                                     <i class="ph ph-map-pin shrink-0" :style="{ color: getEventColor(event) }"></i>
                                     <span class="truncate">{{ event.location }}</span>
                                 </div>
 
+                                <!-- Row 4: Action Row (Dedicated) -->
                                 <div class="flex items-center gap-2 pt-1">
                                     <button @click.stop="addToCalendar(event)" class="flex-1 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-lg text-xs font-bold text-slate-600 flex items-center justify-center gap-1.5 transition-colors">
                                         <i class="ph ph-calendar-plus text-sm"></i> 加入日曆
@@ -270,6 +291,7 @@
                                     </a>
                                 </div>
                                 
+                                <!-- Footer -->
                                 <div class="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-slate-100">
                                     <div class="flex items-center gap-2 text-slate-700">
                                         <i class="ph ph-wallet" :style="{ color: getEventColor(event) }"></i>
@@ -295,6 +317,7 @@
                             </div>
                         </div>
                         
+                        <!-- Expanded Detail -->
                         <transition name="expand">
                             <div v-if="expandedEventId === event.id" class="bg-slate-50 border-t border-slate-100 px-6 py-4 overflow-hidden">
                                 <div class="mb-4">
@@ -326,6 +349,7 @@
                 </transition-group>
             </div>
 
+            <!-- Tab: Map -->
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
                 <div class="absolute top-4 left-4 right-4 z-[400] bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
@@ -334,6 +358,7 @@
                 </div>
             </div>
 
+            <!-- Tab: Stats -->
             <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
@@ -382,11 +407,13 @@
             </div>
         </main>
 
+        <!-- FAB -->
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
             class="absolute bottom-24 right-6 w-14 h-14 text-white rounded-full shadow-lg shadow-primary/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 z-30 mb-safe">
             <i class="ph ph-plus text-2xl font-bold"></i>
         </button>
 
+        <!-- Bottom Navigation -->
         <nav class="bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shrink-0 w-full z-40 safe-pb">
             <button @click="activeTab = 'home'" class="flex flex-col items-center gap-1 transition-colors w-16" 
                 :class="activeTab === 'home' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'home' ? themeColor : '' }">
@@ -405,6 +432,7 @@
             </button>
         </nav>
 
+        <!-- Ticket Modal -->
         <transition name="fade">
             <div v-if="showTicketModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" @click.self="showTicketModal = false">
                 <div class="w-full max-w-xs transform transition-all relative" @click.stop>
@@ -414,21 +442,20 @@
                              <h2 class="text-white font-bold text-xl relative z-10 drop-shadow-md">{{ ticketEvent.artist }}</h2>
                         </div>
                         <div class="p-6 text-center space-y-4">
-                            <div>
-                                <div class="text-xs text-slate-400 uppercase tracking-widest mb-1">EVENT</div>
-                                <h3 class="text-xl font-bold leading-tight">{{ ticketEvent.title }}</h3>
-                                <div class="text-xs font-medium text-slate-500 mt-1 flex items-center justify-center gap-1">
-                                    <i class="ph ph-map-pin-fill text-sm"></i>
-                                    {{ ticketEvent.location }}
-                                </div>
-                            </div>
-                            <div class="border-b border-slate-100 pb-4 pt-2">
-                                <div class="text-center">
+                            <div><div class="text-xs text-slate-400 uppercase tracking-widest mb-1">EVENT</div><h3 class="text-xl font-bold leading-tight">{{ ticketEvent.title }}</h3></div>
+                            <!-- FIXED: Date/Time/Location Layout -->
+                            <div class="flex justify-between items-stretch border-b border-slate-100 pb-4">
+                                <div class="flex-1 text-left min-w-0 pr-2">
                                     <div class="text-[10px] text-slate-400 uppercase">DATE / TIME</div>
-                                    <div class="font-bold text-lg leading-snug">{{ ticketEvent.date }}</div>
-                                    <div class="font-bold text-md leading-snug">{{ ticketEvent.time }}</div>
+                                    <div class="font-bold">{{ ticketEvent.date }}</div>
+                                    <div class="font-bold text-sm">{{ ticketEvent.time }}</div>
+                                </div>
+                                <div class="flex-1 text-right min-w-0 pl-2">
+                                    <div class="text-[10px] text-slate-400 uppercase">LOCATION</div>
+                                    <div class="font-bold text-sm">{{ ticketEvent.location }}</div>
                                 </div>
                             </div>
+                            <!-- FIXED: SEAT / TICKET PRICE -->
                             <div class="flex justify-between items-center">
                                 <div class="text-left">
                                     <div class="text-[10px] text-slate-400 uppercase">SEAT</div>
@@ -449,10 +476,12 @@
             </div>
         </transition>
 
+        <!-- Settings Modal -->
         <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
                 <h3 class="font-bold text-lg mb-4 text-slate-700">資料與主題設定 ⚙️</h3>
                 
+                <!-- NEW: Title Setting -->
                 <div class="mb-6 border-b border-slate-100 pb-4">
                     <p class="text-xs font-medium text-slate-500 mb-2">App 標題</p>
                     <input type="text" v-model="customTitle" @input="updateAppTitle" placeholder="例如：我的追星天堂"
@@ -478,6 +507,7 @@
             </div>
         </div>
 
+        <!-- Add/Edit Modal -->
         <transition name="slide-up">
             <div v-if="showModal" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
                 <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="closeModal"></div>
@@ -489,6 +519,7 @@
                     <div class="overflow-y-auto flex-1 no-scrollbar space-y-4 pb-32">
                         <div class="space-y-4">
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">活動名稱</label><input v-model="form.title" type="text" placeholder="例如: 2024 世界巡迴演唱會" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800"></div>
+                             <!-- Cover Image Input -->
                              <div><label class="block text-sm font-medium text-slate-500 mb-1">封面圖片連結 (URL)</label><div class="relative"><i class="ph ph-image absolute left-3 top-3.5 text-slate-400"></i><input v-model="form.coverUrl" type="text" placeholder="https://..." class="w-full bg-slate-50 border-none rounded-xl p-3 pl-10 focus:ring-2 focus:ring-primary/50 text-slate-800"></div><p class="text-[10px] text-slate-400 mt-1">貼上 Imgur 或官方圖片網址，豐富你的行程卡片！</p></div>
 
                             <div class="grid grid-cols-[1fr,60px] gap-3">
@@ -509,7 +540,8 @@
                         <div><div class="flex justify-between items-center mb-2"><label class="block text-sm font-medium text-slate-700">詳細支出記帳 💰</label><span class="text-xs font-bold" :style="{ color: themeColor }">總計: ${{ formatMoney(calculateTotal(form.expenses)) }}</span></div><div class="space-y-2 mb-2"><div v-for="(exp, index) in form.expenses" :key="index" class="grid grid-cols-[1fr,1fr,auto] gap-2 items-center"><input v-model="exp.item" type="text" placeholder="項目" class="w-full bg-slate-50 border-none rounded-lg p-2 text-sm"><input v-model.number="exp.amount" type="number" placeholder="金額" class="w-full bg-slate-50 border-none rounded-lg p-2 text-sm text-right"><button @click="removeExpenseItem(index)" class="text-slate-400 hover:text-red-500"><i class="ph ph-minus-circle text-lg"></i></button></div></div><div class="flex gap-2 overflow-x-auto"><button @click="addExpenseItem('門票')" class="px-3 py-1 bg-slate-100 text-xs rounded-full border">門票</button><button @click="addExpenseItem('交通')" class="px-3 py-1 bg-slate-100 text-xs rounded-full border">交通</button><button @click="addExpenseItem('住宿')" class="px-3 py-1 bg-slate-100 text-xs rounded-full border">住宿</button><button @click="addExpenseItem('周邊')" class="px-3 py-1 bg-slate-100 text-xs rounded-full border">周邊</button></div></div>
                          <div><label class="block text-sm font-medium text-slate-700 mb-1">心得筆記 📝</label><textarea v-model="form.memo" placeholder="寫下你的應援心情、觀後感..." class="w-full h-24 bg-slate-50 border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/50 text-slate-800 resize-none"></textarea></div>
                          <hr class="border-slate-100 my-2">
-                         <div>
+                         <!-- Checklist -->
+                        <div>
                             <div class="flex justify-between items-center mb-2"><label class="block text-sm font-medium text-slate-700">必帶清單 ✅</label><button @click="addDefaultChecklist" class="text-xs text-primary hover:underline" :style="{color: themeColor}">加入常用項目</button></div>
                             <div class="space-y-2 mb-2"><div v-for="(item, index) in form.checklist" :key="index" class="flex gap-2 items-center"><input v-model="item.text" type="text" placeholder="項目" class="flex-1 bg-slate-50 border-none rounded-lg p-2 text-sm"><button @click="removeChecklistItem(index)" class="text-slate-400 hover:text-red-500 p-1"><i class="ph ph-x"></i></button></div></div>
                             <button @click="addChecklistItem" class="w-full py-2 bg-slate-50 text-slate-500 text-xs rounded-lg border border-dashed border-slate-300 hover:bg-slate-100">+ 新增檢查項目</button>
@@ -522,10 +554,12 @@
             </div>
         </transition>
 
+        <!-- Import Modal -->
         <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md m-4">
                 <h3 class="font-bold text-lg mb-2 text-slate-700">批次匯入行程</h3>
                 
+                <!-- 匯入格式說明 -->
                 <div class="bg-slate-50 p-3 rounded-xl mb-3 text-xs text-slate-500 leading-relaxed border border-slate-100">
                     <p class="font-bold mb-1 text-slate-700">💡 如何使用：</p>
                     請貼上標準的 <b>JSON 陣列</b>。支援的欄位包含：
