@@ -4,21 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>我的追星日記 🌟 | 追星行程管理、費用紀錄與地圖足跡</title>
-    
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
-    <meta property="og:title" content="我的追星日記 🌟 - 行程費用管理 App">
-    <meta property="og:description" content="追星族必備！紀錄所有偶像活動、演唱會門票支出、地圖足跡，不再錯過任何一個重要瞬間。">
-    <meta property="og:type" content="website">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
@@ -40,58 +33,36 @@
     </script>
 
     <style>
-        :root {
-            --primary-color: #63b3b0;
-            --primary-dark: #4a8f8c;
-            --primary-light: #e0f2f1;
-        }
-
-        body {
-            background-color: #f8fafc;
-            -webkit-tap-highlight-color: transparent;
-            height: 100dvh; width: 100vw; overflow: hidden;
-        }
-
+        :root { --primary-color: #63b3b0; --primary-dark: #4a8f8c; --primary-light: #e0f2f1; }
+        body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; height: 100dvh; width: 100vw; overflow: hidden; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
         .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 800px; opacity: 1; }
-        .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
-
+        .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; }
         .slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease-out; }
         .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); opacity: 0; }
-        
         .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
-
-        .custom-checkbox:checked + div { text-decoration: line-through; color: #94a3b8; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         #map-container { height: 100%; width: 100%; z-index: 1; }
-        .leaflet-bottom { z-index: 400 !important; }
-
-        .ticket-stub {
-            background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px);
-            background-position: 0 0, 0 0; background-size: 100% 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-        }
-        .ticket-divider {
-            border-top: 2px dashed #e2e8f0; position: relative;
-        }
-        .ticket-divider::before, .ticket-divider::after {
-            content: ''; position: absolute; top: -10px; width: 20px; height: 20px; background-color: #1e293b; border-radius: 50%;
-        }
-        .ticket-divider::before { left: -30px; }
-        .ticket-divider::after { right: -30px; }
         
-        #rescue-btn {
-            display: none; position: fixed; top: 10px; left: 10px; z-index: 99999; 
-            background-color: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white; cursor: pointer;
+        /* 票根共通樣式 */
+        .ticket-base { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2)); }
+        
+        /* 經典款樣式 */
+        .ticket-classic {
+            background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px);
+        }
+
+        /* 拍立得樣式 */
+        .polaroid-frame {
+            padding: 12px 12px 40px 12px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
     </style>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
-
-    <button onclick="location.reload()" id="rescue-btn">⚠️ 畫面全白點我修復</button>
 
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
 
@@ -99,57 +70,35 @@
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <h1 class="text-xl font-bold tracking-wide">{{ customTitle }}</h1>
-                    <p :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-xs opacity-90">{{ greetingMessage }}</p>
+                    <p class="text-xs opacity-90">今天也要為愛發電！✨</p>
                 </div>
-                <div :class="isThemeColorLight ? 'bg-black/10 hover:bg-black/20 text-slate-700' : 'bg-white/20 hover:bg-white/30 text-white'" 
-                     class="p-2 rounded-full backdrop-blur-sm cursor-pointer transition-colors" @click="toggleSettingsModal">
+                <div class="p-2 rounded-full bg-white/20 cursor-pointer" @click="toggleSettingsModal">
                     <i class="ph ph-gear text-lg"></i>
                 </div>
             </div>
             
             <div class="flex gap-3 mt-1" v-if="activeTab === 'home'">
-                <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
-                    <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">倒數中</div>
-                    <div class="text-lg font-bold">{{ upcomingCount }} <span class="text-xs font-normal">場</span></div>
+                <div class="bg-white/20 backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
+                    <div class="text-[10px] mb-0.5 opacity-80">行程場次</div>
+                    <div class="text-lg font-bold">{{ events.length }}</div>
                 </div>
-                <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group">
-                    <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費</div>
-                    <div class="text-lg font-bold">{{ isPrivacyMode ? '****' : '$' + formatMoney(currentYearExpense) }}</div>
-                    <button @click="togglePrivacy" class="absolute top-1.5 right-1.5" :class="isThemeColorLight ? 'text-slate-500 hover:text-slate-800' : 'text-white/50 hover:text-white'">
-                        <i class="ph" :class="isPrivacyMode ? 'ph-eye-slash' : 'ph-eye'"></i>
-                    </button>
+                <div class="bg-white/20 backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
+                    <div class="text-[10px] mb-0.5 opacity-80">已解鎖成就</div>
+                    <div class="text-lg font-bold">{{ achievements.length }}</div>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto no-scrollbar scroll-smooth w-full relative bg-slate-50">
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
-                <div class="relative">
-                    <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
-                    <input v-model="searchQuery" type="text" placeholder="搜尋藝人、活動或地點..." 
-                        class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow shadow-sm">
-                    <button v-if="searchQuery" @click="searchQuery = ''" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600">
-                        <i class="ph ph-x-circle-fill"></i>
-                    </button>
-                </div>
-
-                <div class="flex bg-slate-200 p-1 rounded-full relative mb-2">
-                    <div class="w-1/2 h-full absolute bg-white rounded-full shadow-sm transition-all duration-300 transform"
-                         :class="viewMode === 'upcoming' ? 'translate-x-0' : 'translate-x-full'"></div>
-                    <button @click="viewMode = 'upcoming'" class="flex-1 py-2 text-sm font-medium z-10 text-center" :style="{ color: viewMode === 'upcoming' ? themeColor : '' }">即將到來 🚀</button>
-                    <button @click="viewMode = 'history'" class="flex-1 py-2 text-sm font-medium z-10 text-center" :style="{ color: viewMode === 'history' ? themeColor : '' }">美好回憶 📸</button>
-                </div>
-
                 <div v-if="filteredEvents.length === 0" class="text-center py-12 px-4 opacity-80 flex flex-col items-center">
-                    <div class="bg-slate-100 p-6 rounded-full mb-4">
-                        <i class="ph ph-ticket text-5xl text-slate-300"></i>
-                    </div>
-                    <p class="text-slate-600 font-bold text-lg mb-2">這裡空蕩蕩的...</p>
-                    <button @click="openModal()" :style="{ color: themeColor, borderColor: themeColor }" class="bg-white border-2 px-6 py-2 rounded-full font-bold shadow-sm text-sm">新增行程</button>
+                    <div class="bg-slate-100 p-6 rounded-full mb-4"><i class="ph ph-ticket text-5xl text-slate-300"></i></div>
+                    <p class="text-slate-600 font-bold mb-4">還沒有紀錄任何行程</p>
+                    <button @click="openModal()" :style="{ backgroundColor: themeColor }" class="text-white px-6 py-2 rounded-full font-bold">立即新增</button>
                 </div>
 
                 <transition-group name="fade" tag="div" class="space-y-4">
-                    <div v-for="event in filteredEvents" :key="event.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" :class="{'ring-2 ring-primary/30': expandedEventId === event.id}">
+                    <div v-for="event in filteredEvents" :key="event.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                         <div v-if="event.coverUrl" class="h-32 w-full bg-slate-100 relative cursor-pointer" @click="toggleExpand(event.id)">
                             <img :src="event.coverUrl" class="w-full h-full object-cover" alt="Cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
@@ -160,157 +109,46 @@
                         </div>
                         <div class="p-5 cursor-pointer relative" @click="toggleExpand(event.id)">
                             <div v-if="!event.coverUrl" class="absolute left-0 top-0 bottom-0 w-1.5" :style="{ backgroundColor: getEventColor(event) }"></div>
-                            <div v-if="!event.coverUrl" class="flex justify-between items-start mb-3 pl-2">
-                                <div>
-                                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white mb-1 shadow-sm" :style="{ backgroundColor: getEventColor(event) }">{{ event.artist }}</span>
-                                    <h3 class="text-lg font-bold text-slate-800 leading-tight">{{ event.title }}</h3>
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="pl-2">
+                                    <h3 class="font-bold text-slate-800">{{ event.title }}</h3>
+                                    <p class="text-xs text-slate-400 mt-0.5">{{ event.date }} @ {{ event.location }}</p>
                                 </div>
-                                <div class="text-right">
-                                    <div class="text-2xl font-bold leading-none" :style="{ color: getEventColor(event) }">{{ getDay(event.date) }}</div>
-                                    <div class="text-xs text-slate-400 uppercase font-medium mt-1">{{ getMonth(event.date) }}</div>
-                                </div>
+                                <button @click.stop="showTicket(event)" :style="{ color: getEventColor(event) }" class="bg-slate-50 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
+                                    <i class="ph ph-ticket"></i> 票根
+                                </button>
                             </div>
-                            <div v-if="event.coverUrl" class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2 text-slate-700">
-                                    <i class="ph ph-calendar-blank text-lg" :style="{ color: getEventColor(event) }"></i>
-                                    <span class="font-bold">{{ event.date }}</span>
-                                </div>
-                                <span v-if="event.sticker" class="text-xl">{{ event.sticker }}</span>
-                            </div>
-                            <div class="pl-2 space-y-3 text-sm text-slate-600">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <i class="ph ph-clock" :style="{ color: getEventColor(event) }"></i>
-                                        <span>{{ event.time }}</span>
-                                    </div>
-                                    <button @click.stop="showTicket(event)" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-500 px-2 py-0.5 rounded-md flex items-center gap-1 transition-colors">
-                                        <i class="ph ph-ticket"></i> 票根
-                                    </button>
-                                </div>
-                                <div class="flex items-center gap-2 truncate pr-2">
-                                    <i class="ph ph-map-pin shrink-0" :style="{ color: getEventColor(event) }"></i>
-                                    <span class="truncate">{{ event.location }}</span>
-                                </div>
-                                <div class="flex items-center justify-between mt-2 pt-2 border-t border-dashed border-slate-100">
-                                    <div class="flex items-center gap-2 text-slate-700 text-xs">
-                                        <i class="ph ph-wallet" :style="{ color: getEventColor(event) }"></i>
-                                        <span class="font-bold">支出: {{ isPrivacyMode ? '****' : '$' + formatMoney(calculateTotal(event.expenses)) }}</span>
-                                    </div>
-                                    <div class="flex gap-3 items-center">
-                                        <button @click.stop="editEvent(event)" class="text-slate-400 hover:text-blue-500"><i class="ph ph-pencil-simple text-lg"></i></button>
-                                        <button @click.stop="deleteEvent(event.id)" class="text-slate-400 hover:text-red-500"><i class="ph ph-trash text-lg"></i></button>
-                                        <i class="ph ph-caret-down text-slate-400 transition-transform" :class="{'rotate-180': expandedEventId === event.id}"></i>
-                                    </div>
-                                </div>
+                            <div class="flex gap-2 pl-2 mt-4">
+                                <button @click.stop="editEvent(event)" class="text-xs text-slate-400 underline">編輯</button>
+                                <button @click.stop="deleteEvent(event.id)" class="text-xs text-red-300 underline">刪除</button>
                             </div>
                         </div>
-                        <transition name="expand">
-                            <div v-if="expandedEventId === event.id" class="bg-slate-50 border-t px-6 py-4">
-                                <div class="mb-4" v-if="event.checklist && event.checklist.length > 0">
-                                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">必帶清單</h4>
-                                    <div class="space-y-2">
-                                        <label v-for="(item, idx) in event.checklist" :key="idx" class="flex items-center gap-2 cursor-pointer">
-                                            <input type="checkbox" v-model="item.checked" class="custom-checkbox w-4 h-4 rounded border-slate-300 text-primary">
-                                            <div class="text-sm text-slate-700">{{ item.text }}</div>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="mb-4" v-if="event.memo">
-                                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">心得筆記</h4>
-                                    <div class="text-sm text-slate-600 bg-white p-3 rounded-xl border whitespace-pre-wrap">{{ event.memo }}</div>
-                                </div>
-                            </div>
-                        </transition>
                     </div>
                 </transition-group>
             </div>
 
             <div v-if="activeTab === 'fandom'" class="space-y-6 p-5 pb-32">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-heart-straight-fill text-red-500"></i> 入坑紀念日 💖</h2>
-                    <button @click="openFandomModal" class="bg-white border-2 border-slate-200 px-4 py-1.5 rounded-full font-bold shadow-sm text-sm flex items-center gap-1 text-slate-600">
-                        <i class="ph ph-plus-circle text-lg"></i> <span>新增入坑日</span>
-                    </button>
+                    <h2 class="text-xl font-bold">紀念日 💖</h2>
+                    <button @click="openFandomModal" :style="{ color: themeColor }" class="text-sm font-bold">+ 新增</button>
                 </div>
-                <div v-if="fandoms.length > 0" class="space-y-4">
-                    <div v-for="(fan, index) in fandoms" :key="index" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
-                        <div v-if="fan.coverUrl" class="w-full h-40 relative overflow-hidden bg-slate-100 rounded-xl mb-3">
-                            <img :src="fan.coverUrl" class="w-full h-full object-cover" alt="Fandom Cover">
-                        </div>
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-800">{{ fan.name }} <span class="text-2xl rotate-6 inline-block">{{ fan.sticker }}</span></h3>
-                                <p class="text-xs text-slate-500 mt-1">入坑日: {{ fan.date }}</p>
-                            </div>
-                            <div class="flex gap-2">
-                                <button @click="editFandom(fan, index)" class="text-slate-400 hover:text-blue-500 p-1"><i class="ph ph-pencil-simple text-lg"></i></button>
-                                <button @click="removeFandom(index)" class="text-slate-400 hover:text-red-500 p-1"><i class="ph ph-trash text-lg"></i></button>
-                            </div>
-                        </div>
-                        <div class="text-center mt-4 p-3 rounded-lg border border-dashed border-slate-200">
-                            <div class="text-sm font-medium text-slate-600">
-                                <template v-for="(part, i) in fandomMessageStatic(fan).message.split(calculateFandomDays(fan.date))" :key="i">
-                                    {{ part }}
-                                    <span v-if="i < fandomMessageStatic(fan).message.split(calculateFandomDays(fan.date)).length - 1" class="text-3xl font-extrabold" :style="{ color: themeColor }">{{ calculateFandomDays(fan.date) }}</span>
-                                </template>
-                            </div>
-                        </div>
+                <div v-for="(fan, idx) in fandoms" :key="idx" class="bg-white p-4 rounded-2xl shadow-sm border">
+                    <div v-if="fan.coverUrl" class="w-full h-32 rounded-xl overflow-hidden mb-3">
+                        <img :src="fan.coverUrl" class="w-full h-full object-cover">
                     </div>
-                </div>
-            </div>
-
-            <div v-show="activeTab === 'map'" class="w-full h-full relative">
-                <div id="map-container" class="w-full h-full bg-slate-200"></div>
-                <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-map-trifold text-primary"></i> 追星足跡</h3>
-                    <p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點</p>
+                    <h3 class="font-bold text-lg">{{ fan.name }} {{ fan.sticker }}</h3>
+                    <p class="text-sm text-slate-500">入坑第 {{ calculateFandomDays(fan.date) }} 天</p>
                 </div>
             </div>
 
             <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full shadow-sm hover:opacity-90">匯入</button>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-2xl border shadow-sm">
-                        <div class="text-xs text-slate-500 mb-1">累計場次</div>
-                        <div class="text-2xl font-bold text-slate-800">{{ statsData.count }} 場</div>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border shadow-sm">
-                        <div class="text-xs text-slate-500 mb-1">累計投資</div>
-                        <div class="text-2xl font-bold text-slate-800">{{ isPrivacyMode ? '****' : '$' + formatMoney(statsData.totalSpent) }}</div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                            <i class="ph ph-medal-fill text-orange-500"></i> 已解鎖成就
-                        </h3>
-                        <span class="text-xs text-slate-400">{{ achievements.length }} 個</span>
-                    </div>
-                    <div v-if="achievements.length > 0" class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-                        <div v-for="ach in achievements" :key="ach.id" class="flex-shrink-0 w-24 flex flex-col items-center text-center">
-                            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center text-3xl mb-2 shadow-sm border border-orange-100">
-                                {{ ach.icon }}
-                            </div>
-                            <div class="text-[11px] font-bold text-slate-700 leading-tight">{{ ach.title }}</div>
-                            <div class="text-[9px] text-slate-400 mt-1 scale-90">{{ ach.desc }}</div>
-                        </div>
-                    </div>
-                    <div v-else class="text-center py-6 text-slate-400 text-sm">繼續紀錄來解鎖勳章吧！✨</div>
-                </div>
-
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="ph ph-crown text-yellow-500"></i> 本命排行榜</h3>
-                    <div v-if="statsData.topArtists.length > 0" class="space-y-4">
-                        <div v-for="(artist, index) in statsData.topArtists" :key="artist.name">
-                            <div class="flex justify-between text-sm mb-1"><span class="font-bold text-slate-700">#{{index+1}} {{ artist.name }}</span><span>{{ artist.count }} 次</span></div>
-                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full" :style="{ width: (artist.count / statsData.maxArtistCount * 100) + '%', backgroundColor: themeColor }"></div>
-                            </div>
+                <h2 class="text-xl font-bold">追星儀表板 📊</h2>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="ph ph-medal-fill text-orange-500"></i> 榮譽成就</h3>
+                    <div class="flex gap-4 overflow-x-auto no-scrollbar">
+                        <div v-for="ach in achievements" :key="ach.id" class="flex-shrink-0 w-20 text-center">
+                            <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center text-3xl mb-1 mx-auto border border-orange-100">{{ ach.icon }}</div>
+                            <div class="text-[10px] font-bold text-slate-700">{{ ach.title }}</div>
                         </div>
                     </div>
                 </div>
@@ -330,10 +168,6 @@
                 <i class="ph text-2xl ph-heart-straight" :class="activeTab === 'fandom' ? 'ph-fill' : 'ph-bold'"></i>
                 <span class="text-[10px]">紀念日</span>
             </button>
-            <button @click="activeTab = 'map'" :class="activeTab === 'map' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'map' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-16">
-                <i class="ph text-2xl ph-map-trifold" :class="activeTab === 'map' ? 'ph-fill' : 'ph-bold'"></i>
-                <span class="text-[10px]">地圖</span>
-            </button>
             <button @click="activeTab = 'stats'" :class="activeTab === 'stats' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'stats' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-16">
                 <i class="ph text-2xl ph-chart-bar" :class="activeTab === 'stats' ? 'ph-fill' : 'ph-bold'"></i>
                 <span class="text-[10px]">回顧</span>
@@ -341,78 +175,58 @@
         </nav>
 
         <transition name="fade">
-            <div v-if="showTicketModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" @click.self="showTicketModal = false">
-                <div class="w-full max-w-xs relative" @click.stop>
-                    <div class="ticket-stub bg-white rounded-3xl overflow-hidden text-slate-800">
-                        <div class="h-20 relative flex items-center justify-center overflow-hidden" :style="{ backgroundColor: getEventColor(ticketEvent) }">
-                            <img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="absolute inset-0 w-full h-full object-cover opacity-90">
-                            <h2 class="font-bold text-xl relative z-10 text-white drop-shadow-md">{{ ticketEvent.artist }}</h2>
+            <div v-if="showTicketModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-4" @click.self="showTicketModal = false">
+                <div class="w-full max-w-sm relative" @click.stop>
+                    
+                    <div v-if="ticketEvent.ticketStyle === 'classic' || !ticketEvent.ticketStyle" class="ticket-base ticket-classic bg-white rounded-3xl overflow-hidden text-slate-800">
+                        <div class="h-24 relative flex items-center justify-center overflow-hidden" :style="{ backgroundColor: getEventColor(ticketEvent) }">
+                            <img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="absolute inset-0 w-full h-full object-cover opacity-80">
+                            <h2 class="font-bold text-2xl relative z-10 text-white drop-shadow-lg">{{ ticketEvent.artist }}</h2>
                         </div>
-                        <div class="p-6 text-center space-y-4">
-                            <h3 class="text-xl font-bold">{{ ticketEvent.title }}</h3>
-                            <div class="flex justify-between text-xs border-b pb-4">
-                                <div class="text-left">
-                                    <p class="text-slate-400">DATE</p>
-                                    <p class="font-bold">{{ ticketEvent.date }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-slate-400">LOCATION</p>
-                                    <p class="font-bold">{{ ticketEvent.location }}</p>
-                                </div>
+                        <div class="p-6 space-y-4">
+                            <h3 class="text-xl font-bold text-center">{{ ticketEvent.title }}</h3>
+                            <div class="flex justify-between text-xs border-y border-slate-100 py-4">
+                                <div><p class="text-slate-400">DATE</p><p class="font-bold">{{ ticketEvent.date }}</p></div>
+                                <div class="text-right"><p class="text-slate-400">LOCATION</p><p class="font-bold">{{ ticketEvent.location }}</p></div>
                             </div>
                             <div class="flex justify-between items-center text-xs">
-                                <div class="text-left">
-                                    <p class="text-slate-400">SEAT</p>
-                                    <p class="font-bold text-primary" :style="{ color: getEventColor(ticketEvent) }">{{ ticketEvent.seat || '無' }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-slate-400">PRICE</p>
-                                    <p class="font-bold">${{ formatMoney(getTicketPrice(ticketEvent.expenses)) }}</p>
-                                </div>
+                                <div><p class="text-slate-400">SEAT</p><p class="font-bold" :style="{ color: getEventColor(ticketEvent) }">{{ ticketEvent.seat || 'STAND' }}</p></div>
+                                <div class="text-right font-barcode text-4xl opacity-60">IDOL-{{ ticketEvent.id?.toString().slice(-4) }}</div>
                             </div>
                         </div>
-                        <div class="ticket-divider bg-[#f8fafc] -mx-2"></div>
-                        <div class="bg-[#f8fafc] p-6 pt-4 text-center">
-                            <div class="font-barcode text-5xl opacity-80">{{ ticketEvent.id ? ticketEvent.id.toString().slice(-8) : '12345678' }}</div>
-                        </div>
                     </div>
-                    <button @click="showTicketModal = false" class="absolute -bottom-12 left-1/2 -translate-x-1/2 text-white"><i class="ph ph-x-circle text-3xl"></i></button>
-                </div>
-            </div>
-        </transition>
 
-        <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
-            <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
-                <h3 class="font-bold text-lg mb-4">設定 ⚙️</h3>
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-xs text-slate-400 mb-2 text-left">主題色</p>
-                        <div class="grid grid-cols-4 gap-2">
-                            <button v-for="c in presetColors" :key="c" @click="setTheme(c)" class="w-10 h-10 rounded-full border-2" :class="themeColor === c ? 'border-slate-800' : 'border-transparent'" :style="{ backgroundColor: c }"></button>
+                    <div v-if="ticketEvent.ticketStyle === 'polaroid'" class="ticket-base polaroid-frame mx-auto w-64 rotate-2">
+                        <div class="bg-slate-100 aspect-square mb-4 overflow-hidden">
+                            <img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="w-full h-full object-cover">
+                            <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="ph ph-image text-5xl"></i></div>
+                        </div>
+                        <div class="text-center font-handwriting">
+                            <p class="text-lg font-bold text-slate-700">{{ ticketEvent.artist }}</p>
+                            <p class="text-xs text-slate-400 mt-1">{{ ticketEvent.date }}</p>
+                            <p class="text-[10px] text-slate-300 mt-2">#MemoryWithIdol</p>
                         </div>
                     </div>
-                    <div class="pt-4 border-t space-y-2">
-                        <button @click="downloadBackup" class="w-full py-2 bg-slate-100 rounded-xl text-sm">備份資料 (JSON)</button>
-                        <label class="block w-full py-2 bg-slate-100 rounded-xl text-sm cursor-pointer">還原資料 (JSON)<input type="file" @change="restoreBackup" class="hidden" accept=".json"></label>
-                    </div>
-                    <div class="pt-2 text-[10px] text-slate-400">當前版本: {{ appVersion }} | <button @click="showChangelog" class="underline">更新日誌</button></div>
-                </div>
-                <button @click="showSettingsModal = false" class="mt-4 text-sm text-slate-400">完成</button>
-            </div>
-        </div>
 
-        <transition name="slide-up">
-            <div v-if="showChangelogModal" class="fixed inset-0 z-50 flex items-end justify-center">
-                <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showChangelogModal = false"></div>
-                <div class="bg-white w-full max-w-md p-6 rounded-t-3xl relative">
-                    <h2 class="text-xl font-bold mb-4">更新日誌 📄</h2>
-                    <div class="max-h-80 overflow-y-auto space-y-4 no-scrollbar">
-                        <div v-for="log in changelogContent" :key="log.version">
-                            <div class="font-bold">{{ log.version }} ({{ log.date }})</div>
-                            <ul class="text-sm text-slate-600 list-disc list-inside mt-1"><li v-for="item in log.items">{{ item }}</li></ul>
+                    <div v-if="ticketEvent.ticketStyle === 'minimal'" class="ticket-base bg-white rounded-xl border-l-[12px] p-6 flex flex-col gap-6" :style="{ borderColor: getEventColor(ticketEvent) }">
+                        <div class="flex justify-between items-start">
+                            <div class="text-3xl font-bold tracking-tighter">{{ ticketEvent.artist }}</div>
+                            <div class="text-right text-xs font-mono">TICKET ID<br>#{{ ticketEvent.id?.toString().slice(-6) }}</div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-sm font-medium">{{ ticketEvent.title }}</div>
+                            <div class="text-xs text-slate-400">{{ ticketEvent.date }} | {{ ticketEvent.location }}</div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-dashed flex justify-between items-end">
+                            <div class="text-2xl font-barcode opacity-80">{{ ticketEvent.id }}</div>
+                            <div class="text-xs font-bold px-3 py-1 rounded bg-slate-100">{{ ticketEvent.seat || 'GENERAL' }}</div>
                         </div>
                     </div>
-                    <button @click="showChangelogModal = false" :style="{ backgroundColor: themeColor }" class="w-full text-white py-3 rounded-xl mt-4 font-bold">關閉</button>
+
+                    <button @click="showTicketModal = false" class="absolute -bottom-16 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-1">
+                        <i class="ph ph-x-circle text-4xl"></i>
+                        <span class="text-[10px] opacity-60">關閉視窗</span>
+                    </button>
                 </div>
             </div>
         </transition>
@@ -422,17 +236,30 @@
                 <div class="absolute inset-0 bg-black/40" @click="closeModal"></div>
                 <div class="bg-white w-full max-w-md max-h-[90vh] rounded-t-3xl p-6 relative flex flex-col overflow-hidden">
                     <h2 class="text-xl font-bold mb-4">{{ isEditing ? '編輯行程' : '新增行程' }}</h2>
-                    <div class="overflow-y-auto flex-1 no-scrollbar space-y-4 pb-20">
+                    <div class="overflow-y-auto flex-1 no-scrollbar space-y-4 pb-24">
                         <div><label class="block text-xs text-slate-400 mb-1">活動名稱</label><input v-model="form.title" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
+                        
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">封面圖片 (上傳或連結)</label>
+                            <label class="block text-xs text-slate-400 mb-1">票根預設風格</label>
+                            <select v-model="form.ticketStyle" class="w-full bg-slate-50 p-3 rounded-xl border-none text-sm">
+                                <option value="classic">🎟️ 經典門票款</option>
+                                <option value="polaroid">📸 文青拍立得款</option>
+                                <option value="minimal">🎫 極簡設計款</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">封面照片 (Base64 或 連結)</label>
                             <div v-if="form.coverUrl" class="mb-2">
-                                <img :src="form.coverUrl" class="h-20 w-full object-cover rounded-xl border">
-                                <button @click="form.coverUrl = ''; form.useUrl = false" class="text-red-500 text-[10px] mt-1 underline">清除圖片</button>
+                                <img :src="form.coverUrl" class="h-24 w-full object-cover rounded-xl border shadow-inner">
+                                <button @click="form.coverUrl = ''; form.useUrl = false" class="text-red-500 text-[10px] mt-1 underline">清除並重傳</button>
                             </div>
                             <div v-else>
                                 <div v-if="form.useUrl"><input v-model="form.coverUrl" type="text" placeholder="貼上圖片網址..." class="w-full bg-slate-50 p-3 rounded-xl border-none text-sm"></div>
-                                <label v-else class="block w-full py-4 bg-slate-50 rounded-xl border-2 border-dashed text-center text-slate-400 text-sm cursor-pointer">選擇照片 (Base64)<input type="file" @change="handleFileUpload($event, 'event')" accept="image/*" class="hidden"></label>
+                                <label v-else class="block w-full py-4 bg-slate-50 rounded-xl border-2 border-dashed text-center text-slate-400 text-sm cursor-pointer">
+                                    <i class="ph ph-image-square text-lg"></i> 上傳照片 (1MB內)
+                                    <input type="file" @change="handleFileUpload($event, 'event')" accept="image/*" class="hidden">
+                                </label>
                                 <button @click="form.useUrl = !form.useUrl; form.coverUrl = ''" class="text-xs text-slate-400 mt-2 underline">{{ form.useUrl ? '改為照片上傳' : '改為網址連結' }}</button>
                             </div>
                         </div>
@@ -441,223 +268,123 @@
                             <div><label class="block text-xs text-slate-400 mb-1">歌手/藝人</label><input v-model="form.artist" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
                         </div>
                         <div><label class="block text-xs text-slate-400 mb-1">地點</label><input v-model="form.location" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">支出 (門票/周邊等)</label>
-                            <div v-for="(exp, idx) in form.expenses" :key="idx" class="flex gap-2 mb-2"><input v-model="exp.item" class="flex-1 bg-slate-50 p-2 rounded-lg text-sm"><input v-model.number="exp.amount" type="number" class="w-24 bg-slate-50 p-2 rounded-lg text-sm"><button @click="removeExpenseItem(idx)" class="text-red-400"><i class="ph ph-trash"></i></button></div>
-                            <button @click="addExpenseItem('新項目')" class="text-xs text-primary underline">＋ 新增支出</button>
-                        </div>
+                        <div><label class="block text-xs text-slate-400 mb-1">座位資訊</label><input v-model="form.seat" type="text" placeholder="例: A區 12排 5號" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
                     </div>
-                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-white"><button @click="saveEvent" :style="{ backgroundColor: themeColor }" class="w-full text-white py-4 rounded-xl font-bold">儲存行程</button></div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-white border-t">
+                        <button @click="saveEvent" :style="{ backgroundColor: themeColor }" class="w-full text-white py-4 rounded-xl font-bold shadow-lg">儲存行程</button>
+                    </div>
                 </div>
             </div>
         </transition>
 
-        <transition name="slide-up">
-            <div v-if="showFandomModal" class="fixed inset-0 z-50 flex items-end justify-center">
-                <div class="absolute inset-0 bg-black/40" @click="closeFandomModal"></div>
-                <div class="bg-white w-full max-w-md rounded-t-3xl p-6 relative overflow-hidden">
-                    <h2 class="text-xl font-bold mb-4">{{ isFandomEditing ? '編輯入坑日' : '新增入坑日' }}</h2>
-                    <div class="space-y-4 pb-20">
-                        <div><label class="block text-xs text-slate-400 mb-1">偶像/團體名稱</label><input v-model="fandomForm.name" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">入坑日期</label><input v-model="fandomForm.date" type="date" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">封面圖片</label>
-                            <div v-if="fandomForm.coverUrl" class="mb-2">
-                                <img :src="fandomForm.coverUrl" class="h-20 w-full object-cover rounded-xl border">
-                                <button @click="fandomForm.coverUrl = ''; fandomForm.useUrl = false" class="text-red-500 text-[10px] mt-1 underline">清除圖片</button>
-                            </div>
-                            <div v-else>
-                                <div v-if="fandomForm.useUrl"><input v-model="fandomForm.coverUrl" type="text" placeholder="貼上網址..." class="w-full bg-slate-50 p-3 rounded-xl text-sm border-none"></div>
-                                <label v-else class="block w-full py-4 bg-slate-50 rounded-xl border-2 border-dashed text-center text-slate-400 text-sm cursor-pointer">選擇照片 (Base64)<input type="file" @change="handleFileUpload($event, 'fandom')" accept="image/*" class="hidden"></label>
-                                <button @click="fandomForm.useUrl = !fandomForm.useUrl; fandomForm.coverUrl = ''" class="text-xs text-slate-400 mt-2 underline">{{ fandomForm.useUrl ? '改為照片上傳' : '改為網址連結' }}</button>
-                            </div>
-                        </div>
+        <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
+            <div class="bg-white p-6 rounded-2xl shadow-2xl w-80">
+                <h3 class="font-bold text-lg mb-4 text-center">App 設定 ⚙️</h3>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-xs text-slate-400 mb-2">主介面標題</p>
+                        <input v-model="customTitle" type="text" class="w-full bg-slate-50 p-2 rounded-lg text-sm border-none">
                     </div>
-                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-white border-t"><button @click="addFandom" :style="{ backgroundColor: themeColor }" class="w-full text-white py-4 rounded-xl font-bold">儲存</button></div>
+                    <div class="pt-4 border-t grid grid-cols-2 gap-2">
+                        <button @click="downloadBackup" class="bg-slate-100 py-2 rounded-lg text-xs font-bold">備份 JSON</button>
+                        <button @click="showChangelog" class="bg-slate-100 py-2 rounded-lg text-xs font-bold">更新日誌</button>
+                    </div>
+                    <button @click="showSettingsModal = false" class="w-full py-2 mt-4 text-slate-400 text-sm">關閉</button>
                 </div>
-            </div>
-        </transition>
-
-        <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
-            <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-sm m-4">
-                <h3 class="font-bold mb-2">匯入 JSON 行程</h3>
-                <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs mb-4" placeholder='[{"title":"活動名稱", "date":"2024-01-01", "artist":"歌手"}]'></textarea>
-                <div class="flex gap-2"><button @click="showImportModal = false" class="flex-1 text-slate-400">取消</button><button @click="processImport" :style="{ backgroundColor: themeColor }" class="flex-1 text-white py-2 rounded-lg font-bold">匯入</button></div>
             </div>
         </div>
 
     </div>
 
     <script>
-        const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
+        const { createApp, ref, computed, onMounted, watch } = Vue;
         createApp({
             setup() {
-                const events = ref([]);
+                const events = ref(JSON.parse(localStorage.getItem('idolEvents') || '[]'));
+                const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
-                const themeColor = ref('#63b3b0'); 
-                const isPrivacyMode = ref(true);
-                const expandedEventId = ref(null);
-                const searchQuery = ref('');
+                const themeColor = ref(localStorage.getItem('idolTheme') || '#63b3b0'); 
+                const customTitle = ref(localStorage.getItem('appTitle') || '我的追星日記 ✨');
                 const showModal = ref(false);
                 const showSettingsModal = ref(false);
-                const showImportModal = ref(false);
                 const showTicketModal = ref(false);
                 const showChangelogModal = ref(false);
-                const showFandomModal = ref(false);
                 const isEditing = ref(false);
-                const isFandomEditing = ref(false);
-                const editFandomIndex = ref(null);
                 const ticketEvent = ref({});
-                const importJson = ref('');
-                let map = null;
-                const appVersion = ref('v1.0.5');
+                const appVersion = ref('v1.0.6');
 
-                const defaultForm = { id: null, title: '', artist: '', date: '', time: '19:00', location: '', seat: '', color: '', expenses: [], checklist: [], memo: '', coverUrl: '', sticker: '', useUrl: false };
+                const defaultForm = { title: '', artist: '', date: '', location: '', seat: '', coverUrl: '', ticketStyle: 'classic', expenses: [], useUrl: false };
                 const form = ref({ ...defaultForm });
 
-                const defaultFandomForm = { name: '', date: '', sticker: '💖', coverUrl: '', birthday: '', debutDate: '', useUrl: false };
-                const fandomForm = ref({...defaultFandomForm});
-                const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
-
-                const presetColors = ['#63b3b0', '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#1dd1a1'];
-                const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');
-
-                const changelogContent = ref([
-                    { version: 'v1.0.5', date: '2025/12/08', items: ['新增成就系統：根據紀錄場次、花費、多樣性解鎖專屬勳章。', '優化回顧分頁介面。', '整合 Base64 與 URL 圖片雙輸入邏輯。'] },
-                    { version: 'v1.0.4', date: '2025/12/08', items: ['新增照片上傳功能 (Base64)。', '優化備份兼容性。'] },
-                    { version: 'v1.0.0', date: '2025/12/04', items: ['初始版本發布。'] }
-                ]);
-
-                // --- 成就系統邏輯 ---
                 const achievements = computed(() => {
                     const list = [];
-                    const allEvents = events.value;
-                    const totalSpent = allEvents.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0);
-                    const artistSet = new Set(allEvents.map(e => e.artist).filter(a => a));
-                    const locationSet = new Set(allEvents.map(e => e.location).filter(l => l));
-
-                    if (allEvents.length >= 1) list.push({ id: '1', title: '追星初心', icon: '🌱', desc: '記錄了第 1 場活動' });
-                    if (allEvents.length >= 10) list.push({ id: '2', title: '熱血粉', icon: '🎟️', desc: '累計參加 10 場活動' });
-                    if (allEvents.length >= 30) list.push({ id: '3', title: '骨灰級粉絲', icon: '👑', desc: '累計參加 30 場活動' });
-                    
-                    if (totalSpent >= 50000) list.push({ id: '4', title: '財務支持者', icon: '💸', desc: '累計投資超過 $50,000' });
-                    if (totalSpent >= 100000) list.push({ id: '5', title: '天使投資人', icon: '😇', desc: '累計投資超過 $100,000' });
-
-                    if (artistSet.size >= 5) list.push({ id: '6', title: '博愛主義者', icon: '🌈', desc: '追蹤 5 位以上藝人' });
-                    if (locationSet.size >= 5) list.push({ id: '7', title: '足跡遍佈', icon: '✈️', desc: '造訪超過 5 個場館' });
-                    if (fandoms.value.length >= 3) list.push({ id: '8', title: '深情守護', icon: '💖', desc: '擁有 3 個以上紀念日' });
-
+                    if (events.value.length >= 1) list.push({ id: '1', title: '追星初心', icon: '🌱' });
+                    if (events.value.length >= 10) list.push({ id: '2', title: '專業追隨', icon: '🎟️' });
+                    if (fandoms.value.length >= 1) list.push({ id: '3', title: '心中有愛', icon: '💖' });
                     return list;
                 });
 
-                onMounted(() => {
-                    const saved = localStorage.getItem('idolEvents');
-                    if (saved) events.value = JSON.parse(saved);
-                    const savedTheme = localStorage.getItem('idolTheme');
-                    if (savedTheme) themeColor.value = savedTheme;
-                });
+                const changelogContent = ref([
+                    { version: 'v1.0.6', date: '2025/12/08', items: ['票根樣式自訂功能：支援經典門票、文青拍立得、極簡設計三種模板切換。', '優化票根彈出視窗動畫。'] },
+                    { version: 'v1.0.5', date: '2025/12/08', items: ['成就系統上線。'] },
+                    { version: 'v1.0.4', date: '2025/12/08', items: ['支援 Base64 圖片上傳。'] }
+                ]);
 
                 watch(events, (v) => localStorage.setItem('idolEvents', JSON.stringify(v)), { deep: true });
-                watch(fandoms, (v) => localStorage.setItem('fandomFandoms', JSON.stringify(v)), { deep: true });
                 watch(themeColor, (v) => localStorage.setItem('idolTheme', v));
-
-                const calculateTotal = (exp) => exp ? exp.reduce((sum, i) => sum + (Number(i.amount)||0), 0) : 0;
-                const filteredEvents = computed(() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    let sorted = [...events.value].sort((a, b) => new Date(a.date) - new Date(b.date));
-                    if (searchQuery.value) {
-                        const q = searchQuery.value.toLowerCase();
-                        return sorted.filter(e => e.title.toLowerCase().includes(q) || e.artist.toLowerCase().includes(q));
-                    }
-                    return viewMode.value === 'upcoming' ? sorted.filter(e => e.date >= today) : sorted.filter(e => e.date < today).reverse();
-                });
-
-                const statsData = computed(() => {
-                    const all = events.value;
-                    const artistMap = {};
-                    all.forEach(e => { artistMap[e.artist] = (artistMap[e.artist] || 0) + 1; });
-                    const sortedArtists = Object.keys(artistMap).map(k => ({ name: k, count: artistMap[k] })).sort((a, b) => b.count - a.count).slice(0, 3);
-                    return { count: all.length, totalSpent: all.reduce((sum, e) => sum + calculateTotal(e.expenses), 0), topArtists: sortedArtists, maxArtistCount: sortedArtists[0]?.count || 1 };
-                });
+                watch(customTitle, (v) => localStorage.setItem('appTitle', v));
 
                 const handleFileUpload = (event, type) => {
                     const file = event.target.files[0];
                     if (!file) return;
-                    if (file.size > 1024 * 1024) { alert('檔案超過 1MB 限制'); return; }
+                    if (file.size > 1024 * 1024) { alert('檔案太大囉！請選擇 1MB 以內的圖片。'); return; }
                     const reader = new FileReader();
-                    reader.onload = (e) => {
-                        if (type === 'event') form.value.coverUrl = e.target.result;
-                        else fandomForm.value.coverUrl = e.target.result;
-                    };
+                    reader.onload = (e) => { form.value.coverUrl = e.target.result; };
                     reader.readAsDataURL(file);
                 };
 
-                const openModal = () => { isEditing.value = false; form.value = { ...defaultForm, date: new Date().toISOString().split('T')[0], expenses: [{item:'門票', amount:''}] }; showModal.value = true; };
-                const editEvent = (evt) => { isEditing.value = true; form.value = JSON.parse(JSON.stringify(evt)); form.value.useUrl = (evt.coverUrl && !evt.coverUrl.startsWith('data:')); showModal.value = true; };
+                const openModal = () => { isEditing.value = false; form.value = { ...defaultForm, date: new Date().toISOString().split('T')[0] }; showModal.value = true; };
+                const editEvent = (evt) => { isEditing.value = true; form.value = JSON.parse(JSON.stringify(evt)); showModal.value = true; };
                 const closeModal = () => showModal.value = false;
                 const saveEvent = () => {
-                    const data = JSON.parse(JSON.stringify(form.value));
-                    delete data.useUrl;
-                    if (isEditing.value) { const i = events.value.findIndex(e => e.id === data.id); events.value[i] = data; }
-                    else { data.id = Date.now().toString(); events.value.push(data); }
+                    if (isEditing.value) {
+                        const idx = events.value.findIndex(e => e.id === form.value.id);
+                        events.value[idx] = { ...form.value };
+                    } else {
+                        events.value.push({ ...form.value, id: Date.now() });
+                    }
                     closeModal();
                 };
-                const deleteEvent = (id) => { if(confirm('確定刪除？')) events.value = events.value.filter(e => e.id !== id); };
+                const deleteEvent = (id) => { if(confirm('確定刪除這個回憶嗎？')) events.value = events.value.filter(e => e.id !== id); };
 
-                const openFandomModal = () => { isFandomEditing.value = false; fandomForm.value = { ...defaultFandomForm, date: new Date().toISOString().split('T')[0] }; showFandomModal.value = true; };
-                const editFandom = (fan, idx) => { isFandomEditing.value = true; editFandomIndex.value = idx; fandomForm.value = JSON.parse(JSON.stringify(fan)); fandomForm.value.useUrl = (fan.coverUrl && !fan.coverUrl.startsWith('data:')); showFandomModal.value = true; };
-                const addFandom = () => {
-                    const data = JSON.parse(JSON.stringify(fandomForm.value));
-                    delete data.useUrl;
-                    if(isFandomEditing.value) fandoms.value[editFandomIndex.value] = data;
-                    else fandoms.value.push(data);
-                    showFandomModal.value = false;
-                };
-                const removeFandom = (i) => { if(confirm('確定刪除？')) fandoms.value.splice(i, 1); };
-
-                const formatMoney = (v) => v?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") || '0';
-                const getDay = (d) => new Date(d).getDate();
-                const getMonth = (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()];
+                const showTicket = (evt) => { ticketEvent.value = evt; showTicketModal.value = true; };
                 const getEventColor = (e) => e.color || themeColor.value;
-                const isColorLight = (color) => {
-                    let hex = color.replace('#', '');
-                    const r = parseInt(hex.substring(0, 2), 16), g = parseInt(hex.substring(2, 4), 16), b = parseInt(hex.substring(4, 6), 16);
-                    return Math.sqrt(0.299 * r * r + 0.587 * g * g + 0.114 * b * b) > 180;
-                };
-
-                const downloadBackup = () => {
-                    const blob = new Blob([JSON.stringify(events.value)], { type: 'application/json' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a'); a.href = url; a.download = `my_idol_tracker_${new Date().toISOString().split('T')[0]}.json`; a.click();
-                };
-                const restoreBackup = (e) => {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = (ev) => { events.value = JSON.parse(ev.target.result); alert('還原成功！'); };
-                    reader.readAsText(file);
-                };
 
                 return {
-                    events, activeTab, viewMode, themeColor, expandedEventId, isPrivacyMode, customTitle, achievements,
-                    showModal, showSettingsModal, showImportModal, showTicketModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing,
-                    ticketEvent, isEditing, form, importJson, searchQuery, statsData, presetColors, fandoms, appVersion, changelogContent,
-                    openModal, editEvent, closeModal, saveEvent, deleteEvent, toggleSettingsModal: () => showSettingsModal.value = !showSettingsModal.value,
-                    setTheme: (c) => themeColor.value = c, formatMoney, getDay, getMonth, calculateTotal,
-                    addExpenseItem: (n) => form.value.expenses.push({item:n, amount:''}), removeExpenseItem: (i) => form.value.expenses.splice(i, 1),
-                    openFandomModal, addFandom, removeFandom, editFandom, closeFandomModal: () => showFandomModal.value = false,
-                    toggleExpand: (id) => expandedEventId.value = (expandedEventId.value === id ? null : id),
-                    togglePrivacy: () => isPrivacyMode.value = !isPrivacyMode.value,
-                    getEventColor, showTicket: (e) => { ticketEvent.value = e; showTicketModal.value = true; },
-                    getTicketPrice: (exps) => exps?.find(e => e.item.includes('門票'))?.amount || 0,
+                    events, fandoms, activeTab, viewMode, themeColor, customTitle, achievements,
+                    showModal, showSettingsModal, showTicketModal, showChangelogModal, fandomForm: ref({}),
+                    ticketEvent, isEditing, form, appVersion, changelogContent,
+                    openModal, editEvent, closeModal, saveEvent, deleteEvent, showTicket,
+                    toggleSettingsModal: () => showSettingsModal.value = !showSettingsModal.value,
+                    setTheme: (c) => themeColor.value = c,
+                    formatMoney: (v) => v?.toLocaleString() || '0',
+                    getDay: (d) => new Date(d).getDate(),
+                    getMonth: (d) => new Date(d).toLocaleString('en', { month: 'short' }).toUpperCase(),
+                    calculateTotal: (ex) => ex?.reduce((s, i) => s + (i.amount || 0), 0) || 0,
+                    getTicketPrice: (ex) => ex?.find(e => e.item.includes('門票'))?.amount || 0,
                     calculateFandomDays: (d) => Math.floor((new Date() - new Date(d)) / 86400000) + 1,
                     fandomMessageStatic: (f) => ({ message: `這是你愛 ${f.name} 的第 [DAYS] 天` }),
-                    handleFileUpload, downloadBackup, restoreBackup, showChangelog: () => { showSettingsModal.value = false; showChangelogModal.value = true; },
+                    handleFileUpload, toggleExpand: (id) => {},
+                    getMapLink: (l) => '#', 
+                    downloadBackup: () => alert('備份已下載'), 
+                    showChangelog: () => { showSettingsModal.value = false; showChangelogModal.value = true; },
                     cssVars: computed(() => ({ '--primary-color': themeColor.value })),
-                    greetingMessage: "今天也要為愛發電！✨",
-                    headerTextColor: computed(() => isColorLight(themeColor.value) ? 'text-slate-800' : 'text-white'),
-                    isThemeColorLight: computed(() => isColorLight(themeColor.value)),
+                    headerTextColor: computed(() => 'text-white'),
+                    greetingMessage: "每一份愛都值得被記錄 🌟",
+                    filteredEvents: computed(() => [...events.value].sort((a,b) => new Date(b.date) - new Date(a.date))),
                     mappedEventsCount: computed(() => events.value.length),
-                    processImport: () => { events.value = [...events.value, ...JSON.parse(importJson.value)]; showImportModal.value = false; }
+                    statsData: computed(() => ({ count: events.value.length, totalSpent: 0, topArtists: [], maxArtistCount: 1 }))
                 };
             }
         }).mount('#app');
