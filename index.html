@@ -3,150 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 | 追星行程管理、費用紀錄與地圖足跡</title>
-    <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
+    <title>我的追星日記 🌟</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: 'var(--primary-color)',
-                        'primary-dark': 'var(--primary-dark)',
-                        'primary-light': 'var(--primary-light)',
-                    },
-                    fontFamily: {
-                        sans: ['"Noto Sans TC"', '"Quicksand"', 'sans-serif'],
-                        barcode: ['"Libre Barcode 39 Text"', 'cursive'],
-                    }
+                    colors: { primary: 'var(--primary-color)' },
+                    fontFamily: { sans: ['"Noto Sans TC"', 'sans-serif'], barcode: ['"Libre Barcode 39 Text"', 'cursive'] }
                 }
             }
         }
     </script>
 
     <style>
-        :root { --primary-color: #63b3b0; --primary-dark: #4a8f8c; --primary-light: #e0f2f1; }
-        body { background-color: #f8fafc; -webkit-tap-highlight-color: transparent; height: 100dvh; width: 100vw; overflow: hidden; }
+        :root { --primary-color: #63b3b0; }
+        body { background-color: #f8fafc; height: 100dvh; width: 100vw; overflow: hidden; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 800px; opacity: 1; }
-        .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; }
-        .slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease-out; }
-        .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); opacity: 0; }
         .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
-        #map-container { height: 100%; width: 100%; z-index: 1; }
         
-        /* 票根共通樣式 */
-        .ticket-base { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2)); }
-        
-        /* 經典款樣式 */
-        .ticket-classic {
-            background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px);
-        }
-
-        /* 拍立得樣式 */
-        .polaroid-frame {
-            padding: 12px 12px 40px 12px;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+        /* 月曆樣式 */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-radius: 1rem; overflow: hidden; }
+        .calendar-day { aspect-ratio: 1 / 1.2; display: flex; flex-col; items: center; padding-top: 8px; border: 0.5px solid #f1f5f9; position: relative; cursor: pointer; }
+        .calendar-day.today { background-color: #f0fdfa; }
+        .calendar-day.not-current { opacity: 0.3; }
+        .event-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 2px; }
+        .event-sticker { font-size: 14px; position: absolute; bottom: 4px; }
     </style>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
 
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
 
-        <header :class="headerTextColor" class="pt-4 pb-4 px-5 shadow-lg rounded-b-[1.5rem] z-20 shrink-0 transition-colors duration-200" :style="{ backgroundColor: themeColor }">
+        <header :class="headerTextColor" class="pt-4 pb-4 px-5 shadow-lg rounded-b-[1.5rem] z-20 shrink-0 transition-colors" :style="{ backgroundColor: themeColor }">
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <h1 class="text-xl font-bold tracking-wide">{{ customTitle }}</h1>
-                    <p class="text-xs opacity-90">今天也要為愛發電！✨</p>
+                    <p class="text-xs opacity-80">每一份愛都閃閃發光 ✨</p>
                 </div>
                 <div class="p-2 rounded-full bg-white/20 cursor-pointer" @click="toggleSettingsModal">
                     <i class="ph ph-gear text-lg"></i>
                 </div>
             </div>
-            
-            <div class="flex gap-3 mt-1" v-if="activeTab === 'home'">
-                <div class="bg-white/20 backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
-                    <div class="text-[10px] mb-0.5 opacity-80">行程場次</div>
-                    <div class="text-lg font-bold">{{ events.length }}</div>
-                </div>
-                <div class="bg-white/20 backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
-                    <div class="text-[10px] mb-0.5 opacity-80">已解鎖成就</div>
-                    <div class="text-lg font-bold">{{ achievements.length }}</div>
-                </div>
-            </div>
         </header>
 
         <main class="flex-1 overflow-y-auto no-scrollbar scroll-smooth w-full relative bg-slate-50">
+            
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
-                <div v-if="filteredEvents.length === 0" class="text-center py-12 px-4 opacity-80 flex flex-col items-center">
-                    <div class="bg-slate-100 p-6 rounded-full mb-4"><i class="ph ph-ticket text-5xl text-slate-300"></i></div>
-                    <p class="text-slate-600 font-bold mb-4">還沒有紀錄任何行程</p>
-                    <button @click="openModal()" :style="{ backgroundColor: themeColor }" class="text-white px-6 py-2 rounded-full font-bold">立即新增</button>
-                </div>
-
                 <transition-group name="fade" tag="div" class="space-y-4">
-                    <div v-for="event in filteredEvents" :key="event.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div v-if="event.coverUrl" class="h-32 w-full bg-slate-100 relative cursor-pointer" @click="toggleExpand(event.id)">
-                            <img :src="event.coverUrl" class="w-full h-full object-cover" alt="Cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <div class="absolute bottom-3 left-4 text-white right-4">
-                                <div class="text-[10px] font-bold bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded mb-1 inline-block">{{ event.artist }}</div>
-                                <h3 class="text-lg font-bold leading-tight truncate">{{ event.title }}</h3>
+                    <div v-for="event in sortedEvents" :key="event.id" class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                        <div v-if="event.coverUrl" class="h-32 w-full relative">
+                            <img :src="event.coverUrl" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/40 flex items-end p-4 text-white">
+                                <h3 class="font-bold truncate">{{ event.title }}</h3>
                             </div>
                         </div>
-                        <div class="p-5 cursor-pointer relative" @click="toggleExpand(event.id)">
-                            <div v-if="!event.coverUrl" class="absolute left-0 top-0 bottom-0 w-1.5" :style="{ backgroundColor: getEventColor(event) }"></div>
-                            <div class="flex justify-between items-start mb-2">
-                                <div class="pl-2">
-                                    <h3 class="font-bold text-slate-800">{{ event.title }}</h3>
-                                    <p class="text-xs text-slate-400 mt-0.5">{{ event.date }} @ {{ event.location }}</p>
-                                </div>
-                                <button @click.stop="showTicket(event)" :style="{ color: getEventColor(event) }" class="bg-slate-50 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1">
-                                    <i class="ph ph-ticket"></i> 票根
-                                </button>
+                        <div class="p-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-slate-400">{{ event.date }}</p>
+                                <p class="font-bold text-slate-800">{{ event.artist }}</p>
                             </div>
-                            <div class="flex gap-2 pl-2 mt-4">
-                                <button @click.stop="editEvent(event)" class="text-xs text-slate-400 underline">編輯</button>
-                                <button @click.stop="deleteEvent(event.id)" class="text-xs text-red-300 underline">刪除</button>
-                            </div>
+                            <button @click="showTicket(event)" class="bg-slate-100 p-2 rounded-lg"><i class="ph ph-ticket"></i></button>
                         </div>
                     </div>
                 </transition-group>
             </div>
 
-            <div v-if="activeTab === 'fandom'" class="space-y-6 p-5 pb-32">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold">紀念日 💖</h2>
-                    <button @click="openFandomModal" :style="{ color: themeColor }" class="text-sm font-bold">+ 新增</button>
+            <div v-if="activeTab === 'calendar'" class="p-5 pb-32 space-y-6">
+                <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm">
+                    <button @click="prevMonth" class="p-2 hover:bg-slate-100 rounded-full"><i class="ph ph-caret-left-bold"></i></button>
+                    <h2 class="text-lg font-bold text-slate-800">{{ currentMonthYearDisplay }}</h2>
+                    <button @click="nextMonth" class="p-2 hover:bg-slate-100 rounded-full"><i class="ph ph-caret-right-bold"></i></button>
                 </div>
-                <div v-for="(fan, idx) in fandoms" :key="idx" class="bg-white p-4 rounded-2xl shadow-sm border">
-                    <div v-if="fan.coverUrl" class="w-full h-32 rounded-xl overflow-hidden mb-3">
-                        <img :src="fan.coverUrl" class="w-full h-full object-cover">
+
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
+                    <div class="grid grid-cols-7 bg-slate-50 text-center py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <div v-for="d in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']">{{ d }}</div>
                     </div>
-                    <h3 class="font-bold text-lg">{{ fan.name }} {{ fan.sticker }}</h3>
-                    <p class="text-sm text-slate-500">入坑第 {{ calculateFandomDays(fan.date) }} 天</p>
+                    <div class="calendar-grid">
+                        <div v-for="day in calendarDays" :key="day.date" 
+                             @click="handleDateClick(day)"
+                             :class="['calendar-day', { 'not-current': !day.isCurrentMonth, 'today': day.isToday }]">
+                            <span class="text-xs font-medium" :class="day.isToday ? 'text-primary font-bold' : 'text-slate-600'">{{ day.dayNum }}</span>
+                            <div class="event-sticker" v-if="getDayEvents(day.date).length > 0">
+                                {{ getDayEvents(day.date)[0].sticker || '🌟' }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <p class="text-center text-[10px] text-slate-400 italic">點擊有標記的日期可查看票根 🎫</p>
             </div>
 
             <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                <h2 class="text-xl font-bold">追星儀表板 📊</h2>
                 <div class="bg-white p-5 rounded-2xl shadow-sm border">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="ph ph-medal-fill text-orange-500"></i> 榮譽成就</h3>
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="ph ph-medal-fill text-orange-500"></i> 追星成就</h3>
                     <div class="flex gap-4 overflow-x-auto no-scrollbar">
-                        <div v-for="ach in achievements" :key="ach.id" class="flex-shrink-0 w-20 text-center">
+                        <div v-for="ach in achievements" class="flex-shrink-0 w-20 text-center">
                             <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center text-3xl mb-1 mx-auto border border-orange-100">{{ ach.icon }}</div>
                             <div class="text-[10px] font-bold text-slate-700">{{ ach.title }}</div>
                         </div>
@@ -160,73 +120,35 @@
         </button>
 
         <nav class="bg-white border-t px-6 py-3 flex justify-between items-center w-full z-40 safe-pb">
-            <button @click="activeTab = 'home'" :class="activeTab === 'home' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'home' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-16">
-                <i class="ph text-2xl ph-calendar-check" :class="activeTab === 'home' ? 'ph-fill' : 'ph-bold'"></i>
-                <span class="text-[10px]">行程</span>
+            <button @click="activeTab = 'home'" :class="activeTab === 'home' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'home' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-14">
+                <i class="ph text-2xl ph-house" :class="activeTab === 'home' ? 'ph-fill' : 'ph-bold'"></i>
+                <span class="text-[10px]">首頁</span>
             </button>
-            <button @click="activeTab = 'fandom'" :class="activeTab === 'fandom' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'fandom' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-16">
-                <i class="ph text-2xl ph-heart-straight" :class="activeTab === 'fandom' ? 'ph-fill' : 'ph-bold'"></i>
-                <span class="text-[10px]">紀念日</span>
+            <button @click="activeTab = 'calendar'" :class="activeTab === 'calendar' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'calendar' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-14">
+                <i class="ph text-2xl ph-calendar" :class="activeTab === 'calendar' ? 'ph-fill' : 'ph-bold'"></i>
+                <span class="text-[10px]">月曆</span>
             </button>
-            <button @click="activeTab = 'stats'" :class="activeTab === 'stats' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'stats' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-16">
+            <button @click="activeTab = 'stats'" :class="activeTab === 'stats' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'stats' ? themeColor : '' }" class="flex flex-col items-center gap-1 w-14">
                 <i class="ph text-2xl ph-chart-bar" :class="activeTab === 'stats' ? 'ph-fill' : 'ph-bold'"></i>
                 <span class="text-[10px]">回顧</span>
             </button>
         </nav>
 
         <transition name="fade">
-            <div v-if="showTicketModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-4" @click.self="showTicketModal = false">
+            <div v-if="showTicketModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4" @click.self="showTicketModal = false">
                 <div class="w-full max-w-sm relative" @click.stop>
-                    
-                    <div v-if="ticketEvent.ticketStyle === 'classic' || !ticketEvent.ticketStyle" class="ticket-base ticket-classic bg-white rounded-3xl overflow-hidden text-slate-800">
-                        <div class="h-24 relative flex items-center justify-center overflow-hidden" :style="{ backgroundColor: getEventColor(ticketEvent) }">
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="h-24 relative flex items-center justify-center overflow-hidden" :style="{ backgroundColor: ticketEvent.color || themeColor }">
                             <img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="absolute inset-0 w-full h-full object-cover opacity-80">
-                            <h2 class="font-bold text-2xl relative z-10 text-white drop-shadow-lg">{{ ticketEvent.artist }}</h2>
+                            <h2 class="font-bold text-2xl relative z-10 text-white drop-shadow-md">{{ ticketEvent.artist }}</h2>
                         </div>
-                        <div class="p-6 space-y-4">
-                            <h3 class="text-xl font-bold text-center">{{ ticketEvent.title }}</h3>
-                            <div class="flex justify-between text-xs border-y border-slate-100 py-4">
-                                <div><p class="text-slate-400">DATE</p><p class="font-bold">{{ ticketEvent.date }}</p></div>
-                                <div class="text-right"><p class="text-slate-400">LOCATION</p><p class="font-bold">{{ ticketEvent.location }}</p></div>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <div><p class="text-slate-400">SEAT</p><p class="font-bold" :style="{ color: getEventColor(ticketEvent) }">{{ ticketEvent.seat || 'STAND' }}</p></div>
-                                <div class="text-right font-barcode text-4xl opacity-60">IDOL-{{ ticketEvent.id?.toString().slice(-4) }}</div>
-                            </div>
+                        <div class="p-6 text-center space-y-2">
+                            <h3 class="text-xl font-bold">{{ ticketEvent.title }}</h3>
+                            <p class="text-xs text-slate-400">{{ ticketEvent.date }} | {{ ticketEvent.location }}</p>
+                            <div class="pt-4 font-barcode text-5xl opacity-40">IDOL-{{ ticketEvent.id?.toString().slice(-6) }}</div>
                         </div>
                     </div>
-
-                    <div v-if="ticketEvent.ticketStyle === 'polaroid'" class="ticket-base polaroid-frame mx-auto w-64 rotate-2">
-                        <div class="bg-slate-100 aspect-square mb-4 overflow-hidden">
-                            <img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="w-full h-full object-cover">
-                            <div v-else class="w-full h-full flex items-center justify-center text-slate-300"><i class="ph ph-image text-5xl"></i></div>
-                        </div>
-                        <div class="text-center font-handwriting">
-                            <p class="text-lg font-bold text-slate-700">{{ ticketEvent.artist }}</p>
-                            <p class="text-xs text-slate-400 mt-1">{{ ticketEvent.date }}</p>
-                            <p class="text-[10px] text-slate-300 mt-2">#MemoryWithIdol</p>
-                        </div>
-                    </div>
-
-                    <div v-if="ticketEvent.ticketStyle === 'minimal'" class="ticket-base bg-white rounded-xl border-l-[12px] p-6 flex flex-col gap-6" :style="{ borderColor: getEventColor(ticketEvent) }">
-                        <div class="flex justify-between items-start">
-                            <div class="text-3xl font-bold tracking-tighter">{{ ticketEvent.artist }}</div>
-                            <div class="text-right text-xs font-mono">TICKET ID<br>#{{ ticketEvent.id?.toString().slice(-6) }}</div>
-                        </div>
-                        <div class="space-y-1">
-                            <div class="text-sm font-medium">{{ ticketEvent.title }}</div>
-                            <div class="text-xs text-slate-400">{{ ticketEvent.date }} | {{ ticketEvent.location }}</div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-dashed flex justify-between items-end">
-                            <div class="text-2xl font-barcode opacity-80">{{ ticketEvent.id }}</div>
-                            <div class="text-xs font-bold px-3 py-1 rounded bg-slate-100">{{ ticketEvent.seat || 'GENERAL' }}</div>
-                        </div>
-                    </div>
-
-                    <button @click="showTicketModal = false" class="absolute -bottom-16 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-1">
-                        <i class="ph ph-x-circle text-4xl"></i>
-                        <span class="text-[10px] opacity-60">關閉視窗</span>
-                    </button>
+                    <button @click="showTicketModal = false" class="absolute -bottom-16 left-1/2 -translate-x-1/2 text-white"><i class="ph ph-x-circle text-4xl"></i></button>
                 </div>
             </div>
         </transition>
@@ -237,60 +159,42 @@
                 <div class="bg-white w-full max-w-md max-h-[90vh] rounded-t-3xl p-6 relative flex flex-col overflow-hidden">
                     <h2 class="text-xl font-bold mb-4">{{ isEditing ? '編輯行程' : '新增行程' }}</h2>
                     <div class="overflow-y-auto flex-1 no-scrollbar space-y-4 pb-24">
-                        <div><label class="block text-xs text-slate-400 mb-1">活動名稱</label><input v-model="form.title" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
+                        <input v-model="form.title" type="text" placeholder="活動名稱" class="w-full bg-slate-50 p-3 rounded-xl border-none">
+                        <input v-model="form.artist" type="text" placeholder="歌手/藝人" class="w-full bg-slate-50 p-3 rounded-xl border-none">
+                        <input v-model="form.date" type="date" class="w-full bg-slate-50 p-3 rounded-xl border-none">
+                        <input v-model="form.sticker" type="text" placeholder="心情貼紙 (Emoji)" class="w-full bg-slate-50 p-3 rounded-xl border-none">
                         
                         <div>
-                            <label class="block text-xs text-slate-400 mb-1">票根預設風格</label>
-                            <select v-model="form.ticketStyle" class="w-full bg-slate-50 p-3 rounded-xl border-none text-sm">
-                                <option value="classic">🎟️ 經典門票款</option>
-                                <option value="polaroid">📸 文青拍立得款</option>
-                                <option value="minimal">🎫 極簡設計款</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs text-slate-400 mb-1">封面照片 (Base64 或 連結)</label>
+                            <label class="block text-xs text-slate-400 mb-1">封面圖片</label>
                             <div v-if="form.coverUrl" class="mb-2">
-                                <img :src="form.coverUrl" class="h-24 w-full object-cover rounded-xl border shadow-inner">
-                                <button @click="form.coverUrl = ''; form.useUrl = false" class="text-red-500 text-[10px] mt-1 underline">清除並重傳</button>
+                                <img :src="form.coverUrl" class="h-24 w-full object-cover rounded-xl border">
+                                <button @click="form.coverUrl = ''" class="text-red-500 text-xs mt-1 underline">清除圖片</button>
                             </div>
                             <div v-else>
-                                <div v-if="form.useUrl"><input v-model="form.coverUrl" type="text" placeholder="貼上圖片網址..." class="w-full bg-slate-50 p-3 rounded-xl border-none text-sm"></div>
-                                <label v-else class="block w-full py-4 bg-slate-50 rounded-xl border-2 border-dashed text-center text-slate-400 text-sm cursor-pointer">
-                                    <i class="ph ph-image-square text-lg"></i> 上傳照片 (1MB內)
-                                    <input type="file" @change="handleFileUpload($event, 'event')" accept="image/*" class="hidden">
+                                <label v-if="!form.useUrl" class="block w-full py-4 bg-slate-50 rounded-xl border-2 border-dashed text-center text-slate-400 text-sm cursor-pointer">
+                                    上傳照片 (Base64)<input type="file" @change="handleFileUpload" accept="image/*" class="hidden">
                                 </label>
-                                <button @click="form.useUrl = !form.useUrl; form.coverUrl = ''" class="text-xs text-slate-400 mt-2 underline">{{ form.useUrl ? '改為照片上傳' : '改為網址連結' }}</button>
+                                <input v-else v-model="form.coverUrl" type="text" placeholder="貼上圖片網址..." class="w-full bg-slate-50 p-3 rounded-xl border-none">
+                                <button @click="form.useUrl = !form.useUrl" class="text-[10px] text-slate-400 mt-2 underline">{{ form.useUrl ? '改為照片上傳' : '改為網址連結' }}</button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-xs text-slate-400 mb-1">日期</label><input v-model="form.date" type="date" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
-                            <div><label class="block text-xs text-slate-400 mb-1">歌手/藝人</label><input v-model="form.artist" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
-                        </div>
-                        <div><label class="block text-xs text-slate-400 mb-1">地點</label><input v-model="form.location" type="text" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
-                        <div><label class="block text-xs text-slate-400 mb-1">座位資訊</label><input v-model="form.seat" type="text" placeholder="例: A區 12排 5號" class="w-full bg-slate-50 p-3 rounded-xl border-none"></div>
                     </div>
-                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-white border-t">
-                        <button @click="saveEvent" :style="{ backgroundColor: themeColor }" class="w-full text-white py-4 rounded-xl font-bold shadow-lg">儲存行程</button>
-                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-white"><button @click="saveEvent" :style="{ backgroundColor: themeColor }" class="w-full text-white py-4 rounded-xl font-bold">儲存行程</button></div>
                 </div>
             </div>
         </transition>
 
         <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
-            <div class="bg-white p-6 rounded-2xl shadow-2xl w-80">
-                <h3 class="font-bold text-lg mb-4 text-center">App 設定 ⚙️</h3>
+            <div class="bg-white p-6 rounded-2xl w-80 text-center">
+                <h3 class="font-bold mb-4">設定</h3>
                 <div class="space-y-4">
-                    <div>
-                        <p class="text-xs text-slate-400 mb-2">主介面標題</p>
-                        <input v-model="customTitle" type="text" class="w-full bg-slate-50 p-2 rounded-lg text-sm border-none">
+                    <input v-model="customTitle" type="text" class="w-full bg-slate-50 p-2 rounded-lg text-sm text-center">
+                    <div class="grid grid-cols-4 gap-2">
+                        <div v-for="c in ['#63b3b0','#ff6b6b','#feca57','#48dbfb']" @click="themeColor = c" :style="{backgroundColor: c}" class="h-8 rounded-full cursor-pointer"></div>
                     </div>
-                    <div class="pt-4 border-t grid grid-cols-2 gap-2">
-                        <button @click="downloadBackup" class="bg-slate-100 py-2 rounded-lg text-xs font-bold">備份 JSON</button>
-                        <button @click="showChangelog" class="bg-slate-100 py-2 rounded-lg text-xs font-bold">更新日誌</button>
-                    </div>
-                    <button @click="showSettingsModal = false" class="w-full py-2 mt-4 text-slate-400 text-sm">關閉</button>
+                    <button @click="downloadBackup" class="w-full py-2 bg-slate-100 rounded-xl text-sm">下載備份 (JSON)</button>
                 </div>
+                <button @click="showSettingsModal = false" class="mt-4 text-slate-400 text-xs">完成</button>
             </div>
         </div>
 
@@ -301,50 +205,85 @@
         createApp({
             setup() {
                 const events = ref(JSON.parse(localStorage.getItem('idolEvents') || '[]'));
-                const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
                 const activeTab = ref('home');
-                const viewMode = ref('upcoming');
                 const themeColor = ref(localStorage.getItem('idolTheme') || '#63b3b0'); 
-                const customTitle = ref(localStorage.getItem('appTitle') || '我的追星日記 ✨');
+                const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');
                 const showModal = ref(false);
                 const showSettingsModal = ref(false);
                 const showTicketModal = ref(false);
-                const showChangelogModal = ref(false);
                 const isEditing = ref(false);
                 const ticketEvent = ref({});
-                const appVersion = ref('v1.0.6');
-
-                const defaultForm = { title: '', artist: '', date: '', location: '', seat: '', coverUrl: '', ticketStyle: 'classic', expenses: [], useUrl: false };
-                const form = ref({ ...defaultForm });
+                const form = ref({ id: null, title: '', artist: '', date: '', coverUrl: '', sticker: '', useUrl: false });
+                
+                // 月曆專用狀態
+                const currentMonth = ref(new Date());
 
                 const achievements = computed(() => {
                     const list = [];
                     if (events.value.length >= 1) list.push({ id: '1', title: '追星初心', icon: '🌱' });
                     if (events.value.length >= 10) list.push({ id: '2', title: '專業追隨', icon: '🎟️' });
-                    if (fandoms.value.length >= 1) list.push({ id: '3', title: '心中有愛', icon: '💖' });
                     return list;
                 });
 
-                const changelogContent = ref([
-                    { version: 'v1.0.6', date: '2025/12/08', items: ['票根樣式自訂功能：支援經典門票、文青拍立得、極簡設計三種模板切換。', '優化票根彈出視窗動畫。'] },
-                    { version: 'v1.0.5', date: '2025/12/08', items: ['成就系統上線。'] },
-                    { version: 'v1.0.4', date: '2025/12/08', items: ['支援 Base64 圖片上傳。'] }
-                ]);
+                // 月曆邏輯
+                const currentMonthYearDisplay = computed(() => {
+                    return currentMonth.value.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long' });
+                });
 
+                const calendarDays = computed(() => {
+                    const year = currentMonth.value.getFullYear();
+                    const month = currentMonth.value.getMonth();
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+                    
+                    const days = [];
+                    // 填補月初空白
+                    for (let i = 0; i < firstDay.getDay(); i++) {
+                        const prevDate = new Date(year, month, -i);
+                        days.unshift({ date: formatDate(prevDate), dayNum: prevDate.getDate(), isCurrentMonth: false });
+                    }
+                    // 本月日期
+                    for (let i = 1; i <= lastDay.getDate(); i++) {
+                        const date = new Date(year, month, i);
+                        days.push({ 
+                            date: formatDate(date), 
+                            dayNum: i, 
+                            isCurrentMonth: true, 
+                            isToday: formatDate(date) === formatDate(new Date()) 
+                        });
+                    }
+                    return days;
+                });
+
+                const formatDate = (date) => date.toISOString().split('T')[0];
+                const getDayEvents = (date) => events.value.filter(e => e.date === date);
+
+                const handleDateClick = (day) => {
+                    const dayEvents = getDayEvents(day.date);
+                    if (dayEvents.length > 0) {
+                        ticketEvent.value = dayEvents[0];
+                        showTicketModal.value = true;
+                    }
+                };
+
+                const prevMonth = () => currentMonth.value = new Date(currentMonth.value.setMonth(currentMonth.value.getMonth() - 1));
+                const nextMonth = () => currentMonth.value = new Date(currentMonth.value.setMonth(currentMonth.value.getMonth() + 1));
+
+                // 其他基礎功能
                 watch(events, (v) => localStorage.setItem('idolEvents', JSON.stringify(v)), { deep: true });
                 watch(themeColor, (v) => localStorage.setItem('idolTheme', v));
                 watch(customTitle, (v) => localStorage.setItem('appTitle', v));
 
-                const handleFileUpload = (event, type) => {
+                const handleFileUpload = (event) => {
                     const file = event.target.files[0];
-                    if (!file) return;
-                    if (file.size > 1024 * 1024) { alert('檔案太大囉！請選擇 1MB 以內的圖片。'); return; }
-                    const reader = new FileReader();
-                    reader.onload = (e) => { form.value.coverUrl = e.target.result; };
-                    reader.readAsDataURL(file);
+                    if (file && file.size <= 1024 * 1024) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => form.value.coverUrl = e.target.result;
+                        reader.readAsDataURL(file);
+                    } else { alert('檔案太大囉 (限制 1MB)'); }
                 };
 
-                const openModal = () => { isEditing.value = false; form.value = { ...defaultForm, date: new Date().toISOString().split('T')[0] }; showModal.value = true; };
+                const openModal = () => { isEditing.value = false; form.value = { id: null, title: '', artist: '', date: formatDate(new Date()), coverUrl: '', sticker: '', useUrl: false }; showModal.value = true; };
                 const editEvent = (evt) => { isEditing.value = true; form.value = JSON.parse(JSON.stringify(evt)); showModal.value = true; };
                 const closeModal = () => showModal.value = false;
                 const saveEvent = () => {
@@ -356,35 +295,18 @@
                     }
                     closeModal();
                 };
-                const deleteEvent = (id) => { if(confirm('確定刪除這個回憶嗎？')) events.value = events.value.filter(e => e.id !== id); };
-
-                const showTicket = (evt) => { ticketEvent.value = evt; showTicketModal.value = true; };
-                const getEventColor = (e) => e.color || themeColor.value;
 
                 return {
-                    events, fandoms, activeTab, viewMode, themeColor, customTitle, achievements,
-                    showModal, showSettingsModal, showTicketModal, showChangelogModal, fandomForm: ref({}),
-                    ticketEvent, isEditing, form, appVersion, changelogContent,
-                    openModal, editEvent, closeModal, saveEvent, deleteEvent, showTicket,
-                    toggleSettingsModal: () => showSettingsModal.value = !showSettingsModal.value,
-                    setTheme: (c) => themeColor.value = c,
-                    formatMoney: (v) => v?.toLocaleString() || '0',
-                    getDay: (d) => new Date(d).getDate(),
-                    getMonth: (d) => new Date(d).toLocaleString('en', { month: 'short' }).toUpperCase(),
-                    calculateTotal: (ex) => ex?.reduce((s, i) => s + (i.amount || 0), 0) || 0,
-                    getTicketPrice: (ex) => ex?.find(e => e.item.includes('門票'))?.amount || 0,
-                    calculateFandomDays: (d) => Math.floor((new Date() - new Date(d)) / 86400000) + 1,
-                    fandomMessageStatic: (f) => ({ message: `這是你愛 ${f.name} 的第 [DAYS] 天` }),
-                    handleFileUpload, toggleExpand: (id) => {},
-                    getMapLink: (l) => '#', 
-                    downloadBackup: () => alert('備份已下載'), 
-                    showChangelog: () => { showSettingsModal.value = false; showChangelogModal.value = true; },
+                    events, activeTab, themeColor, customTitle, achievements, showModal, showSettingsModal, showTicketModal, ticketEvent, isEditing, form,
+                    currentMonthYearDisplay, calendarDays, prevMonth, nextMonth, getDayEvents, handleDateClick,
+                    openModal, editEvent, closeModal, saveEvent, toggleSettingsModal: () => showSettingsModal.value = !showSettingsModal.value,
+                    showTicket: (e) => { ticketEvent.value = e; showTicketModal.value = true; },
+                    handleFileUpload, downloadBackup: () => alert('備份已準備好'),
                     cssVars: computed(() => ({ '--primary-color': themeColor.value })),
                     headerTextColor: computed(() => 'text-white'),
-                    greetingMessage: "每一份愛都值得被記錄 🌟",
-                    filteredEvents: computed(() => [...events.value].sort((a,b) => new Date(b.date) - new Date(a.date))),
-                    mappedEventsCount: computed(() => events.value.length),
-                    statsData: computed(() => ({ count: events.value.length, totalSpent: 0, topArtists: [], maxArtistCount: 1 }))
+                    sortedEvents: computed(() => [...events.value].sort((a,b) => new Date(b.date) - new Date(a.date))),
+                    calculateFandomDays: (d) => Math.floor((new Date() - new Date(d)) / 86400000) + 1,
+                    fandoms: ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'))
                 };
             }
         }).mount('#app');
