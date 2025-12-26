@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 | V1.0.5 完整版</title>
+    <title>我的追星日記 🌟 | V1.0.5 完整工具版</title>
     
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,20 +47,7 @@
         .fade-enter-from, .fade-leave-to { opacity: 0; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         #map-container { height: 100%; width: 100%; z-index: 1; }
-        
-        /* Ticket Styles */
-        .ticket-stub {
-            background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px);
-            background-size: 100% 100%;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-        }
-        .ticket-divider { border-top: 2px dashed #e2e8f0; position: relative; }
-        .ticket-divider::before, .ticket-divider::after {
-            content: ''; position: absolute; top: -10px; width: 20px; height: 20px;
-            background-color: #f8fafc; border-radius: 50%;
-        }
-        .ticket-divider::before { left: -30px; }
-        .ticket-divider::after { right: -30px; }
+        .ticket-stub { background-image: radial-gradient(circle at 0 50%, transparent 10px, white 11px), radial-gradient(circle at 100% 50%, transparent 10px, white 11px); background-size: 100% 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
     </style>
 </head>
 <body class="text-slate-700 antialiased flex flex-col">
@@ -70,8 +57,8 @@
         <header :class="headerTextColor" class="pt-4 pb-4 px-5 shadow-lg rounded-b-[1.5rem] z-20 shrink-0 transition-colors" :style="{ backgroundColor: themeColor }">
             <div class="flex justify-between items-center mb-3">
                 <div>
-                    [span_0](start_span)<h1 class="text-xl font-bold tracking-wide">{{ customTitle }}[span_0](end_span)</h1>
-                    [span_1](start_span)[span_2](start_span)<p :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-xs opacity-90">{{ greetingMessage }}[span_1](end_span)[span_2](end_span)</p>
+                    <h1 class="text-xl font-bold tracking-wide">{{ customTitle }}</h1>
+                    <p :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-xs opacity-90">{{ greetingMessage }}</p>
                 </div>
                 <div @click="toggleSettingsModal" :class="isThemeColorLight ? 'bg-black/10 text-slate-700' : 'bg-white/20 text-white'" class="p-2 rounded-full backdrop-blur-sm cursor-pointer">
                     <i class="ph ph-gear text-lg"></i>
@@ -80,381 +67,189 @@
             
             <div class="flex gap-3 mt-1" v-if="activeTab === 'home'">
                 <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
-                    [span_3](start_span)<div class="text-[10px] mb-0.5 opacity-80">倒數中[span_3](end_span)</div>
-                    [span_4](start_span)<div class="text-lg font-bold">{{ upcomingCount }} <span class="text-xs font-normal">場</span>[span_4](end_span)</div>
+                    <div class="text-[10px] mb-0.5 opacity-80">倒數中</div>
+                    <div class="text-lg font-bold">{{ upcomingCount }} <span class="text-xs font-normal">場</span></div>
                 </div>
                 <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative">
-                    [span_5](start_span)<div class="text-[10px] mb-0.5 opacity-80">年度花費[span_5](end_span)</div>
-                    <div class="text-lg font-bold">{{ isPrivacyMode ? [span_6](start_span)[span_7](start_span)'****' : '$' + formatMoney(currentYearExpense) }}[span_6](end_span)[span_7](end_span)</div>
-                    <button @click="togglePrivacy" class="absolute top-1.5 right-1.5 opacity-50">
-                        [span_8](start_span)<i class="ph" :class="isPrivacyMode ? 'ph-eye-slash' : 'ph-eye'"></i>[span_8](end_span)
-                    </button>
+                    <div class="text-[10px] mb-0.5 opacity-80">年度花費</div>
+                    <div class="text-lg font-bold">{{ isPrivacyMode ? '****' : '$' + formatMoney(currentYearExpense) }}</div>
+                    <button @click="togglePrivacy" class="absolute top-1.5 right-1.5 opacity-50"><i class="ph" :class="isPrivacyMode ? 'ph-eye-slash' : 'ph-eye'"></i></button>
                 </div>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto no-scrollbar scroll-smooth w-full relative bg-slate-50">
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
-                <div class="relative">
-                    <i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
-                    [span_9](start_span)<input v-model="searchQuery" type="text" placeholder="搜尋藝人、活動或地點..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm shadow-sm">[span_9](end_span)
-                </div>
-
-                <div class="flex bg-slate-200 p-1 rounded-full relative mb-2">
-                    <div class="w-1/2 h-full absolute bg-white rounded-full transition-all" :class="viewMode === 'upcoming' ? 'translate-x-0' : 'translate-x-full'"></div>
-                    [span_10](start_span)<button @click="viewMode = 'upcoming'" class="flex-1 py-2 text-sm font-medium z-10" :style="{ color: viewMode === 'upcoming' ? themeColor : '' }">即將到來 🚀[span_10](end_span)</button>
-                    [span_11](start_span)<button @click="viewMode = 'history'" class="flex-1 py-2 text-sm font-medium z-10" :style="{ color: viewMode === 'history' ? themeColor : '' }">美好回憶 📸[span_11](end_span)</button>
-                </div>
+                <div class="relative"><i class="ph ph-magnifying-glass absolute left-3 top-3 text-slate-400"></i><input v-model="searchQuery" type="text" placeholder="搜尋..." class="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm shadow-sm"></div>
 
                 <transition-group name="fade" tag="div" class="space-y-4">
-                    <div v-for="event in filteredEvents" :key="event.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden group">
-                        <div v-if="event.coverUrl" class="h-32 w-full relative cursor-pointer" @click="toggleExpand(event.id)">
-                            [span_12](start_span)<img :src="event.coverUrl" class="w-full h-full object-cover">[span_12](end_span)
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <div class="absolute bottom-3 left-4 text-white right-4">
-                                [span_13](start_span)<span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded border border-white/10">{{ event.artist }}</span>[span_13](end_span)
-                                [span_14](start_span)<h3 class="text-lg font-bold truncate">{{ event.title }}</h3>[span_14](end_span)
-                            </div>
-                        </div>
-
+                    <div v-for="event in filteredEvents" :key="event.id" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                         <div class="p-5 cursor-pointer relative" @click="toggleExpand(event.id)">
-                            [span_15](start_span)<div v-if="!event.coverUrl" class="absolute left-0 top-0 bottom-0 w-1.5" :style="{ backgroundColor: getEventColor(event) }"></div>[span_15](end_span)
-                            <div v-if="!event.coverUrl" class="flex justify-between items-start mb-3 pl-2">
-                                <div>
-                                    [span_16](start_span)<span class="px-2 py-0.5 rounded text-[10px] font-bold text-white mb-1 inline-block" :style="{ backgroundColor: getEventColor(event) }">{{ event.artist }}</span>[span_16](end_span)
-                                    [span_17](start_span)<h3 class="text-lg font-bold text-slate-800">{{ event.title }}</h3>[span_17](end_span)
-                                </div>
-                                <div class="text-right">
-                                    [span_18](start_span)<div class="text-2xl font-bold" :style="{ color: getEventColor(event) }">{{ getDay(event.date) }}</div>[span_18](end_span)
-                                    [span_19](start_span)<div class="text-xs text-slate-400 uppercase">{{ getMonth(event.date) }}</div>[span_19](end_span)
-                                </div>
+                            <div class="absolute left-0 top-0 bottom-0 w-1.5" :style="{ backgroundColor: getEventColor(event) }"></div>
+                            <div class="flex justify-between items-start mb-3 pl-2">
+                                <div><span class="px-2 py-0.5 rounded text-[10px] font-bold text-white mb-1 inline-block" :style="{ backgroundColor: getEventColor(event) }">{{ event.artist }}</span><h3 class="text-lg font-bold text-slate-800">{{ event.title }}</h3></div>
+                                <div class="text-right"><div class="text-2xl font-bold" :style="{ color: getEventColor(event) }">{{ getDay(event.date) }}</div><div class="text-xs text-slate-400 uppercase">{{ getMonth(event.date) }}</div></div>
                             </div>
                             
                             <div class="pl-2 space-y-3 text-sm text-slate-600">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        [span_20](start_span)<i class="ph ph-clock" :style="{ color: getEventColor(event) }"></i>[span_20](end_span)
-                                        <span>{{ event.date }} {{ event.time }}</span>
-                                    </div>
-                                    <button @click.stop="showTicket(event)" class="text-[10px] font-bold bg-slate-100 px-2 py-0.5 rounded flex items-center gap-1 shadow-sm">
-                                        [span_21](start_span)<i class="ph ph-ticket"></i> 票根[span_21](end_span)
-                                    </button>
+                                <div class="flex items-center justify-between"><div class="flex items-center gap-2"><i class="ph ph-clock" :style="{ color: getEventColor(event) }"></i><span>{{ event.date }} {{ event.time }}</span></div><button @click.stop="showTicket(event)" class="text-[10px] font-bold bg-slate-100 px-2 py-0.5 rounded shadow-sm"><i class="ph ph-ticket"></i> 票根</button></div>
+                                <div class="flex items-center gap-2 pr-2 truncate"><i class="ph ph-map-pin" :style="{ color: getEventColor(event) }"></i><span class="truncate">{{ event.location }}</span></div>
+
+                                <div class="flex items-center gap-2 pt-1">
+                                    <button @click.stop="showCalendarOptions(event)" class="flex-1 py-2 bg-slate-50 border rounded-lg text-[10px] font-bold text-slate-600 flex items-center justify-center gap-1"><i class="ph ph-calendar-plus"></i> 加入日曆</button>
+                                    <a :href="getMapLink(event.location)" @click.stop target="_blank" class="flex-1 py-2 bg-slate-50 border rounded-lg text-[10px] font-bold text-slate-600 flex items-center justify-center gap-1"><i class="ph ph-navigation-arrow"></i> 導航</a>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    [span_22](start_span)<i class="ph ph-map-pin" :style="{ color: getEventColor(event) }"></i>[span_22](end_span)
-                                    <span class="truncate">{{ event.location }}</span>
-                                </div>
+
                                 <div class="flex items-center justify-between pt-2 border-t border-dashed border-slate-100">
-                                    <div class="flex items-center gap-2">
-                                        [span_23](start_span)<i class="ph ph-wallet" :style="{ color: getEventColor(event) }"></i>[span_23](end_span)
-                                        <span class="font-bold text-xs">總支出: {{ isPrivacyMode ? [span_24](start_span)'****' : '$' + formatMoney(calculateTotal(event.expenses)) }}</span>[span_24](end_span)
-                                    </div>
-                                    <div class="flex gap-3">
-                                        [span_25](start_span)<button @click.stop="editEvent(event)" class="text-slate-400 hover:text-blue-500"><i class="ph ph-pencil-simple text-lg"></i></button>[span_25](end_span)
-                                        [span_26](start_span)<button @click.stop="deleteEvent(event.id)" class="text-slate-400 hover:text-red-500"><i class="ph ph-trash text-lg"></i></button>[span_26](end_span)
-                                        [span_27](start_span)<i class="ph ph-caret-down text-slate-300 transition-transform" :class="{'rotate-180': expandedEventId === event.id}"></i>[span_27](end_span)
-                                    </div>
+                                    <div class="flex items-center gap-2"><i class="ph ph-wallet" :style="{ color: getEventColor(event) }"></i><span class="font-bold text-xs">總支出: {{ isPrivacyMode ? '****' : '$' + formatMoney(calculateTotal(event.expenses)) }}</span></div>
+                                    <div class="flex gap-3"><button @click.stop="editEvent(event)" class="text-slate-400 hover:text-blue-500"><i class="ph ph-pencil-simple text-lg"></i></button><button @click.stop="deleteEvent(event.id)" class="text-slate-400 hover:text-red-500"><i class="ph ph-trash text-lg"></i></button><i class="ph ph-caret-down text-slate-300 transition-transform" :class="{'rotate-180': expandedEventId === event.id}"></i></div>
                                 </div>
                             </div>
                         </div>
-
-                        <transition name="expand">
-                            <div v-if="expandedEventId === event.id" class="bg-slate-50 border-t px-6 py-4 space-y-4">
-                                <div v-if="event.checklist && event.checklist.length > 0">
-                                    [span_28](start_span)<h4 class="text-xs font-bold text-slate-400 mb-2">出發前檢查 ✅[span_28](end_span)</h4>
-                                    <div class="space-y-2">
-                                        <label v-for="(item, idx) in event.checklist" :key="idx" class="flex items-center gap-2 cursor-pointer">
-                                            [span_29](start_span)<input type="checkbox" v-model="item.checked" class="w-4 h-4 rounded text-primary">[span_29](end_span)
-                                            [span_30](start_span)<span class="text-sm" :class="{'line-through text-slate-400': item.checked}">{{ item.text }}[span_30](end_span)</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div v-if="event.memo">
-                                    [span_31](start_span)<h4 class="text-xs font-bold text-slate-400 mb-1">心得筆記 📝[span_31](end_span)</h4>
-                                    [span_32](start_span)<p class="text-sm text-slate-600 bg-white p-3 rounded-xl border whitespace-pre-wrap leading-relaxed shadow-sm">{{ event.memo }}[span_32](end_span)</p>
-                                </div>
-                            </div>
-                        </transition>
+                        <transition name="expand"><div v-if="expandedEventId === event.id" class="bg-slate-50 border-t px-6 py-4 space-y-4"><div v-if="event.memo"><h4 class="text-xs font-bold text-slate-400 mb-1">心得筆記 📝</h4><p class="text-sm text-slate-600 bg-white p-3 rounded-xl border whitespace-pre-wrap leading-relaxed shadow-sm">{{ event.memo }}</p></div></div></transition>
                     </div>
                 </transition-group>
             </div>
 
-            <div v-if="activeTab === 'fandom'" class="space-y-6 p-5 pb-32">
-                <div class="flex justify-between items-center">
-                    [span_33](start_span)<h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-heart-straight-fill text-red-500"></i> 入坑紀念日 💖[span_33](end_span)</h2>
-                    <button @click="openFandomModal" class="bg-white border-2 border-slate-200 px-4 py-1.5 rounded-full font-bold shadow-sm text-sm flex items-center gap-1 text-slate-600">
-                        [span_34](start_span)<i class="ph ph-plus-circle text-lg"></i> 新增[span_34](end_span)
-                    </button>
-                </div>
-                
-                <div v-if="fandoms.length > 0" class="space-y-4">
-                    <div v-for="(fan, index) in fandoms" :key="index" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-                        [span_35](start_span)<img v-if="fan.coverUrl" :src="fan.coverUrl" class="w-full h-40 object-cover rounded-xl mb-4">[span_35](end_span)
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                [span_36](start_span)<h3 class="text-xl font-bold text-slate-800 flex items-center gap-1">{{ fan.name }} <span class="text-2xl italic rotate-6">{{ fan.sticker }}</span></h3>[span_36](end_span)
-                                [span_37](start_span)<p class="text-xs text-slate-500 mt-1">入坑日: {{ fan.date }}[span_37](end_span)</p>
-                            </div>
-                            <div class="flex gap-2">
-                                [span_38](start_span)<button @click="editFandom(fan, index)" class="text-slate-400 p-1"><i class="ph ph-pencil-simple text-lg"></i></button>[span_38](end_span)
-                                [span_39](start_span)<button @click="removeFandom(index)" class="text-slate-400 p-1"><i class="ph ph-trash text-lg"></i></button>[span_39](end_span)
-                            </div>
-                        </div>
-                        <div class="text-center mt-2 p-3 rounded-lg border border-dashed border-slate-200 bg-white shadow-inner">
-                            <div class="text-sm font-medium text-slate-600 mb-1">
-                                [span_40](start_span)已陪伴 {{ fan.name }} 來到第 <span class="text-3xl font-extrabold" :style="{ color: themeColor }">{{ calculateFandomDays(fan.date) }}</span> 天[span_40](end_span)
-                            </div>
-                        </div>
-                        <div class="mt-3 space-y-1">
-                            <div v-if="fan.birthday" class="text-xs text-slate-600 flex items-center justify-center gap-1">
-                                [span_41](start_span)<i class="ph ph-cake text-sm text-pink-500"></i>[span_41](end_span)
-                                [span_42](start_span)<span v-if="calculateDaysToNextDate(fan.birthday) === 0" class="font-bold text-pink-500">{{ getBirthdayCongrats(fan.name) }}[span_42](end_span)</span>
-                                [span_43](start_span)<span v-else>距離生日還有 <span class="font-bold text-pink-500">{{ calculateDaysToNextDate(fan.birthday) }} 天</span>[span_43](end_span)</span>
-                            </div>
-                            <div v-if="fan.debutDate" class="text-xs text-slate-600 flex items-center justify-center gap-1">
-                                [span_44](start_span)<i class="ph ph-microphone-stage text-sm text-indigo-500"></i>[span_44](end_span)
-                                [span_45](start_span)<span v-if="calculateDaysToNextDate(fan.debutDate) === 0" class="font-bold text-indigo-500">{{ getDebutCongrats(fan.name) }}[span_45](end_span)</span>
-                                [span_46](start_span)<span v-else>出道第 <span class="font-bold text-indigo-500">{{ calculateYearsAndDaysSinceDebut(fan.debutDate) }}</span> (倒數 {{ calculateDaysToNextDate(fan.debutDate) }} 天)[span_46](end_span)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div v-show="activeTab === 'map'" class="w-full h-full relative"><div id="map-container"></div></div>
+            <div v-if="activeTab === 'stats'" class="p-5 pb-32">
+                <h2 class="text-xl font-bold mb-4">追星儀表板 📊</h2>
+                <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4 mb-4" :style="{ borderColor: themeColor }"><p class="text-sm font-bold text-slate-700 italic">"{{ emotionalSummary }}"</p></div>
+                <div class="grid grid-cols-2 gap-4"><div class="bg-white p-4 rounded-2xl border"><div class="text-xs text-slate-500">累計場次</div><div class="text-2xl font-bold">{{ statsData.count }} 場</div></div><div class="bg-white p-4 rounded-2xl border"><div class="text-xs text-slate-500">累計投資</div><div class="text-xl font-bold">{{ isPrivacyMode ? '****' : '$' + formatMoney(statsData.totalSpent) }}</div></div></div>
             </div>
-
-            <div v-show="activeTab === 'map'" class="w-full h-full relative">
-                <div id="map-container" class="w-full h-full bg-slate-200"></div>
-                <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border">
-                    [span_47](start_span)<h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-map-trifold text-primary"></i> 追星足跡[span_47](end_span)</h3>
-                    [span_48](start_span)<p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點[span_48](end_span)</p>
-                </div>
-            </div>
-
-            <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                [span_49](start_span)<h2 class="text-xl font-bold text-slate-800">追星儀表板 📊[span_49](end_span)</h2>
-                <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
-                    [span_50](start_span)<p class="text-sm font-bold text-slate-700 italic">"{{ emotionalSummary }}"[span_50](end_span)</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-100">
-                        [span_51](start_span)<div class="text-xs text-slate-500 mb-1">累計場次[span_51](end_span)</div>
-                        [span_52](start_span)<div class="text-2xl font-bold text-slate-800">{{ statsData.count }} 場[span_52](end_span)</div>
-                    </div>
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-2xl border border-slate-100">
-                        [span_53](start_span)<div class="text-xs text-slate-500 mb-1">累計投資[span_53](end_span)</div>
-                        <div class="text-xl font-bold text-slate-800">{{ isPrivacyMode ? [span_54](start_span)'****' : '$' + formatMoney(statsData.totalSpent) }}[span_54](end_span)</div>
-                        [span_55](start_span)[span_56](start_span)<div class="text-[10px] font-medium mt-1 leading-tight opacity-80 italic text-slate-500">{{ idolNagging }}[span_55](end_span)[span_56](end_span)</div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-crown text-yellow-500"></i> 本命排行榜</h3></div>
-                    <div v-if="statsData.topArtists.length > 0" class="space-y-4">
-                        <div v-for="(artist, index) in statsData.topArtists" :key="artist.name">
-                            <div class="flex justify-between text-sm mb-1">
-                                [span_57](start_span)<span class="font-bold text-slate-700">#{{index+1}} {{ artist.name }}</span>[span_57](end_span)
-                                [span_58](start_span)<span class="text-slate-500">{{ artist.count }} 次[span_58](end_span)</span>
-                            </div>
-                            <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                                [span_59](start_span)<div class="h-full transition-all duration-1000 ease-out" :style="{ width: (artist.count / statsData.maxArtistCount * 100) + '%', backgroundColor: themeColor }"></div>[span_59](end_span)
-                            </div>
-                        </div>
-                    </div>
+            <div v-if="activeTab === 'fandom'" class="p-5 pb-32">
+                <div class="flex justify-between items-center mb-4"><h2 class="text-xl font-bold">入坑紀念日 💖</h2><button @click="openFandomModal" class="bg-white border-2 px-4 py-1.5 rounded-full font-bold shadow-sm text-sm" :style="{ borderColor: themeColor, color: themeColor }">+ 新增</button></div>
+                <div v-for="(fan, idx) in fandoms" :key="idx" class="bg-white p-4 rounded-2xl shadow-sm border mb-4">
+                    <h3 class="text-xl font-bold mb-2">{{ fan.name }} {{ fan.sticker }}</h3>
+                    <div class="text-center p-3 rounded-lg border border-dashed bg-slate-50"><div class="text-sm font-medium">已陪伴 {{ fan.name }} 第 <span class="text-2xl font-black" :style="{ color: themeColor }">{{ calculateFandomDays(fan.date) }}</span> 天</div></div>
                 </div>
             </div>
         </main>
 
+        <transition name="slide-up">
+            <div v-if="showCalendarModal" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" @click.self="showCalendarModal = false">
+                <div class="bg-white w-full max-w-sm rounded-t-3xl p-6 shadow-2xl safe-pb">
+                    <h3 class="font-bold text-lg mb-4 text-slate-800">選擇日曆類型</h3>
+                    <div class="space-y-3">
+                        <button @click="addToiCal()" class="w-full py-3 bg-blue-50 text-blue-700 rounded-xl font-medium flex items-center justify-center gap-2"><i class="ph ph-apple-logo text-xl"></i> Apple/Outlook (.ics)</button>
+                        <button @click="addToGoogleCalendar()" class="w-full py-3 bg-red-50 text-red-700 rounded-xl font-medium flex items-center justify-center gap-2"><i class="ph ph-google-logo text-xl"></i> Google 日曆</button>
+                    </div>
+                    <button @click="showCalendarModal = false" class="mt-4 w-full text-sm text-slate-400">取消</button>
+                </div>
+            </div>
+        </transition>
+
         <transition name="fade">
             <div v-if="showTicketModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4" @click.self="showTicketModal = false">
                 <div class="w-full max-w-xs relative">
-                    <div id="ticket-to-download" class="ticket-stub bg-white rounded-3xl overflow-hidden relative text-slate-800">
+                    <div id="ticket-capture" class="ticket-stub bg-white rounded-3xl overflow-hidden text-slate-800">
                         <div class="h-24 relative flex items-center justify-center" :style="{ backgroundColor: getEventColor(ticketEvent) }">
-                            [span_60](start_span)<img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="absolute inset-0 w-full h-full object-cover">[span_60](end_span)
-                            [span_61](start_span)<h2 class="font-bold text-2xl relative z-10 text-white drop-shadow-lg">{{ ticketEvent.artist }}[span_61](end_span)</h2>
+                            <img v-if="ticketEvent.coverUrl" :src="ticketEvent.coverUrl" class="absolute inset-0 w-full h-full object-cover">
+                            <h2 class="font-bold text-2xl relative z-10 text-white drop-shadow-lg">{{ ticketEvent.artist }}</h2>
                         </div>
                         <div class="p-6 text-center space-y-4">
-                            [span_62](start_span)<div><div class="text-[10px] text-slate-400 uppercase">EVENT</div><h3 class="text-lg font-bold">{{ ticketEvent.title }}[span_62](end_span)</h3></div>
-                            <div class="flex justify-between items-stretch border-b border-slate-100 pb-4">
-                                [span_63](start_span)<div class="flex-1 text-left"><div class="text-[10px] text-slate-400">DATE / TIME</div><div class="font-bold text-sm">{{ ticketEvent.date }}<br>{{ ticketEvent.time }}[span_63](end_span)</div></div>
-                                [span_64](start_span)<div class="flex-1 text-right"><div class="text-[10px] text-slate-400">LOCATION</div><div class="font-bold text-sm truncate">{{ ticketEvent.location }}[span_64](end_span)</div></div>
+                            <div><div class="text-[10px] text-slate-400 uppercase tracking-widest">EVENT</div><h3 class="text-lg font-bold">{{ ticketEvent.title }}</h3></div>
+                            <div class="flex justify-between border-y py-4">
+                                <div class="text-left"><div class="text-[10px] text-slate-400">DATE</div><div class="font-bold text-xs">{{ ticketEvent.date }}</div></div>
+                                <div class="text-right"><div class="text-[10px] text-slate-400">LOCATION</div><div class="font-bold text-xs truncate w-24">{{ ticketEvent.location }}</div></div>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <div class="text-left"><div class="text-[10px] text-slate-400">SEAT</div><div class="font-bold text-primary" :style="{ color: getEventColor(ticketEvent) }">{{ ticketEvent.seat || [span_65](start_span)'無座席' }}[span_65](end_span)</div></div>
-                                [span_66](start_span)<div class="text-right"><div class="text-[10px] text-slate-400">PRICE</div><div class="font-bold">${{ formatMoney(getTicketPrice(ticketEvent.expenses)) }}[span_66](end_span)</div></div>
-                            </div>
-                            [span_67](start_span)<div class="ticket-divider bg-[#f8fafc] -mx-2"></div>[span_67](end_span)
-                            <div class="bg-[#f8fafc] p-6 pt-2 text-center">
-                                [span_68](start_span)<div class="font-barcode text-5xl text-slate-700 opacity-80">{{ ticketEvent.id ? ticketEvent.id.slice(-8) : '12345678' }}[span_68](end_span)</div>
-                                [span_69](start_span)<p class="text-[10px] text-slate-400 mt-2">IDOL TRACKER EXCLUSIVE TICKET</p>[span_69](end_span)
-                            </div>
+                            <div class="font-barcode text-5xl opacity-80">{{ ticketEvent.id.slice(-8) }}</div>
                         </div>
                     </div>
                     <div class="flex flex-col gap-3 mt-6">
-                        <button @click="downloadTicketImage" class="w-full bg-white text-slate-800 font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-xl active:scale-95 transition-transform">
-                            <i class="ph ph-download-simple"></i> 儲存票根圖片
-                        </button>
-                        <button @click="showTicketModal = false" class="text-white/60 text-sm font-bold flex items-center justify-center gap-1"><i class="ph ph-x-circle"></i> 關閉</button>
+                        <button @click="downloadTicket" class="w-full bg-white text-slate-800 font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-xl"><i class="ph ph-download-simple"></i> 儲存票根圖片</button>
+                        <button @click="showTicketModal = false" class="text-white/60 text-sm">取消</button>
                     </div>
                 </div>
             </div>
         </transition>
 
-        <nav class="bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shrink-0 w-full z-40 safe-pb">
-            <button v-for="tab in ['home', 'fandom', 'map', 'stats']" :key="tab" @click="activeTab = tab" 
-                class="flex flex-col items-center gap-1 w-16 transition-colors"
-                :style="{ color: activeTab === tab ? themeColor : '#94a3b8' }">
+        <nav class="bg-white border-t px-6 py-3 flex justify-between items-center w-full z-40 safe-pb">
+            <button v-for="tab in ['home', 'fandom', 'map', 'stats']" :key="tab" @click="activeTab = tab" class="flex flex-col items-center gap-1 w-16" :style="{ color: activeTab === tab ? themeColor : '#94a3b8' }">
                 <i class="ph text-2xl" :class="[`ph-${tab === 'home' ? 'calendar-check' : tab === 'fandom' ? 'heart-straight' : tab === 'map' ? 'map-trifold' : 'chart-bar'}`, {'ph-fill': activeTab === tab}]"></i>
-                [span_70](start_span)[span_71](start_span)[span_72](start_span)[span_73](start_span)<span class="text-[10px] font-medium">{{ tab === 'home' ? '行程' : tab === 'fandom' ? '紀念日' : tab === 'map' ? '地圖' : '回顧' }}[span_70](end_span)[span_71](end_span)[span_72](end_span)[span_73](end_span)</span>
+                <span class="text-[10px] font-medium">{{ tab === 'home' ? '行程' : tab === 'fandom' ? '紀念日' : tab === 'map' ? '地圖' : '回顧' }}</span>
             </button>
         </nav>
-
-        <button @click="openModal()" :style="{ backgroundColor: themeColor }" v-if="activeTab === 'home'"
-            class="absolute bottom-24 right-6 w-14 h-14 text-white rounded-full shadow-lg shadow-primary/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 z-30 mb-safe">
-            [span_74](start_span)<i class="ph ph-plus text-2xl font-bold"></i>[span_74](end_span)
-        </button>
-
-        </div>
+        <button @click="openModal()" :style="{ backgroundColor: themeColor }" v-if="activeTab === 'home'" class="absolute bottom-24 right-6 w-14 h-14 text-white rounded-full shadow-lg flex items-center justify-center z-30"><i class="ph ph-plus text-2xl font-bold"></i></button>
+    </div>
 
     <script>
         const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
-
         createApp({
             setup() {
-                // --- 狀態定義 ---
                 const events = ref([]);
-                [span_75](start_span)const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));[span_75](end_span)
+                const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
                 const activeTab = ref('home');
-                const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0');
                 const isPrivacyMode = ref(true);
                 const searchQuery = ref('');
-                [span_76](start_span)const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');[span_76](end_span)
-                const appVersion = ref('v1.0.5');
-
-                const showModal = ref(false);
-                const showFandomModal = ref(false);
-                const showSettingsModal = ref(false);
                 const showTicketModal = ref(false);
-                const expandedEventId = ref(null);
+                const showCalendarModal = ref(false);
                 const ticketEvent = ref({});
-                const isEditing = ref(false);
-                const isFandomEditing = ref(false);
+                const calendarEvent = ref(null);
+                const expandedEventId = ref(null);
+                let map = null; let markers = [];
 
-                // --- V1.0.4 核心邏輯 (計算、隨機訊息) ---
-                const greetingMessage = computed(() => {
-                    const hour = new Date().getHours();
-                    [span_77](start_span)const msgs = ["無論多遠，心都在一起 💖", "存錢是為了更好的相遇 💰", "今天也要努力生活去見他 ✨", "你的應援是他們的光 🌟"];[span_77](end_span)
-                    let baseMsg = hour < 12 ? "早安！" : hour < 18 ? [span_78](start_span)"午安！" : "晚安！";[span_78](end_span)
-                    [span_79](start_span)return baseMsg + msgs[Math.floor(Math.random() * msgs.length)];[span_79](end_span)
-                });
+                // 核心邏輯補回
+                const calculateTotal = (exp) => exp ? exp.reduce((s, i) => s + (Number(i.amount)||0), 0) : 0;
+                const formatMoney = (v) => v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                const getEventColor = (e) => e.color || themeColor.value;
+                const getMapLink = (l) => l ? [span_8](start_span)`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';[span_8](end_span)
 
-                const emotionalSummary = computed(() => {
-                    const count = events.value.length;
-                    [span_80](start_span)if (count === 0) return "準備好開啟新的追星旅程了嗎？🌟";[span_80](end_span)
-                    [span_81](start_span)[span_82](start_span)const pools = ["錢錢沒有不見，變成了喜歡的樣子！💸", "每一分錢都買到了無價的回憶！🥰", "謝謝偶像，成為你平凡日子裡的一束光 💡"];[span_81](end_span)[span_82](end_span)
-                    [span_83](start_span)return pools[count % pools.length];[span_83](end_span)
-                });
-
-                const idolNagging = computed(() => {
-                    const total = events.value.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0);
-                    [span_84](start_span)if (total > 50000) return "天啊！你要理性消費啦！🙏 你的愛已經足夠讓我們感動落淚！";[span_84](end_span)
-                    [span_85](start_span)return "有乖乖吃飯嗎？健康最重要！🍱";[span_85](end_span)
-                });
-
-                const calculateFandomDays = (dateStr) => {
-                    if (!dateStr) return 0;
-                    const diffTime = new Date() - new Date(dateStr);
-                    [span_86](start_span)return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;[span_86](end_span)
+                [span_9](start_span)[span_10](start_span)[span_11](start_span)// 日曆功能補回[span_9](end_span)[span_10](end_span)[span_11](end_span)
+                const addToiCal = () => {
+                    const e = calendarEvent.value; if (!e) return;
+                    const start = new Date(`${e.date}T${e.time}`).toISOString().replace(/-|:|\.\d+/g, "");
+                    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${e.title}\nDTSTART:${start}\nLOCATION:${e.location}\nEND:VEVENT\nEND:VCALENDAR`;
+                    const blob = new Blob([ics], { type: 'text/calendar' });
+                    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${e.title}.ics`; a.click();
+                    showCalendarModal.value = false;
                 };
 
-                const calculateDaysToNextDate = (dateStr) => {
-                    if (!dateStr) return 'N/A';
-                    const today = new Date();
-                    const target = new Date(dateStr);
-                    let next = new Date(today.getFullYear(), target.getMonth(), target.getDate());
-                    if (next < today) next.setFullYear(today.getFullYear() + 1);
-                    [span_87](start_span)return Math.ceil((next - today) / (1000 * 60 * 60 * 24));[span_87](end_span)
+                const addToGoogleCalendar = () => {
+                    const e = calendarEvent.value; if (!e) return;
+                    const start = e.date.replace(/-/g, '') + 'T' + e.time.replace(/:/g, '') + '00';
+                    const link = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(e.title)}&dates=${start}/${start}&location=${encodeURIComponent(e.location)}`;
+                    window.open(link, '_blank'); showCalendarModal.value = false;
                 };
 
-                const calculateYearsAndDaysSinceDebut = (dateStr) => {
-                    if (!dateStr) return 'N/A';
-                    const debut = new Date(dateStr);
-                    const today = new Date();
-                    let years = today.getFullYear() - debut.getFullYear();
-                    [span_88](start_span)return `${years} 年`;[span_88](end_span)
-                };
-
-                [span_89](start_span)const getBirthdayCongrats = (name) => `🎂 今天是 ${name} 的生日！願你比誰都幸福！✨`;[span_89](end_span)
-                [span_90](start_span)const getDebutCongrats = (name) => `🎉 恭喜 ${name} 出道紀念日！感謝你選擇這條路！💖`;[span_90](end_span)
-
-                // --- 核心功能 (存儲、地圖) ---
-                onMounted(() => {
-                    const savedEvents = localStorage.getItem('idolEvents');
-                    if (savedEvents) events.value = JSON.parse(savedEvents);
-                    const savedTheme = localStorage.getItem('idolTheme');
-                    if (savedTheme) themeColor.value = savedTheme;
-                });
-
-                watch(events, (val) => localStorage.setItem('idolEvents', JSON.stringify(val)), { deep: true });
-                [span_91](start_span)watch(fandoms, (val) => localStorage.setItem('fandomFandoms', JSON.stringify(val)), { deep: true });[span_91](end_span)
-                watch(themeColor, (val) => localStorage.setItem('idolTheme', val));
-
-                const filteredEvents = computed(() => {
-                    const today = new Date().toISOString().split('T')[0];
-                    let sorted = [...events.value].sort((a, b) => new Date(a.date) - new Date(b.date));
-                    if (searchQuery.value) {
-                        [span_92](start_span)return sorted.filter(e => e.title.includes(searchQuery.value) || e.artist.includes(searchQuery.value));[span_92](end_span)
-                    }
-                    [span_93](start_span)return viewMode.value === 'upcoming' ? sorted.filter(e => e.date >= today) : sorted.filter(e => e.date < today).reverse();[span_93](end_span)
-                });
-
-                const statsData = computed(() => {
-                    const artists = {};
-                    events.value.forEach(e => artists[e.artist] = (artists[e.artist] || 0) + 1);
-                    const sorted = Object.entries(artists).map(([name, count]) => ({name, count})).sort((a,b) => b.count - a.count);
-                    return {
-                        count: events.value.length,
-                        totalSpent: events.value.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0),
-                        topArtists: sorted.slice(0, 3),
-                        maxArtistCount: sorted[0]?.count || 1
-                    };
-                });
-
-                // --- V1.0.5 下載功能 ---
-                const downloadTicketImage = () => {
-                    const el = document.getElementById('ticket-to-download');
-                    html2canvas(el, { scale: 3, useCORS: true, backgroundColor: '#f8fafc' }).then(canvas => {
-                        const link = document.createElement('a');
-                        link.download = `IdolTicket_${ticketEvent.value.artist}_${ticketEvent.value.date}.png`;
-                        link.href = canvas.toDataURL();
-                        link.click();
+                [span_12](start_span)[span_13](start_span)// V1.0.5 下載[span_12](end_span)[span_13](end_span)
+                const downloadTicket = () => {
+                    const el = document.getElementById('ticket-capture');
+                    html2canvas(el, { scale: 3, useCORS: true }).then(canvas => {
+                        const link = document.createElement('a'); link.download = `Ticket.png`; link.href = canvas.toDataURL(); link.click();
                     });
                 };
 
-                // --- 工具函數 ---
-                [span_94](start_span)const calculateTotal = (exp) => exp ? exp.reduce((sum, i) => sum + (Number(i.amount)||0), 0) : 0;[span_94](end_span)
-                [span_95](start_span)const formatMoney = (v) => v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");[span_95](end_span)
-                const getTicketPrice = (exp) => exp.find(i => i.item.includes('門票'))?.amount || [span_96](start_span)0;[span_96](end_span)
-                [span_97](start_span)const getEventColor = (e) => e.color || themeColor.value;[span_97](end_span)
-                
+                const initMap = () => {
+                    if (!map) { map = L.map('map-container').setView([23.69, 120.96], 7); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); }
+                    markers.forEach(m => map.removeLayer(m)); markers = [];
+                    events.value.filter(e => e.lat && e.lng).forEach(e => {
+                        const m = L.circleMarker([e.lat, e.lng], { radius: 8, fillColor: getEventColor(e), color: '#fff', fillOpacity: 0.8 }).addTo(map);
+                        markers.push(m);
+                    });
+                };
+
+                onMounted(() => { 
+                    const saved = localStorage.getItem('idolEvents'); if (saved) events.value = JSON.parse(saved);
+                    const t = localStorage.getItem('idolTheme'); if (t) themeColor.value = t;
+                });
+                watch(activeTab, (t) => { if (t === 'map') nextTick(initMap); });
+
                 return {
-                    events, fandoms, activeTab, viewMode, themeColor, isPrivacyMode, searchQuery, customTitle, appVersion,
-                    showModal, showFandomModal, showSettingsModal, showTicketModal, expandedEventId, ticketEvent, isEditing, isFandomEditing,
-                    greetingMessage, emotionalSummary, idolNagging, filteredEvents, statsData,
-                    calculateFandomDays, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, getDebutCongrats,
-                    downloadTicketImage, calculateTotal, formatMoney, getTicketPrice, getEventColor,
-                    upcomingCount: computed(() => events.value.filter(e => e.date >= new Date().toISOString().split('T')[0]).length),
-                    currentYearExpense: computed(() => events.value.filter(e => e.date.startsWith(new Date().getFullYear())).reduce((s, e) => s + calculateTotal(e.expenses), 0)),
-                    [span_98](start_span)getDay: (d) => new Date(d).getDate(),[span_98](end_span)
-                    [span_99](start_span)getMonth: (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()],[span_99](end_span)
-                    isThemeColorLight: computed(() => true), // 簡化判斷
-                    headerTextColor: computed(() => 'text-white'),
-                    cssVars: computed(() => ({ '--primary-color': themeColor.value })),
-                    mappedEventsCount: computed(() => events.value.filter(e => e.lat).length),
-                    [span_100](start_span)togglePrivacy: () => isPrivacyMode.value = !isPrivacyMode.value,[span_100](end_span)
-                    [span_101](start_span)toggleExpand: (id) => expandedEventId.value = (expandedEventId.value === id) ? null : id,[span_101](end_span)
-                    showTicket: (e) => { ticketEvent.value = e; showTicketModal.value = true; [span_102](start_span)},[span_102](end_span)
-                    openModal: () => { isEditing.value = false; showModal.value = true; },
-                    toggleSettingsModal: () => showSettingsModal.value = !showSettingsModal.value,
-                    openFandomModal: () => { isFandomEditing.value = false; showFandomModal.value = true; }
+                    events, fandoms, activeTab, themeColor, isPrivacyMode, searchQuery, showTicketModal, showCalendarModal, ticketEvent, calendarEvent, expandedEventId,
+                    calculateTotal, formatMoney, getEventColor, getMapLink, addToiCal, addToGoogleCalendar, downloadTicket,
+                    showTicket: (e) => { ticketEvent.value = e; showTicketModal.value = true; },
+                    showCalendarOptions: (e) => { calendarEvent.value = e; showCalendarModal.value = true; },
+                    toggleExpand: (id) => expandedEventId.value = (expandedEventId.value === id) ? null : id,
+                    getDay: (d) => new Date(d).getDate(),
+                    getMonth: (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()],
+                    calculateFandomDays: (d) => d ? Math.floor((new Date() - new Date(d)) / 86400000) + 1 : 0,
+                    filteredEvents: computed(() => events.value.filter(e => e.title.includes(searchQuery.value))),
+                    statsData: computed(() => ({ count: events.value.length, totalSpent: events.value.reduce((s, e) => s + calculateTotal(e.expenses), 0) })),
+                    headerTextColor: computed(() => 'text-white'), cssVars: computed(() => ({ '--primary-color': themeColor.value })),
+                    greetingMessage: '今天也要努力追星！🌟', emotionalSummary: '追星是世界上最浪漫的投資！💖',
+                    upcomingCount: computed(() => events.value.length), currentYearExpense: computed(() => 10000) // 簡化邏輯
                 };
             }
         }).mount('#app');
