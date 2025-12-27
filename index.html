@@ -1742,7 +1742,20 @@ watch(mapYearFilter, () => {
                     }
                 };
 const initMap = () => {
-    // 改用篩選後的活動資料
+   if (!map) {
+        map = L.map('map-container').setView([23.6978, 120.9605], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: '© OpenStreetMap' 
+        }).addTo(map);
+    } else { 
+        map.invalidateSize();
+    }
+
+    // 清除舊的標記與線條
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+   // 關鍵：改用篩選後的活動資料[span_15](end_span)    // 改用篩選後的活動資料
     const mapPoints = [...filteredMapEvents.value]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -1935,6 +1948,8 @@ const initMap = () => {
                     events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
+
+mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, initmap, filteredMapEvents,
                   
                     cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors, 
               
@@ -1948,7 +1963,6 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, initmap, filteredMapEvents, 
 
                 };
             }
