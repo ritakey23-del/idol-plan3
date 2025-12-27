@@ -534,25 +534,24 @@
             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
-           <div class=“flex items-center gap-2 mt-1”>
-<select v-model="mapYearFilter" @change="initMap" class="text-[10px] bg-slate-100 border-none rounded-lg px-2 py-1 focus:ring-0">
-    <option value="ALL">全部足跡</option>
-    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-</select>
-            <p class="text-xs text-slate-500 mt-1">
-                已解鎖 {{ filteredMapCount }} 個地點
-                <span v-if="filteredMissingCount > 0" class="text-orange-500 ml-1">
-                    ({{ filteredMissingCount }} 個待定位) 
-                </span>
-            </p>
-        </div>
+          <div class="flex items-center gap-2 mt-1"> <select v-model="mapYearFilter" @change="initMap" class="text-[10px] bg-slate-100 border-none rounded-lg px-2 py-1 focus:ring-0">
+        <option value="ALL">全部足跡</option>
+        <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+    </select>
+    <p class="text-xs text-slate-500">
+        已解鎖 {{ filteredMapCount }} 個地點
+        <span v-if="filteredMissingCount > 0" class="text-orange-500 ml-1">({{ filteredMissingCount }} 待定位)</span>
+    </p>
+</div>
         </div>
         <div class="text-right">
             <div class="text-xl font-bold" :style="{ color: themeColor }">
                 {{ filteredDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
-        </div> </div> </div> </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+
+</div> </div> </div> </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+
                  <div class=“flex justify-between items-center mb-2”>
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
@@ -1584,7 +1583,7 @@ else if (distValue < 1500) distanceRemark = "你已經繞了台灣整整一圈�
 else distanceRemark = "這距離太愛了！";
 
                     return { 
-                        yearlyDistance: distValue, distanceRemark: remark, 
+                        yearlyDistance: distValue, distanceRemark: distanceRemark, 
 count, 
                         totalSpent, 
                         topArtists: sortedArtists, 
