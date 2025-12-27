@@ -535,7 +535,7 @@
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
             <p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點</p>
-        </div>
+        </div> <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">({{ missingCoordsCount }} 個待定位)</span>
         <div class="text-right">
             <div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span></div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰距離</div>
@@ -1095,7 +1095,7 @@ const totalDistance = computed(() => {
     '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
     '優化地圖 UI 佈局，防止縮放按鈕與資訊卡片重疊。',
     '新增地圖路徑標線繪製，直觀呈現追星歷史足跡。'
-] }
+] },
                     { version: 'v1.0.4', date: '2025/12/08', items: [
                         '新增封面圖片上傳彈性：行程與紀念日表單支援 Base64 檔案上傳（限制 1MB）或貼上圖片 URL 兩種模式。',
                         '優化 Base64 圖片預覽與清除邏輯。',
