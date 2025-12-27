@@ -1051,7 +1051,8 @@ watch(mapYearFilter, () => {
 
 
                 const events = ref([]);
-                const activeTab = ref('home');
+const mapYearFilter = ref('ALL'); 
+               const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
           
@@ -1949,7 +1950,7 @@ const initMap = () => {
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
 
-mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, initmap, filteredMapEvents,
+mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, initMap, filteredMapEvents,
                   
                     cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors, 
               
