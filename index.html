@@ -1071,7 +1071,7 @@ const totalDistance = computed(() => {
                 const form = ref({ ...defaultForm });
                 const presetColors = ['#63b3b0', '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#1dd1a1'];
                 const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');
-                const appVersion = ref('v1.0.4'); // 更新版本號
+                const appVersion = ref('v1.0.5'); // 更新版本號
                 
                 // --- FANDOM STATES ---
                 const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
@@ -1090,6 +1090,12 @@ const totalDistance = computed(() => {
                 // --- END FANDOM STATES ---
 
                 const changelogContent = ref([ 
+
+{ version: 'v1.0.5', date: '2025/12/28', items: [
+    '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
+    '優化地圖 UI 佈局，防止縮放按鈕與資訊卡片重疊。',
+    '新增地圖路徑標線繪製，直觀呈現追星歷史足跡。'
+] }
                     { version: 'v1.0.4', date: '2025/12/08', items: [
                         '新增封面圖片上傳彈性：行程與紀念日表單支援 Base64 檔案上傳（限制 1MB）或貼上圖片 URL 兩種模式。',
                         '優化 Base64 圖片預覽與清除邏輯。',
@@ -1732,15 +1738,22 @@ const totalDistance = computed(() => {
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const pathCoords = [];
-    sortedEvents.forEach(e => {
-        const color = getEventColor(e);
-        const marker = L.circleMarker([e.lat, e.lng], { 
-            radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 
-        }).addTo(map);
-        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}`);
-        markers.push(marker);
-        pathCoords.push([e.lat, e.lng]);
-    });
+    // 修改 initMap 裡面的這一段
+sortedEvents.forEach(e => {
+    [span_11](start_span)const color = getEventColor(e);[span_11](end_span)
+    const marker = L.circleMarker([e.lat, e.lng], { 
+        radius: 7, 
+        fillColor: color, 
+        color: '#fff', 
+        weight: 2, 
+        fillOpacity: 0.8 
+    [span_12](start_span)}).addTo(map);[span_12](end_span)
+    
+    // 確保這裡有加上 e.date
+    [span_13](start_span)marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);[span_13](end_span)
+    [span_14](start_span)markers.push(marker);[span_14](end_span)
+});
+
 
     // 繪製追星標線 (虛線效果)
     if (pathCoords.length > 1) {
