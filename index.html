@@ -534,19 +534,16 @@
             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
-            <div class="flex items-center gap-2 mt-1">
-    <select v-model="mapYearFilter" @change="initMap" class="text-[10px] bg-slate-100 border-none rounded-lg px-2 py-1">
-        <option value="ALL">全部足跡</option>
-        <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-    </select>
-    <p class="text-xs text-slate-500">
-        已解鎖 {{ filteredMapCount }} 個地點
-        <span v-if="filteredMissingCount > 0" class="text-orange-500 ml-1">({{ filteredMissingCount }} 待定位)</span>
-    </p>
-</div>
+            <p class="text-xs text-slate-500 mt-1">
+                已解鎖 {{ mappedEventsCount }} 個地點
+                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
+                    ({{ missingCoordsCount }} 個待定位) 
+                </span>
+            </p>
+        </div>
         <div class="text-right">
-            <div class="text-2xl font-bold" :style="{ color: themeColor }">
-                {{ filteredDistance }} <span class="text-xs font-normal text-slate-400">km</span>
+            <div class="text-xl font-bold" :style="{ color: themeColor }">
+                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
         </div>
@@ -554,7 +551,7 @@
 </div>
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
-                 
+                   
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
                     <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
                 </div>
@@ -1010,8 +1007,6 @@
         createApp({
             setup() {
 
-const mapYearFilter = ref('ALL');
-
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // 地球半徑 (km)
@@ -1023,36 +1018,24 @@ const calculateKm = (lat1, lon1, lat2, lon2) => {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 };
 
-// 1. 根據下拉選單過濾地圖顯示的行程
-const filteredMapEvents = computed(() => {
-    return events.value.filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value));
-});
-
-// 2. 連動更新地點計數
-const filteredMapCount = computed(() => filteredMapEvents.value.filter(e => e.lat && e.lng).length);
-const filteredMissingCount = computed(() => filteredMapEvents.value.length - filteredMapCount.value);
-
-// 3. 連動計算該選取範圍內的里程
-const filteredDistance = computed(() => {
-    const validPoints = [...filteredMapEvents.value]
+// 自動計算所有足跡的總里程 (按日期排序)
+const totalDistance = computed(() => {
+    const validPoints = [...events.value]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
+
     let dist = 0;
     for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+        dist += calculateKm(
+            validPoints[i].lat, validPoints[i].lng,
+            validPoints[i+1].lat, validPoints[i+1].lng
+        );
     }
     return dist.toFixed(1);
 });
 
-// 4. 監聽選單變化，立即更新地圖
-watch(mapYearFilter, () => { 
-    nextTick(() => initMap()); 
-});
-
-
                 const events = ref([]);
-const mapYearFilter = ref('ALL'); 
-               const activeTab = ref('home');
+                const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
           
@@ -1742,39 +1725,59 @@ const mapYearFilter = ref('ALL');
                         }
                     }
                 };
+                // 修正後的 initMap 邏輯
+
 const initMap = () => {
-   if (!map) {
+    if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
             attribution: '© OpenStreetMap' 
         }).addTo(map);
     } else { 
-        map.invalidateSize();
+        map.invalidateSize(); 
     }
 
-    // 清除舊的標記與線條
+    // 清除舊標記與線條
     markers.forEach(m => map.removeLayer(m));
     markers = [];
 
-   // 關鍵：改用篩選後的活動資料[span_15](end_span)    // 改用篩選後的活動資料
-    const mapPoints = [...filteredMapEvents.value]
+    // 取得排序後的有效座標點
+    const sortedEvents = [...events.value]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const pathCoords = [];
-    mapPoints.forEach(e => {
+    
+    sortedEvents.forEach(e => {
         const color = getEventColor(e);
-        const marker = L.circleMarker([e.lat, e.lng], { radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 }).addTo(map);
+        const marker = L.circleMarker([e.lat, e.lng], { 
+            radius: 7, 
+            fillColor: color, 
+            color: '#fff', 
+            weight: 2, 
+            fillOpacity: 0.8 
+        }).addTo(map);
+        
+        // 修正：在地圖 Popup 顯示日期
         marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
         markers.push(marker);
-        pathCoords.push([e.lat, e.lng]);
+        
+        // 修正：必須存入座標，標線才能計算路徑
+        pathCoords.push([e.lat, e.lng]); 
     });
 
-    // 繪製過濾後的移動路徑
+    // 繪製追星標線 (虛線效果)
     if (pathCoords.length > 1) {
-        const polyline = L.polyline(pathCoords, { color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15', lineJoin: 'round' }).addTo(map);
+        const polyline = L.polyline(pathCoords, {
+            color: themeColor.value,
+            weight: 3,
+            opacity: 0.6,
+            dashArray: '10, 15', 
+            lineJoin: 'round'
+        }).addTo(map);
         markers.push(polyline);
     }
+
     if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
 };
 
@@ -1949,8 +1952,6 @@ const initMap = () => {
                     events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
-
-mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, initMap, filteredMapEvents,
                   
                     cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors, 
               
@@ -1964,6 +1965,7 @@ mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, initMap
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
+totalDistance, 
 
                 };
             }
