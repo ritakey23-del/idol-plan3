@@ -534,7 +534,7 @@
             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
-           <div class=flex items-center gap-2 mt-1”>
+           <div class=“flex items-center gap-2 mt-1”>
 <select v-model="mapYearFilter" @change="initMap" class="text-[10px] bg-slate-100 border-none rounded-lg px-2 py-1 focus:ring-0">
     <option value="ALL">全部足跡</option>
     <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
@@ -552,10 +552,9 @@
                 {{ filteredDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
+           </div>
         </div>
-        </div>
-    </div>
-   </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+    </div> </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
@@ -1057,11 +1056,8 @@ const totalDistance = computed(() => {
     return dist.toFixed(1);
 });
 
-                const events = ref([]);
-                const activeTab = ref('home');
                 const mapYearFilter = ref('ALL');
 
-L
 const filteredMapEvents = computed(() => {
     return events.value.filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value));
 });
