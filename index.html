@@ -1729,47 +1729,61 @@ const totalDistance = computed(() => {
                     }
                 };
                 // 修正後的 initMap 邏輯
-const initMap = () => {
-    [span_3](start_span)// ... 前段初始化代碼不變 ...[span_3](end_span)
 
+const initMap = () => {
+    if (!map) {
+        map = L.map('map-container').setView([23.6978, 120.9605], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: '© OpenStreetMap' 
+        }).addTo(map);
+    } else { 
+        map.invalidateSize(); 
+    }
+
+    // 清除舊標記與線條
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    // 取得排序後的有效座標點
     const sortedEvents = [...events.value]
         .filter(e => e.lat && e.lng)
-        [span_4](start_span).sort((a, b) => new Date(a.date) - new Date(b.date));[span_4](end_span)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    [span_5](start_span)const pathCoords = [];[span_5](end_span)
+    const pathCoords = [];
     
     sortedEvents.forEach(e => {
-        [span_6](start_span)const color = getEventColor(e);[span_6](end_span)
+        const color = getEventColor(e);
         const marker = L.circleMarker([e.lat, e.lng], { 
             radius: 7, 
             fillColor: color, 
             color: '#fff', 
             weight: 2, 
             fillOpacity: 0.8 
-        [span_7](start_span)}).addTo(map);[span_7](end_span)
+        }).addTo(map);
         
-        [span_8](start_span)// 修正 1: 確保 Popup 包含日期文字，方便使用者查看[span_8](end_span)
-        [span_9](start_span)marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);[span_9](end_span)
-        [span_10](start_span)markers.push(marker);[span_10](end_span)
+        // 修正：在地圖 Popup 顯示日期
+        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
+        markers.push(marker);
         
-        [span_11](start_span)// 修正 2: 必須將座標 push 進 pathCoords，里程標線才能繪製[span_11](end_span)
+        // 修正：必須存入座標，標線才能計算路徑
         pathCoords.push([e.lat, e.lng]); 
     });
 
     // 繪製追星標線 (虛線效果)
-    [span_12](start_span)if (pathCoords.length > 1) {[span_12](end_span)
+    if (pathCoords.length > 1) {
         const polyline = L.polyline(pathCoords, {
             color: themeColor.value,
             weight: 3,
             opacity: 0.6,
             dashArray: '10, 15', 
             lineJoin: 'round'
-        [span_13](start_span)}).addTo(map);[span_13](end_span)
-        [span_14](start_span)markers.push(polyline);[span_14](end_span)
+        }).addTo(map);
+        markers.push(polyline);
     }
 
-    [span_15](start_span)if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });[span_15](end_span)
+    if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
 };
+
 
 
                 // Calendar
