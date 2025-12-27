@@ -70,11 +70,9 @@
 
         .custom-checkbox:checked + div { text-decoration: line-through; color: #94a3b8; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
-
-.leaflet-control-container .leaflet-top {
-    top: 80px;}
         #map-container { height: 100%; width: 100%; z-index: 1; }
         .leaflet-bottom { z-index: 400 !important; }
+.leaflet-top.leaflet-left { margin-top: 85px !important; }
 
         /* Ticket Styles */
         .ticket-stub {
@@ -530,21 +528,19 @@
 
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
-             <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
-    <h3 class="font-bold text-slate-800 flex justify-between items-center">
-        <span class="flex items-center gap-2">
-            <i class="ph ph-map-trifold text-primary"></i> 追星足跡
-        </span>
-        <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-lg">
-            累計飛行/移動：{{ totalDistance }} km
-        </span>
-    </h3>
-    <p class="text-xs text-slate-500 mt-1">
-        已解鎖 {{ mappedEventsCount }} 個地點 
-        <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
-            ({{ missingCoordsCount }} 個待定位)
-        </span>
-    </p>
+                <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
+    <div class="flex justify-between items-center">
+        <div>
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                <i class="ph ph-map-trifold text-primary"></i> 追星足跡
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點</p>
+        </div>
+        <div class="text-right">
+            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span></div>
+            <div class="text-[10px] text-slate-400 font-medium">累計征戰距離</div>
+        </div>
+    </div>
 </div>
 
 
@@ -1005,30 +1001,19 @@
         const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
         createApp({
             setup() {
-const totalDistance = computed(() => {
-    const validEvents = [...events.value]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    let distance = 0;
-    for (let i = 0; i < validEvents.length - 1; i++) {
-        distance += calculatePointsDistance(
-            validEvents[i].lat, validEvents[i].lng,
-            validEvents[i+1].lat, validEvents[i+1].lng
-        );}
-    return distance.toFixed(1);
-});
+// 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // 地球半徑 (公里)
+    const R = 6371; // 地球半徑 (km)
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 };
 
+// 自動計算所有足跡的總里程 (按日期排序)
 const totalDistance = computed(() => {
     const validPoints = [...events.value]
         .filter(e => e.lat && e.lng)
@@ -1041,7 +1026,7 @@ const totalDistance = computed(() => {
             validPoints[i+1].lat, validPoints[i+1].lng
         );
     }
-    return dist.toFixed(1); 
+    return dist.toFixed(1);
 });
 
                 const events = ref([]);
@@ -1735,43 +1720,35 @@ const totalDistance = computed(() => {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
             attribution: '© OpenStreetMap' 
         }).addTo(map);
-    } else { 
-        map.invalidateSize();
-    }
+    } else { map.invalidateSize(); }
 
-    // 清除舊標記與線條
+    // 清除舊標記
     markers.forEach(m => map.removeLayer(m));
     markers = [];
 
     // 取得排序後的有效座標點
-    const validEvents = [...events.value]
+    const sortedEvents = [...events.value]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const pathCoords = [];
-    
-    validEvents.forEach(e => {
+    sortedEvents.forEach(e => {
         const color = getEventColor(e);
         const marker = L.circleMarker([e.lat, e.lng], { 
-            radius: 6, 
-            fillColor: color, 
-            color: '#fff', 
-            weight: 2, 
-            fillOpacity: 0.8 
+            radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 
         }).addTo(map);
-        
         marker.bindPopup(`<b>${e.artist}</b><br>${e.title}`);
         markers.push(marker);
         pathCoords.push([e.lat, e.lng]);
     });
 
-    // 繪製標線
+    // 繪製追星標線 (虛線效果)
     if (pathCoords.length > 1) {
         const polyline = L.polyline(pathCoords, {
             color: themeColor.value,
             weight: 3,
             opacity: 0.6,
-            dashArray: '10, 10', // 虛線效果
+            dashArray: '10, 15', // 虛線效果
             lineJoin: 'round'
         }).addTo(map);
         markers.push(polyline);
