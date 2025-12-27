@@ -605,7 +605,6 @@
     </div>
 </div>
 
- 
                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                     <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-crown text-yellow-500"></i> 本命排行榜</h3><span class="text-[10px] text-slate-500 px-2 py-1 rounded-full">含見面/錄製/簽售</span></div>
                     <div v-if="statsData.topArtists.length > 0" class="space-y-4">
@@ -1553,14 +1552,11 @@ const totalDistance = computed(() => {
 const yearlyValidEvents = targetEvents
     .filter(e => e.lat && e.lng)
     .sort((a, b) => new Date(a.date) - new Date(b.date));
-
 let yDist = 0;
 for (let i = 0; i < yearlyValidEvents.length - 1; i++) {
     yDist += calculateKm(
-        yearlyValidEvents[i].lat, yearlyValidEvents[i].lng,
-        yearlyValidEvents[i+1].lat, yearlyValidEvents[i+1].lng
-    );
-}
+       yearlyValidEvents[i].lat, yearlyValidEvents[i].lng,
+        yearlyValidEvents[i+1].lat, yearlyValidEvents[i+1].lng);}
 const distValue = parseFloat(yDist.toFixed(1));
 
 let distanceRemark = "";
@@ -1790,7 +1786,6 @@ const initMap = () => {
     .filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value))
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-
     const pathCoords = [];
     
     sortedEvents.forEach(e => {
@@ -2010,7 +2005,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-totalDistance, 
+totalDistance, mapYearFilter, 
 
                 };
             }
