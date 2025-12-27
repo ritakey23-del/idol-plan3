@@ -1952,7 +1952,7 @@ const initMap = () => {
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
                 return {
-                    totalDistance, events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
+                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
                   
@@ -1967,7 +1967,8 @@ const initMap = () => {
                     downloadBackup, restoreBackup, idolNagging, showCalendarOptions, addToiCal, addToGoogleCalendar, showTicket, getTicketPrice, updateAppTitle,
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
-                    handleFileUpload 
+                    handleFileUpload, 
+totalDistance
                 };
             }
         }).mount('#app');
