@@ -1042,27 +1042,7 @@ const calculateKm = (lat1, lon1, lat2, lon2) => {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 };
 
-             const filteredMapEvents = computed(() => {
-    return events.value.filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value));
-});
-
-const filteredMapCount = computed(() => filteredMapEvents.value.filter(e => e.lat && e.lng).length);
-
-const filteredMissingCount = computed(() => filteredMapEvents.value.length - filteredMapCount.value);
-
-const filteredDistance = computed(() => {
-    const validPoints = [...filteredMapEvents.value]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-    let dist = 0;
-    for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
-    }
-    return dist.toFixed(1);
-});
-
-watch(mapYearFilter, () => { nextTick(() => initMap()); 
-});
+            
                const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0');
@@ -1070,6 +1050,7 @@ watch(mapYearFilter, () => { nextTick(() => initMap());
                 const expandedEventId = ref(null);
                 const isPrivacyMode = ref(true);
                 const events = ref([]);
+                const mapYearFilter = ref('ALL');
                 const isSearching = ref(false);
                 const searchError = ref('');
      
@@ -1090,6 +1071,28 @@ watch(mapYearFilter, () => { nextTick(() => initMap());
                 const isEditing = ref(false);
                 const isFandomEditing = ref(false); 
                 const editFandomIndex = ref(null); 
+
+const filteredMapEvents = computed(() => {
+    return events.value.filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value));
+});
+
+const filteredMapCount = computed(() => filteredMapEvents.value.filter(e => e.lat && e.lng).length);
+
+const filteredMissingCount = computed(() => filteredMapEvents.value.length - filteredMapCount.value);
+
+const filteredDistance = computed(() => {
+    const validPoints = [...filteredMapEvents.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    let dist = 0;
+    for (let i = 0; i < validPoints.length - 1; i++) {
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+    }
+    return dist.toFixed(1);
+});
+
+watch(mapYearFilter, () => { nextTick(() => initMap()); 
+});
 
                 let map = null;
                 let markers = [];
