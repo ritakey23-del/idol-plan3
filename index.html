@@ -70,9 +70,9 @@
 
         .custom-checkbox:checked + div { text-decoration: line-through; color: #94a3b8; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+        .leaflet-top.leaflet-left { margin-top: 85px !important; }
         #map-container { height: 100%; width: 100%; z-index: 1; }
         .leaflet-bottom { z-index: 400 !important; }
-.leaflet-top.leaflet-left { margin-top: 85px !important; }
 
         /* Ticket Styles */
         .ticket-stub {
@@ -529,28 +529,13 @@
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
                 <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
-    <div class="flex justify-between items-center">
-        <div>
-            <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                <i class="ph ph-map-trifold text-primary"></i> 追星足跡
-            </h3>
-            <p class="text-xs text-slate-500 mt-1">
-                已解鎖 {{ mappedEventsCount }} 個地點
-                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
-                    ({{ missingCoordsCount }} 個待定位) 
-                </span>
-            </p>
-        </div>
-        <div class="text-right">
-            <div class="text-xl font-bold" :style="{ color: themeColor }">
-                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-map-trifold text-primary"></i> 追星足跡</h3>
+                    <p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點 <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">({{ missingCoordsCount }} 個待定位)</span></p>
+
+{{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
-        </div>
-    </div>
-</div>
-
-
+            </div>
 
             <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
@@ -1009,34 +994,6 @@
         const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
         createApp({
             setup() {
-
-// 計算兩點間的球面距離 (Haversine 公式)
-const calculateKm = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // 地球半徑 (km)
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-};
-
-// 自動計算所有足跡的總里程 (按日期排序)
-const totalDistance = computed(() => {
-    const validPoints = [...events.value]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    let dist = 0;
-    for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(
-            validPoints[i].lat, validPoints[i].lng,
-            validPoints[i+1].lat, validPoints[i+1].lng
-        );
-    }
-    return dist.toFixed(1);
-});
-
                 const events = ref([]);
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
@@ -1079,7 +1036,7 @@ const totalDistance = computed(() => {
                 const form = ref({ ...defaultForm });
                 const presetColors = ['#63b3b0', '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#1dd1a1'];
                 const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');
-                const appVersion = ref('v1.0.5'); // 更新版本號
+                const appVersion = ref('v1.0.4'); // 更新版本號
                 
                 // --- FANDOM STATES ---
                 const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
@@ -1098,12 +1055,6 @@ const totalDistance = computed(() => {
                 // --- END FANDOM STATES ---
 
                 const changelogContent = ref([ 
-
-{ version: 'v1.0.5', date: '2025/12/28', items: [
-    '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
-    '優化地圖 UI 佈局，防止縮放按鈕與資訊卡片重疊。',
-    '新增地圖路徑標線繪製，直觀呈現追星歷史足跡。'
-] },
                     { version: 'v1.0.4', date: '2025/12/08', items: [
                         '新增封面圖片上傳彈性：行程與紀念日表單支援 Base64 檔案上傳（限制 1MB）或貼上圖片 URL 兩種模式。',
                         '優化 Base64 圖片預覽與清除邏輯。',
@@ -1728,64 +1679,26 @@ const totalDistance = computed(() => {
                         }
                     }
                 };
-                // 修正後的 initMap 邏輯
-
-const initMap = () => {
-    if (!map) {
-        map = L.map('map-container').setView([23.6978, 120.9605], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '© OpenStreetMap' 
-        }).addTo(map);
-    } else { 
-        map.invalidateSize(); 
-    }
-
-    // 清除舊標記與線條
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
-
-    // 取得排序後的有效座標點
-    const sortedEvents = [...events.value]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    const pathCoords = [];
-    
-    sortedEvents.forEach(e => {
-        const color = getEventColor(e);
-        const marker = L.circleMarker([e.lat, e.lng], { 
-            radius: 7, 
-            fillColor: color, 
-            color: '#fff', 
-            weight: 2, 
-            fillOpacity: 0.8 
-        }).addTo(map);
-        
-        // 修正：在地圖 Popup 顯示日期
-        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
-        markers.push(marker);
-        
-        // 修正：必須存入座標，標線才能計算路徑
-        pathCoords.push([e.lat, e.lng]); 
-    });
-
-    // 繪製追星標線 (虛線效果)
-    if (pathCoords.length > 1) {
-        const polyline = L.polyline(pathCoords, {
-            color: themeColor.value,
-            weight: 3,
-            opacity: 0.6,
-            dashArray: '10, 15', 
-            lineJoin: 'round'
-        }).addTo(map);
-        markers.push(polyline);
-    }
-
-    if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
-};
-
-
-
+                const initMap = () => {
+                    if (!map) {
+                        map = L.map('map-container').setView([23.6978, 120.9605], 7);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
+                    } else { map.invalidateSize();
+                    }
+                    markers.forEach(m => map.removeLayer(m));
+                    markers = [];
+                    const validEvents = events.value.filter(e => e.lat && e.lng);
+                    const bounds = [];
+                    validEvents.forEach(e => {
+                        const color = getEventColor(e);
+                        const marker = L.circleMarker([e.lat, e.lng], { radius: 8, fillColor: color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.8 }).addTo(map);
+                        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>${e.date}`);
+     
+                        markers.push(marker);
+                        bounds.push([e.lat, e.lng]);
+                    });
+                    if (bounds.length > 0) map.fitBounds(bounds, { padding: [50, 50] });
+                };
                 // Calendar
                 const showCalendarOptions = (event) => {
                     calendarEvent.value = event;
@@ -1951,23 +1864,81 @@ const initMap = () => {
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
+
+// 1. 球面距離計算公式
+const calculateKm = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+};
+
+// 2. 自動計算里程 Computed
+const totalDistance = computed(() => {
+    const validPoints = [...events.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    let dist = 0;
+    for (let i = 0; i < validPoints.length - 1; i++) {
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+    }
+    return dist.toFixed(1);
+});
+
+// 3. 更新 initMap 函式 (請完整替換舊的 initMap)
+const initMap = () => {
+    if (!map) {
+        map = L.map('map-container').setView([23.6978, 120.9605], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    } else { map.invalidateSize(); }
+
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+    const sortedEvents = [...events.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const pathCoords = [];
+    sortedEvents.forEach(e => {
+        const color = getEventColor(e);
+        const marker = L.circleMarker([e.lat, e.lng], { 
+            radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 
+        }).addTo(map);
+        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
+        markers.push(marker);
+        pathCoords.push([e.lat, e.lng]); // 存入座標繪製虛線
+    });
+
+    if (pathCoords.length > 1) {
+        const polyline = L.polyline(pathCoords, {
+            color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15', lineJoin: 'round'
+        }).addTo(map);
+        markers.push(polyline);
+    }
+    if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
+};
+
                 return {
                     events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
                   
-                    cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors,
+                    cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors, 
               
                     openModal, editEvent, closeModal, saveEvent, deleteEvent, toggleSettingsModal, setTheme, updateCustomTheme, processImport, showChangelog,
                     toggleExpand, togglePrivacy, formatMoney, getDay, getMonth, getDaysDiff, getMapLink, 
                     calculateTotal, 
                     addExpenseItem, removeExpenseItem, addChecklistItem, removeChecklistItem, addDefaultChecklist, saveFandoms, addFandom, removeFandom, editFandom, closeFandomModal, openFandomModal, fandoms,
-                    getEventColor, emotionalSummary, availableYears, searchCoordinates, isSearching, searchError, mappedEventsCount, missingCoordsCount,
+                    getEventColor, emotionalSummary, availableYears, searchCoordinates, isSearching, searchError, mappedEventsCount, missingCoordsCount, totalDistance, 
     
                     downloadBackup, restoreBackup, idolNagging, showCalendarOptions, addToiCal, addToGoogleCalendar, showTicket, getTicketPrice, updateAppTitle,
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
-                    handleFileUpload
+                    handleFileUpload 
                 };
             }
         }).mount('#app');
