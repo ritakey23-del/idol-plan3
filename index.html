@@ -535,9 +535,9 @@
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
             <p class="text-xs text-slate-500 mt-1">
-                [span_17](start_span)已解鎖 {{ mappedEventsCount }} 個地點[span_17](end_span)
+                已解鎖 {{ mappedEventsCount }} 個地點
                 <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
-                    ({{ missingCoordsCount }} 個待定位) [span_18](start_span)
+                    ({{ missingCoordsCount }} 個待定位) 
                 </span>
             </p>
         </div>
@@ -1952,7 +1952,7 @@ const initMap = () => {
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
                 return {
-                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
+                    totalDistance, events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
                   
