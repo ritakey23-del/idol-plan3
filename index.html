@@ -534,14 +534,22 @@
             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
-            <p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點</p>
-        </div> <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">({{ missingCoordsCount }} 個待定位)</span>
+            <p class="text-xs text-slate-500 mt-1">
+                [span_17](start_span)已解鎖 {{ mappedEventsCount }} 個地點[span_17](end_span)
+                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
+                    ({{ missingCoordsCount }} 個待定位) [span_18](start_span)
+                </span>
+            </p>
+        </div>
         <div class="text-right">
-            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span></div>
-            <div class="text-[10px] text-slate-400 font-medium">累計征戰距離</div>
+            <div class="text-xl font-bold" :style="{ color: themeColor }">
+                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
         </div>
     </div>
 </div>
+
 
 
             <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
@@ -1720,55 +1728,49 @@ const totalDistance = computed(() => {
                         }
                     }
                 };
-                const initMap = () => {
-    if (!map) {
-        map = L.map('map-container').setView([23.6978, 120.9605], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '© OpenStreetMap' 
-        }).addTo(map);
-    } else { map.invalidateSize(); }
+                // 修正後的 initMap 邏輯
+const initMap = () => {
+    [span_3](start_span)// ... 前段初始化代碼不變 ...[span_3](end_span)
 
-    // 清除舊標記
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
-
-    // 取得排序後的有效座標點
     const sortedEvents = [...events.value]
         .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
+        [span_4](start_span).sort((a, b) => new Date(a.date) - new Date(b.date));[span_4](end_span)
 
-    const pathCoords = [];
-    // 修改 initMap 裡面的這一段
-sortedEvents.forEach(e => {
-    [span_11](start_span)const color = getEventColor(e);[span_11](end_span)
-    const marker = L.circleMarker([e.lat, e.lng], { 
-        radius: 7, 
-        fillColor: color, 
-        color: '#fff', 
-        weight: 2, 
-        fillOpacity: 0.8 
-    [span_12](start_span)}).addTo(map);[span_12](end_span)
+    [span_5](start_span)const pathCoords = [];[span_5](end_span)
     
-    // 確保這裡有加上 e.date
-    [span_13](start_span)marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);[span_13](end_span)
-    [span_14](start_span)markers.push(marker);[span_14](end_span)
-});
-
+    sortedEvents.forEach(e => {
+        [span_6](start_span)const color = getEventColor(e);[span_6](end_span)
+        const marker = L.circleMarker([e.lat, e.lng], { 
+            radius: 7, 
+            fillColor: color, 
+            color: '#fff', 
+            weight: 2, 
+            fillOpacity: 0.8 
+        [span_7](start_span)}).addTo(map);[span_7](end_span)
+        
+        [span_8](start_span)// 修正 1: 確保 Popup 包含日期文字，方便使用者查看[span_8](end_span)
+        [span_9](start_span)marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);[span_9](end_span)
+        [span_10](start_span)markers.push(marker);[span_10](end_span)
+        
+        [span_11](start_span)// 修正 2: 必須將座標 push 進 pathCoords，里程標線才能繪製[span_11](end_span)
+        pathCoords.push([e.lat, e.lng]); 
+    });
 
     // 繪製追星標線 (虛線效果)
-    if (pathCoords.length > 1) {
+    [span_12](start_span)if (pathCoords.length > 1) {[span_12](end_span)
         const polyline = L.polyline(pathCoords, {
             color: themeColor.value,
             weight: 3,
             opacity: 0.6,
-            dashArray: '10, 15', // 虛線效果
+            dashArray: '10, 15', 
             lineJoin: 'round'
-        }).addTo(map);
-        markers.push(polyline);
+        [span_13](start_span)}).addTo(map);[span_13](end_span)
+        [span_14](start_span)markers.push(polyline);[span_14](end_span)
     }
 
-    if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
+    [span_15](start_span)if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });[span_15](end_span)
 };
+
 
                 // Calendar
                 const showCalendarOptions = (event) => {
