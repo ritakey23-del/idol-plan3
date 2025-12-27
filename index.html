@@ -526,11 +526,10 @@
             </div>
 
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
-                <div id="map-container" class="w-full h-full bg-slate-200">
+                <div id="map-container" class="w-full h-full bg-slate-200"></div>
                 <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
                     <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-map-trifold text-primary"></i> 追星足跡</h3>
                     <p class="text-xs text-slate-500 mt-1">已解鎖 {{ mappedEventsCount }} 個地點 <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">({{ missingCoordsCount }} 個待定位)</span></p>
-                </div>
             </div>
 
             <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
