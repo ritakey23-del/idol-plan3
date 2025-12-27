@@ -1018,8 +1018,6 @@ const totalDistance = computed(() => {
         );}
     return distance.toFixed(1);
 });
-
-// A. 兩點距離計算函數 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // 地球半徑 (公里)
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -1031,9 +1029,7 @@ const calculateKm = (lat1, lon1, lat2, lon2) => {
     return R * c;
 };
 
-// B. 自動計算總里程的 Computed
 const totalDistance = computed(() => {
-    // 篩選出有經緯度的行程，並按日期由舊到新排序
     const validPoints = [...events.value]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -1045,7 +1041,7 @@ const totalDistance = computed(() => {
             validPoints[i+1].lat, validPoints[i+1].lng
         );
     }
-    return dist.toFixed(1); // 回傳保留一位小數的公里數
+    return dist.toFixed(1); 
 });
 
                 const events = ref([]);
