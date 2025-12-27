@@ -552,10 +552,8 @@
                 {{ filteredDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
-           </div>
-        </div>
-    </div> </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                 <div class="flex justify-between items-center mb-2">
+        </div> </div> </div> </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+                 <div class=“flex justify-between items-center mb-2”>
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
                     <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
@@ -1056,9 +1054,7 @@ const totalDistance = computed(() => {
     return dist.toFixed(1);
 });
 
-                const mapYearFilter = ref('ALL');
-
-const filteredMapEvents = computed(() => {
+             const filteredMapEvents = computed(() => {
     return events.value.filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value));
 });
 
