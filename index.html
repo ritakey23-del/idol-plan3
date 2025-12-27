@@ -534,22 +534,25 @@
             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
+           <div class=flex items-center gap-2 mt-1”>
 <select v-model="mapYearFilter" @change="initMap" class="text-[10px] bg-slate-100 border-none rounded-lg px-2 py-1 focus:ring-0">
     <option value="ALL">全部足跡</option>
     <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
 </select>
             <p class="text-xs text-slate-500 mt-1">
-                已解鎖 {{ mappedEventsCount }} 個地點
-                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
-                    ({{ missingCoordsCount }} 個待定位) 
+                已解鎖 {{ filteredMapCount }} 個地點
+                <span v-if="filteredMissingCount > 0" class="text-orange-500 ml-1">
+                    ({{ filteredMissingCount }} 個待定位) 
                 </span>
             </p>
         </div>
+        </div>
         <div class="text-right">
             <div class="text-xl font-bold" :style="{ color: themeColor }">
-                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
+                {{ filteredDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
+        </div>
         </div>
     </div>
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
@@ -1057,6 +1060,26 @@ const totalDistance = computed(() => {
                 const events = ref([]);
                 const activeTab = ref('home');
                 const mapYearFilter = ref('ALL');
+
+L
+const filteredMapEvents = computed(() => {
+    return events.value.filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value));
+});
+
+const filteredMapCount = computed(() => filteredMapEvents.value.filter(e => e.lat && e.lng).length);
+
+const filteredMissingCount = computed(() => filteredMapEvents.value.length - filteredMapCount.value);
+
+const filteredDistance = computed(() => {
+    const validPoints = [...filteredMapEvents.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    let dist = 0;
+    for (let i = 0; i < validPoints.length - 1; i++) {
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+    }
+    return dist.toFixed(1);
+});
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
           
@@ -1764,60 +1787,36 @@ count,
                         }
                     }
                 };
-                // 修正後的 initMap 邏輯
 
 const initMap = () => {
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-            attribution: '© OpenStreetMap' 
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
     } else { 
-        map.invalidateSize(); 
+        map.invalidateSize();
     }
 
-    // 清除舊標記與線條
     markers.forEach(m => map.removeLayer(m));
     markers = [];
 
-    // 取得排序後的有效座標點
-    const sortedEvents = [...events.value]
-    .filter(e => e.lat && e.lng)
-    .filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value))
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    // 改用篩選後的活動
+    const mapPoints = [...filteredMapEvents.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     const pathCoords = [];
-    
-    sortedEvents.forEach(e => {
+    mapPoints.forEach(e => {
         const color = getEventColor(e);
-        const marker = L.circleMarker([e.lat, e.lng], { 
-            radius: 7, 
-            fillColor: color, 
-            color: '#fff', 
-            weight: 2, 
-            fillOpacity: 0.8 
-        }).addTo(map);
-        
-        // 修正：在地圖 Popup 顯示日期
+        const marker = L.circleMarker([e.lat, e.lng], { radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 }).addTo(map);
         marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
         markers.push(marker);
-        
-        // 修正：必須存入座標，標線才能計算路徑
-        pathCoords.push([e.lat, e.lng]); 
+        pathCoords.push([e.lat, e.lng]);
     });
 
-    // 繪製追星標線 (虛線效果)
     if (pathCoords.length > 1) {
-        const polyline = L.polyline(pathCoords, {
-            color: themeColor.value,
-            weight: 3,
-            opacity: 0.6,
-            dashArray: '10, 15', 
-            lineJoin: 'round'
-        }).addTo(map);
+        const polyline = L.polyline(pathCoords, { color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15', lineJoin: 'round' }).addTo(map);
         markers.push(polyline);
     }
-
     if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
 };
 
@@ -2005,7 +2004,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-totalDistance, mapYearFilter, 
+totalDistance, mapYearFilter, filteredMapCount, filteredMissingCount, filteredDistance, 
 
                 };
             }
