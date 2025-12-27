@@ -545,7 +545,7 @@
     </p>
 </div>
         <div class="text-right">
-            <div class="text-xl font-bold" :style="{ color: themeColor }">
+            <div class="text-2xl font-bold" :style="{ color: themeColor }">
                 {{ filteredDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
             <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
@@ -554,7 +554,7 @@
 </div>
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
-                   
+                 
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
                     <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
                 </div>
@@ -1742,10 +1742,6 @@ watch(mapYearFilter, () => {
                     }
                 };
 const initMap = () => {
-    // ... 前段初始化地圖容器 ...
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
-
     // 改用篩選後的活動資料
     const mapPoints = [...filteredMapEvents.value]
         .filter(e => e.lat && e.lng)
