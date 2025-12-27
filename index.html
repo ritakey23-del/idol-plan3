@@ -534,6 +534,10 @@
             <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
+<select v-model="mapYearFilter" @change="initMap" class="text-[10px] bg-slate-100 border-none rounded-lg px-2 py-1 focus:ring-0">
+    <option value="ALL">全部足跡</option>
+    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+</select>
             <p class="text-xs text-slate-500 mt-1">
                 已解鎖 {{ mappedEventsCount }} 個地點
                 <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
@@ -583,7 +587,25 @@
                         <div class="text-[10px] font-medium mt-1 leading-tight opacity-80 italic text-slate-500">{{ idolNagging }}</div>
                     </div>
                 </div>
-  
+  <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+    <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+            <i class="ph ph-map-pin-area text-orange-500"></i> 行動戰力回顧
+        </h3>
+    </div>
+    <div class="text-center py-2">
+        <div class="text-3xl font-black text-slate-800">
+            {{ statsData.yearlyDistance }} <span class="text-sm font-normal text-slate-400">km</span>
+        </div>
+        <p class="text-sm font-bold mt-2" :style="{ color: themeColor }">
+            「{{ statsData.distanceRemark }}」
+        </p>
+        <p class="text-[10px] text-slate-400 mt-1">
+            你在 {{ selectedYear === 'ALL' ? '歷年' : selectedYear }} 間的追星總位移
+        </p>
+    </div>
+</div>
+
  
                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
                     <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-crown text-yellow-500"></i> 本命排行榜</h3><span class="text-[10px] text-slate-500 px-2 py-1 rounded-full">含見面/錄製/簽售</span></div>
@@ -1036,6 +1058,7 @@ const totalDistance = computed(() => {
 
                 const events = ref([]);
                 const activeTab = ref('home');
+                const mapYearFilter = ref('ALL');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
           
@@ -1528,8 +1551,29 @@ const totalDistance = computed(() => {
                         if (!excludeKeywords.some(k => t.includes(k))) titleMap[t] = (titleMap[t] || 0) + 1;
                     });
                     const series = Object.keys(titleMap).map(key => ({ title: key, count: titleMap[key] })).filter(item => item.count > 1).sort((a, b) => b.count - a.count);
+const yearlyValidEvents = targetEvents
+    .filter(e => e.lat && e.lng)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+let yDist = 0;
+for (let i = 0; i < yearlyValidEvents.length - 1; i++) {
+    yDist += calculateKm(
+        yearlyValidEvents[i].lat, yearlyValidEvents[i].lng,
+        yearlyValidEvents[i+1].lat, yearlyValidEvents[i+1].lng
+    );
+}
+const distValue = parseFloat(yDist.toFixed(1));
+
+let distanceRemark = "";
+if (distValue === 0) distanceRemark = "還在熱身中！";
+else if (distValue < 300) distanceRemark = "相當於從台北跑到台中！";
+else if (distValue < 1000) distanceRemark = "這長度足以縱貫台灣南北了！";
+else if (distValue < 1500) distanceRemark = "你已經繞了台灣整整一圈！";
+else distanceRemark = "這距離太愛了！";
+
                     return { 
-                        count, 
+                        yearlyDistance: distValue, distanceRemark: remark, 
+count, 
                         totalSpent, 
                         topArtists: sortedArtists, 
                         maxArtistCount, 
@@ -1743,8 +1787,10 @@ const initMap = () => {
 
     // 取得排序後的有效座標點
     const sortedEvents = [...events.value]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    .filter(e => e.lat && e.lng)
+    .filter(e => mapYearFilter.value === 'ALL' || e.date.startsWith(mapYearFilter.value))
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
 
     const pathCoords = [];
     
