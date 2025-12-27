@@ -1019,16 +1019,27 @@ const totalDistance = computed(() => {
     return distance.toFixed(1);
 });
 
-const calculatePointsDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // 地球半徑
+const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // 地球半徑 (km)
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+.atan2(Math.sqrt(a), Math.sqrt(1-a));
 };
+
+const totalTravelDistance = computed(() => {
+    const validEvents = events.value
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    let total = 0;
+    for (let i = 0; i < validEvents.length - 1; i++) {
+        total += getDistance(validEvents[i].lat, validEvents[i].lng, validEvents[i+1].lat, validEvents[i+1].lng);
+    }
+    return total.toFixed(1);
+});
                 const events = ref([]);
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
