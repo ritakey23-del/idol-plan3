@@ -557,24 +557,33 @@
 
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
-                <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
-    <div class="flex justify-between items-center">
-        <div>
-            <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                <i class="ph ph-map-trifold text-primary"></i> 追星足跡
-            </h3>
-            <p class="text-xs text-slate-500 mt-1">
-                已解鎖 {{ mappedEventsCount }} 個地點
-                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
-                    ({{ missingCoordsCount }} 個待定位) 
-                </span>
-            </p>
-        </div>
-        <div class="text-right">
-            <div class="text-xl font-bold" :style="{ color: themeColor }">
-                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
+<div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-slate-100">
+    <div class="flex justify-between items-center gap-2">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+            <div class="relative shrink-0">
+                <select v-model="selectedMapYear" @change="initMap" 
+                        class="appearance-none bg-slate-100 border-none text-slate-700 py-1.5 pl-2 pr-6 rounded-lg text-xs font-bold focus:ring-1 focus:ring-primary">
+                    <option value="ALL">全部</option>
+                    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                </select>
+                <i class="ph ph-caret-down absolute right-1.5 top-2 text-[10px] pointer-events-none opacity-50"></i>
             </div>
-            <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
+            
+            <div class="truncate">
+                <h3 class="font-bold text-slate-800 text-xs flex items-center gap-1">
+                    已解鎖 {{ filteredMapEventsCount }} 處
+                </h3>
+                <p v-if="missingCoordsCount > 0" class="text-[10px] text-orange-500 truncate">
+                    {{ missingCoordsCount }} 個待定位
+                </p>
+            </div>
+        </div>
+
+        <div class="text-right shrink-0 border-l border-slate-100 pl-3">
+            <div class="text-lg font-bold leading-none" :style="{ color: themeColor }">
+                {{ filteredTotalDistance }} <span class="text-[10px] font-normal text-slate-400">km</span>
+            </div>
+            <div class="text-[9px] text-slate-400 font-medium mt-1">累積里程</div>
         </div>
     </div>
 </div>
@@ -1035,6 +1044,34 @@
         const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
         createApp({
             setup() {
+
+const selectedMapYear = ref('ALL'); // 預設顯示全部
+
+// 新增：過濾後的統計數量
+const filteredMapEventsCount = computed(() => {
+    const target = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+    return target.filter(e => e.lat && e.lng).length;
+});
+
+// 新增：過濾後的里程計算
+const filteredTotalDistance = computed(() => {
+    const targetEvents = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+        
+    const validPoints = [...targetEvents]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let dist = 0;
+    for (let i = 0; i < validPoints.length - 1; i++) {
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+    }
+    return dist.toFixed(1);
+});
+
 
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
@@ -1763,19 +1800,68 @@ const totalDistance = computed(() => {
 const initMap = () => {
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
-       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    } else {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    } else { 
         map.invalidateSize();
     }
 
- markers.forEach(m => map.removeLayer(m));    
-markers = [];
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
 
-    const sortedEvents = [...events.value]
+ // 修改處：根據選取的年度過濾資料
+    const baseEvents = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+
+    // 使用過濾後的資料進行排序
+    const sortedEvents = [...baseEvents]
         .filter(e => e.lat && e.lng)
-       .sort((a, b) => new Date(a.date) - new Date(b.date));
-// 修復點：確保 pathCoords 取得所有順序座標
-  const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // 確保路徑線條的座標也同步更新
+    const pathCoords = sortedEvents.map(e => [e.lat, e.lng]); 
+    // 同地點合併畫點邏輯
+    const groupPoints = {};
+    sortedEvents.forEach(e => {
+        const key = `${e.lat}_${e.lng}`;
+        if (!groupPoints[key]) groupPoints[key] = [];
+        groupPoints[key].push(e);
+    });
+
+    Object.values(groupPoints).forEach(eventsAtLoc => {
+        const latest = eventsAtLoc[eventsAtLoc.length - 1];
+        const color = getEventColor(latest);
+        
+        const marker = L.circleMarker([latest.lat, latest.lng], { 
+            radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 
+        }).addTo(map);
+
+        let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
+        [...eventsAtLoc].reverse().forEach(ev => {
+            popup += `<div style="border-bottom:1px dashed #eee; margin-bottom:5px; padding-bottom:5px;">
+                <b style="color:${getEventColor(ev)}">${ev.artist}</b><br>
+                <small>${ev.title}</small><br>
+                <small style="color:#666">📅 ${ev.date}</small>
+            </div>`;
+        });
+        popup += `</div>`;
+        
+        marker.bindPopup(popup);
+        markers.push(marker);
+    });
+
+// 重新繪製線條
+    if (pathCoords.length > 1) {
+        const polyline = L.polyline(pathCoords, {
+            color: themeColor.value,
+            weight: 3,
+            opacity: 0.6,
+            dashArray: '10, 15'
+        }).addTo(map);
+        markers.push(polyline);     }
+
+    if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] }); 
+};
 
     // 分組畫點邏輯
     const groupPoints = {};
