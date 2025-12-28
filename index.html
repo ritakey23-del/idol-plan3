@@ -132,6 +132,7 @@
         }
     </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
 
@@ -595,16 +596,10 @@
 
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
-    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-    <div class="flex gap-2">
-        <button @click="generateShareCard" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-share-network text-lg"></i> 分享
-        </button>
-        <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-download-simple text-lg"></i> 匯入
-        </button>
-    </div>
-</div>
+                   
+                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+                </div>
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -657,64 +652,7 @@
                     <div v-else class="text-center text-slate-400 text-sm py-4">區間內無資料</div>
                 </div>
             </div>
-
-<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[400px] h-[800px] p-8 font-sans text-white overflow-hidden" 
-     :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #0f172a 100%)' }">
-    
-    <div class="backdrop-blur-2xl bg-white/10 rounded-[2.5rem] p-8 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden">
-        
-        <div class="relative z-10 text-center mb-6">
-            <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-1">年度追星里程</div>
-            <h2 class="text-4xl font-black tracking-tight">{{ selectedYear === 'ALL' ? '追星足跡' : selectedYear + ' 年度回顧' }}</h2>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3 mb-6 relative z-10">
-            <div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5 flex flex-col justify-center">
-                <div class="text-[9px] text-white/40 mb-1">總場次</div>
-                <div class="text-xl font-bold">{{ statsData.count }}</div>
-            </div>
-            <div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5 flex flex-col justify-center">
-                <div class="text-[9px] text-white/40 mb-1">總場館</div>
-                <div class="text-xl font-bold">{{ filteredMapEventsCount }}</div>
-            </div>
-            <div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5 flex flex-col justify-center min-w-0">
-                <div class="text-[9px] text-white/40 mb-1">總里程</div>
-                <div class="text-base font-bold truncate leading-tight">{{ totalDistance }}<span class="text-[8px] ml-0.5">km</span></div>
-            </div>
-        </div>
-
-        <div class="w-full h-44 bg-black/30 rounded-3xl mb-6 overflow-hidden border border-white/10 relative">
-            <div id="map-snapshot" class="w-full h-full opacity-90"></div>
-            <div class="absolute bottom-2 left-4 text-[10px] text-white/60">📍 足跡地圖實錄</div>
-        </div>
-
-        <div v-if="emotionalSummary" class="mb-6 px-4 py-4 bg-white/5 rounded-2xl border-l-4 border-white/30 italic text-sm leading-relaxed relative z-10">
-            「 {{ emotionalSummary }} 」
-        </div>
-
-        <div class="w-full relative z-10 flex-1 overflow-hidden">
-            <div class="text-[10px] text-white/40 tracking-widest mb-4 flex items-center gap-2">
-                <i class="ph ph-crown-simple"></i> 年度本命排行榜
-            </div>
-            <div class="space-y-3">
-                <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" class="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/5">
-                    <div class="flex items-center gap-4">
-                        <span class="text-base font-black italic opacity-20">{{ index + 1 }}</span>
-                        <span class="text-sm font-bold">{{ artist.name }}</span>
-                    </div>
-                    <span class="text-[11px] font-medium opacity-70">{{ artist.count }} 次見面</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4 pt-4 border-t border-white/5 text-center relative z-10">
-            <p class="text-[9px] opacity-20 tracking-[0.2em] font-medium">{{ customTitle }} • 自動生成</p>
-        </div>
-    </div>
-</div>
-
-
-
+  
        </main>
 
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
@@ -1148,66 +1086,6 @@
                 const importJson = ref('');
                 let map = null;
                 let markers = [];
-
-const generateShareCard = async () => {
-    if (statsData.value.count === 0) {
-        alert("目前選定的區間沒有資料喔！");
-        return;
-    }
-
-    // 提示使用者
-    alert("正在同步地圖與數據，生成中...");
-    
-    // 關鍵：將實際地圖的 HTML 內容複製到快照區塊
-    const realMap = document.getElementById('map-container');
-    const snapshotContainer = document.getElementById('map-snapshot');
-    
-    // 清除舊快照並克隆目前的地圖外觀 (僅 CSS 模擬)
-    snapshotContainer.innerHTML = '';
-    const mapClone = realMap.cloneNode(true);
-    snapshotContainer.appendChild(mapClone);
-
-    await nextTick();
-    const element = document.getElementById('share-card-template');
-    
-    try {
-        const canvas = await html2canvas(element, {
-            backgroundColor: null,
-            scale: 2, // 2倍解析度最適合手機分享且不佔過多記憶體
-            useCORS: true,
-            allowTaint: true,
-            logging: false
-            onclone: (clonedDoc) => {
-                const el =
-        clonedDoc.getElementById('share-card-template');
-                 el.style.display = 'block' ;
-         }
-        });
-
-        // 針對 Safari 優化：轉換為 DataURL 後直接開啟新視窗或提示儲存
-        const imgData = canvas.toDataURL('image/png', 1.0);
-        
-        // 建立一個臨時圖片顯示區，解決 Safari 無法下載問題
-        const newTab = window.open();
-        if (newTab) {
-            newTab.document.write(`
-                <body style="margin:0; background:#000; display:flex; justify-content:center; align-items:center; min-height:100vh;">
-                    <img src="${imgData}" style="max-width:100%; height:auto; box-shadow:0 0 50px rgba(0,0,0,0.5);" />
-                    <p style="position:fixed; bottom:20px; color:#fff; font-family:sans-serif; font-size:14px; opacity:0.7;">長按圖片儲存至相簿</p>
-                </body>
-        } else {
-            // 如果被擋住彈窗，則使用直接下載
-            const link = document.createElement('a');
-            link.download = `${selectedYear.value}_年度追星回顧.png`;
-            link.href = imgData;
-            link.click();
-        }
-    } catch (err) {
-        console.error("生成錯誤:", err);
-        alert("分享功能在當前瀏覽器受限，請嘗試使用 Chrome 或截圖功能。");
-    }
-};
-
 
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
@@ -2180,7 +2058,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, generateShareCard, 
+selectedMapYear, filteredMapEventsCount, totalDistance, 
 
                 };
             }
