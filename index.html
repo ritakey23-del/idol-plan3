@@ -1700,68 +1700,45 @@ const mapYearFilter = ref('ALL');
                     showChangelogModal.value = true;
                 };
 
-                const searchCoordinates = async () => {
+const searchCoordinates = async () => {
     if (!form.value.location) {
-        searchError.value = "請先輸入地點名稱"; [span_2](start_span)//[span_2](end_span)
+        searchError.value = "請先輸入地點名稱";
         return;
     }
-
-    // 優化：優先從現有行程抓取已存在的座標，減少 API 請求
-    const cachedEvent = events.value.find(e => e.location === form.value.location && e.lat && e.lng);
-    if (cachedEvent) {
-        form.value.lat = cachedEvent.lat;
-        form.value.lng = cachedEvent.lng;
+    // --- 優化：本地快取檢查 ---
+    const cached = events.value.find(e => e.location === form.value.location && e.lat && e.lng);
+    if (cached) {
+        form.value.lat = cached.lat;
+        form.value.lng = cached.lng;
         searchError.value = `定位成功 (來自本地紀錄)！`;
         return;
     }
-
-    isSearching.value = true; [span_3](start_span)//[span_3](end_span)
-    searchError.value = ''; [span_4](start_span)//[span_4](end_span)
-    
-    // 改用 Photon API，對 GitHub Pages 的請求限制較寬鬆
+    isSearching.value = true;
+    searchError.value = '';
+    // 使用對 GitHub Pages 更友善的 Photon API
     const apiUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(form.value.location)}&limit=1`;
-    
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`連線失敗: ${response.status}`); [span_5](start_span)//[span_5](end_span)
-
+        if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
         const data = await response.json();
         if (data.features && data.features.length > 0) {
-            // Photon 回傳格式為 [lng, lat]
-            const [lng, lat] = data.features[0].geometry.coordinates; [span_6](start_span)//[span_6](end_span)
-            form.value.lat = lat; [span_7](start_span)//[span_7](end_span)
-            form.value.lng = lng; [span_8](start_span)//[span_8](end_span)
-            searchError.value = `定位成功！`; [span_9](start_span)//[span_9](end_span)
+            const [lng, lat] = data.features[0].geometry.coordinates;
+            form.value.lat = lat;
+            form.value.lng = lng;
+            searchError.value = `定位成功！`;
         } else {
-            form.value.lat = null; [span_10](start_span)//[span_10](end_span)
-            form.value.lng = null; [span_11](start_span)//[span_11](end_span)
-            searchError.value = "找不到該地點座標，請輸入更具體的名稱。"; [span_12](start_span)//[span_12](end_span)
+            form.value.lat = null;
+            form.value.lng = null;
+            searchError.value = "找不到該地點，請輸入更具體的名稱";
         }
     } catch (e) {
-        searchError.value = `定位失敗: ${e.message}`; [span_13](start_span)//[span_13](end_span)
+        searchError.value = `定位失敗: ${e.message}`;
     } finally {
-        isSearching.value = false; [span_14](start_span)//[span_14](end_span)
-        if (activeTab.value === 'map') {
-            nextTick(() => { initMap(); }); [span_15](start_span)//[span_15](end_span)
-        }
+        isSearching.value = false;
+        if (activeTab.value === 'map') nextTick(() => { initMap(); });
     }
 };
 
-                    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}&limit=1`;
-                    try {
-                        const response = await fetch(apiUrl, {
-                            headers: {
-                               'User-Agent': 'MyIdolTrackerApp/1.0 (contact@example.com)' 
-                            }
-                        });
-                        if (!response.ok) {
-                             throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-                        if (data && data.length > 0) {
-                            form.value.lat = parseFloat(data[0].lat);
-                            form.value.lng = parseFloat(data[0].lon);
                             
                             const latFormatted = form.value.lat.toFixed(4);
                             const lngFormatted = form.value.lng.toFixed(4);
@@ -1782,60 +1759,46 @@ const mapYearFilter = ref('ALL');
                     }
                 };
 const initMap = () => {
-    // 使用 nextTick 確保地圖容器 div 已經出現在網頁上
-    nextTick(() => {
+    nextTick(() => { // 確保地圖容器 div 已就緒
         if (!map) {
-            [span_17](start_span)// 初始化地圖並設定中心點[span_17](end_span)
-            map = L.map('map-container').setView([23.6978, 120.9605], 7); 
-            [span_18](start_span)// 強制使用 https 確保圖磚載入安全[span_18](end_span)
+            map = L.map('map-container').setView([23.6978, 120.9605], 7);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
                 attribution: '© OpenStreetMap' 
             }).addTo(map);
         } else { 
-            map.invalidateSize(); [span_19](start_span)// 修正地圖容器大小變動時的顯示問題[span_19](end_span)
+            map.invalidateSize();
         }
-        
-        [span_20](start_span)// 清除舊標記並重新繪製[span_20](end_span)
-        markers.forEach(m => map.removeLayer(m));
-        markers = [];
-
-        [span_21](start_span)// 過濾並排序有效座標點[span_21](end_span)
-        const sortedEvents = [...events.value]
-            .filter(e => e.lat && e.lng)
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-        const pathCoords = [];
-        
-        sortedEvents.forEach(e => {
-            [span_22](start_span)const color = getEventColor(e); //[span_22](end_span)
-            const marker = L.circleMarker([e.lat, e.lng], { 
-                radius: 7, 
-                fillColor: color, 
-                color: '#fff', 
-                weight: 2, 
-                fillOpacity: 0.8 
-            }).addTo(map); [span_23](start_span)//[span_23](end_span)
-            
-            marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`); [span_24](start_span)//[span_24](end_span)
-            markers.push(marker);
-            pathCoords.push([e.lat, e.lng]); [span_25](start_span)//[span_25](end_span)
-        });
-
-        [span_26](start_span)// 繪製追星路徑線條[span_26](end_span)
-        if (pathCoords.length > 1) {
-            const polyline = L.polyline(pathCoords, {
-                color: themeColor.value,
-                weight: 3,
-                opacity: 0.6,
-                dashArray: '10, 15', 
-                lineJoin: 'round'
-            }).addTo(map); [span_27](start_span)//[span_27](end_span)
-            markers.push(polyline); [span_28](start_span)//[span_28](end_span)
-        }
-
-        if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] }); [span_29](start_span)//[span_29](end_span)
+        // ...後續 markers 清除與重新繪製邏輯
     });
 };
+
+
+    // 清除舊的標記與線條
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
+
+   // 關鍵：改用篩選後的活動資料[span_15](end_span)    // 改用篩選後的活動資料
+    const mapPoints = [...filteredMapEvents.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    const pathCoords = [];
+    mapPoints.forEach(e => {
+        const color = getEventColor(e);
+        const marker = L.circleMarker([e.lat, e.lng], { radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 }).addTo(map);
+        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
+        markers.push(marker);
+        pathCoords.push([e.lat, e.lng]);
+    });
+
+    // 繪製過濾後的移動路徑
+    if (pathCoords.length > 1) {
+        const polyline = L.polyline(pathCoords, { color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15', lineJoin: 'round' }).addTo(map);
+        markers.push(polyline);
+    }
+    if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
+};
+
 
 
                 // Calendar
