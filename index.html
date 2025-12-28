@@ -715,7 +715,6 @@
 
 
 
-
        </main>
 
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
@@ -1151,17 +1150,19 @@
                 let markers = [];
 
 const generateShareCard = async () => {
-    [span_3](start_span)// 確保統計數據已依選定年份計算[span_3](end_span)
     if (statsData.value.count === 0) {
-        alert("該年度暫無行程數據。");
+        alert("目前選定的區間沒有資料喔！");
         return;
     }
 
-    alert("正在生成高清回顧卡片...");
-
-    // 地圖快照處理
+    // 提示使用者
+    alert("正在同步地圖與數據，生成中...");
+    
+    // 關鍵：將實際地圖的 HTML 內容複製到快照區塊
     const realMap = document.getElementById('map-container');
     const snapshotContainer = document.getElementById('map-snapshot');
+    
+    // 清除舊快照並克隆目前的地圖外觀 (僅 CSS 模擬)
     snapshotContainer.innerHTML = '';
     const mapClone = realMap.cloneNode(true);
     snapshotContainer.appendChild(mapClone);
@@ -1172,20 +1173,21 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 3, // 提高到 3 倍確保文字與數字非常清晰
+            scale: 2, // 2倍解析度最適合手機分享且不佔過多記憶體
             useCORS: true,
             allowTaint: true,
-            logging: false,
-            // 修正字體渲染：讓文字更銳利
+            logging: false
             onclone: (clonedDoc) => {
-                const el = clonedDoc.getElementById('share-card-template');
-                el.style.display = 'block';
-            }
+                const el =
+        clonedDoc.getElementById('share-card-template');
+                 el.style.display = 'block' ;
+         }
         });
 
-        const imgData = canvas.toDataURL('image/png', 1.0); // 使用最高品質輸出
+        // 針對 Safari 優化：轉換為 DataURL 後直接開啟新視窗或提示儲存
+        const imgData = canvas.toDataURL('image/png', 1.0);
         
-        // Safari 相容處理
+        // 建立一個臨時圖片顯示區，解決 Safari 無法下載問題
         const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
@@ -1193,16 +1195,16 @@ const generateShareCard = async () => {
                     <img src="${imgData}" style="max-width:100%; height:auto; box-shadow:0 0 50px rgba(0,0,0,0.5);" />
                     <p style="position:fixed; bottom:20px; color:#fff; font-family:sans-serif; font-size:14px; opacity:0.7;">長按圖片儲存至相簿</p>
                 </body>
-            `);
         } else {
+            // 如果被擋住彈窗，則使用直接下載
             const link = document.createElement('a');
             link.download = `${selectedYear.value}_年度追星回顧.png`;
             link.href = imgData;
             link.click();
         }
     } catch (err) {
-        console.error(err);
-        alert("生成失敗，請再試一次。");
+        console.error("生成錯誤:", err);
+        alert("分享功能在當前瀏覽器受限，請嘗試使用 Chrome 或截圖功能。");
     }
 };
 
@@ -1242,9 +1244,9 @@ const filteredMapEventsCount = computed(() => {
 
 // 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-// 關鍵：確保里程計算只針對選定年份    const baseEvents = selectedYear.value === 'ALL' 
+    const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(selectedYear.value));
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
