@@ -1753,10 +1753,6 @@ const initMap = () => {
         } else { 
             map.invalidateSize();
         }
-        // ...後續 markers 清除與重新繪製邏輯
-    });
-};
-
     // 清除舊標記與線條
     markers.forEach(m => map.removeLayer(m));
     markers = [];
