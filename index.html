@@ -1810,6 +1810,8 @@ const initMap = () => {
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
+       if (sortedEvents.length === 0) return;
+
 // 修復點：確保 pathCoords 取得所有順序座標
   const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
 
