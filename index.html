@@ -1792,15 +1792,16 @@ const initMap = () => {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     } else {
-        map.invalidateSize();
+ map.invalidateSize();
     }
 
-    // 重要：切換年度時必須先清除地圖上所有的點與線
+    // 關鍵優化：先清除所有舊標記與舊線條
+    if (markers && markers.length > 0) {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
     }
 
-    // 重新根據年度過濾資料
+    // 根據目前的年度變數篩選資料來源
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
