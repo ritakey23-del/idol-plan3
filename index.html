@@ -1050,6 +1050,41 @@
         createApp({
             setup() {
 
+
+                const events = ref([]);
+                const selectedMapYear = ref('ALL');
+                const activeTab = ref('home');
+                const viewMode = ref('upcoming');
+                const themeColor = ref('#63b3b0'); 
+          
+ 
+                const selectedYear = ref('ALL');
+                const expandedEventId = ref(null);
+                const isPrivacyMode = ref(true);
+                const isSearching = ref(false);
+                const searchError = ref('');
+     
+                
+                const searchQuery = ref('');
+                
+                const showModal = ref(false);
+                const showSettingsModal = ref(false); 
+                
+                const showImportModal = ref(false);
+                const showTicketModal = ref(false);
+                const showCalendarModal = ref(false); 
+                const showChangelogModal = ref(false); 
+                const showFandomModal = ref(false); 
+                const calendarEvent = ref(null);     
+  
+                const ticketEvent = ref({});
+                const isEditing = ref(false);
+                const isFandomEditing = ref(false); 
+                const editFandomIndex = ref(null); 
+                const importJson = ref('');
+                let map = null;
+                let markers = [];
+
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // 地球半徑 (km)
@@ -1089,39 +1124,6 @@ const totalDistance = computed(() => {
     return dist.toFixed(1);
 });
 
-                const events = ref([]);
-                const selectedMapYear = ref('ALL');
-                const activeTab = ref('home');
-                const viewMode = ref('upcoming');
-                const themeColor = ref('#63b3b0'); 
-          
- 
-                const selectedYear = ref('ALL');
-                const expandedEventId = ref(null);
-                const isPrivacyMode = ref(true);
-                const isSearching = ref(false);
-                const searchError = ref('');
-     
-                
-                const searchQuery = ref('');
-                
-                const showModal = ref(false);
-                const showSettingsModal = ref(false); 
-                
-                const showImportModal = ref(false);
-                const showTicketModal = ref(false);
-                const showCalendarModal = ref(false); 
-                const showChangelogModal = ref(false); 
-                const showFandomModal = ref(false); 
-                const calendarEvent = ref(null);     
-  
-                const ticketEvent = ref({});
-                const isEditing = ref(false);
-                const isFandomEditing = ref(false); 
-                const editFandomIndex = ref(null); 
-                const importJson = ref('');
-                let map = null;
-                let markers = [];
 
                 const defaultForm = {
                     id: null, title: '', artist: '', date: '', time: '19:00', location: '', 
