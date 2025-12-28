@@ -1788,20 +1788,23 @@ const totalDistance = computed(() => {
                 // 修正後的 initMap 邏輯
 
 const initMap = () => {
+    // 具體說明：加入這行可於瀏覽器主控台(F12)確認函式是否觸發
+    console.log('地圖更新中，目前年份：', selectedMapYear.value);
+
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     } else {
- map.invalidateSize();
+        map.invalidateSize();
     }
 
-    // 關鍵優化：先清除所有舊標記與舊線條
+    // 1. 強制清除所有舊標記
     if (markers && markers.length > 0) {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
     }
 
-    // 根據目前的年度變數篩選資料來源
+    // 2. 重新過濾資料
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
@@ -1810,10 +1813,13 @@ const initMap = () => {
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-       if (sortedEvents.length === 0) return;
+    // 3. 即使沒有資料也要繼續執行，確保畫面清空
+    if (sortedEvents.length === 0) {
+        console.log('此年份無資料');
+        return; 
+    }
 
-// 修復點：確保 pathCoords 取得所有順序座標
-  const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
+    const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
 
     // 分組畫點邏輯
     const groupPoints = {};
