@@ -566,16 +566,11 @@
             
             <div class="flex items-center gap-2">
                 <div class="relative shrink-0">
-<div class="flex items-center bg-slate-100 rounded-lg px-1">
-    <select v-model="selectedMapYear" @change="initMap" 
-            class="appearance-none bg-transparent border-none text-slate-700 py-1 pl-2 pr-6 rounded-lg text-[10px] font-bold focus:ring-0">
-        <option value="ALL">全部年度</option>
-        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年</option>
-    </select>
-    <button @click="initMap" class="p-1 text-slate-400 hover:text-primary transition-colors">
-        <i class="ph ph-arrows-clockwise text-xs"></i>
-    </button>
-</div>
+                    <select v-model="selectedMapYear" @change="initMap" 
+                            class="appearance-none bg-slate-100 border-none text-slate-700 py-1 px-2 pr-6 rounded-lg text-[10px] font-bold focus:ring-1 focus:ring-primary">
+                        <option value="ALL">全部年度</option>
+                        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年</option>
+                    </select>
                     <i class="ph ph-caret-down absolute right-1.5 top-1.5 text-[8px] pointer-events-none opacity-50"></i>
                 </div>
                 
@@ -1793,23 +1788,22 @@ const totalDistance = computed(() => {
                 // 修正後的 initMap 邏輯
 
 const initMap = () => {
-    // 具體說明：加入這行可於瀏覽器主控台(F12)確認函式是否觸發
-    console.log('地圖更新中，目前年份：', selectedMapYear.value);
+    // 偵錯：若主控台沒印出這行，代表 HTML 的 @change 沒連到 JS
+    console.log('執行地圖重繪, 年度:', selectedMapYear.value);
 
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     } else {
-        map.invalidateSize();
+     // 重要：切換分頁或年度時強制修正地圖尺寸
+        setTimeout(() => map.invalidateSize(), 100); 
     }
 
-    // 1. 強制清除所有舊標記
-    if (markers && markers.length > 0) {
-        markers.forEach(m => map.removeLayer(m));
-        markers = [];
-    }
+    // 1. 徹底清除地圖上的所有舊物件
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
 
-    // 2. 重新過濾資料
+    // 2. 重新過濾年度資料
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
@@ -1818,13 +1812,10 @@ const initMap = () => {
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // 3. 即使沒有資料也要繼續執行，確保畫面清空
-    if (sortedEvents.length === 0) {
-        console.log('此年份無資料');
-        return; 
+    // 3. 即使沒資料也要讓地圖空白，不要 return
+    if (sortedEvents.length > 0) {
+        const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
     }
-
-    const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
 
     // 分組畫點邏輯
     const groupPoints = {};
