@@ -1758,19 +1758,43 @@ const initMap = () => {
 
     const pathCoords = [];
     
-    sortedEvents.forEach(e => {
-        const color = getEventColor(e);
-        const marker = L.circleMarker([e.lat, e.lng], { 
-            radius: 7, 
-            fillColor: color, 
-            color: '#fff', 
-            weight: 2, 
-            fillOpacity: 0.8 
-        }).addTo(map);
-        
-        // 修正：在地圖 Popup 顯示日期
-        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
-        markers.push(marker);
+// 1. 先按座標將行程分群
+const groupPoints = {};
+sortedEvents.forEach(e => {
+    const key = `${e.lat}_${e.lng}`;
+    if (!groupPoints[key]) groupPoints[key] = [];
+    groupPoints[key].push(e);
+});
+
+// 2. 遍歷分群後的座標來畫點
+Object.values(groupPoints).forEach(eventsAtLoc => {
+    const mainEvent = eventsAtLoc[eventsAtLoc.length - 1]; // 取得最新的一場作為標記代表
+    const color = getEventColor(mainEvent);
+    
+    const marker = L.circleMarker([mainEvent.lat, mainEvent.lng], { 
+        radius: 7, 
+        fillColor: color, 
+        color: '#fff', 
+        weight: 2, 
+        fillOpacity: 0.8 
+    }).addTo(map);
+
+    // 3. 優化 Popup：循環列出該地點所有的追星紀錄
+    let popupContent = `<div class="max-h-32 overflow-y-auto pr-1">`;
+    eventsAtLoc.reverse().forEach(ev => {
+        popupContent += `
+            <div style="margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px;">
+                <b style="color:${getEventColor(ev)}">${ev.artist}</b><br>
+                <span style="font-size:12px">${ev.title}</span><br>
+                <span style="font-size:11px; color:#666">📅 ${ev.date}</span>
+            </div>`;
+    });
+    popupContent += `</div>`;
+
+    marker.bindPopup(popupContent);
+    markers.push(marker);
+});
+
         
         // 修正：必須存入座標，標線才能計算路徑
         pathCoords.push([e.lat, e.lng]); 
