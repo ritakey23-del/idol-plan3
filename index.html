@@ -705,6 +705,7 @@
     </div>
 </div>
 
+
        </main>
 
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
@@ -1141,11 +1142,11 @@
 
 const generateShareCard = async () => {
     if (statsData.value.count === 0) {
-        alert("目前選定的年份沒有足跡資料喔！");
+        alert("目前選定的年份沒有資料可以生成回顧喔！");
         return;
     }
 
-    // 暫時將視窗捲動到頂部確保截圖完整
+    // 確保捲動至頂部以獲得正確座標
     window.scrollTo(0, 0);
     
     await nextTick();
@@ -1154,7 +1155,7 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 3, // 高清倍率
+            scale: 3, // 高品質
             logging: false,
             useCORS: true
         });
@@ -1164,9 +1165,11 @@ const generateShareCard = async () => {
         link.href = canvas.toDataURL('image/png');
         link.click();
     } catch (err) {
+        console.error("分享卡片生成失敗:", err);
         alert("截圖生成失敗，請再試一次。");
     }
 };
+
 
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
