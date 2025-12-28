@@ -1313,11 +1313,23 @@ const totalDistance = computed(() => {
                 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
                 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
                 
-                watch(activeTab, (newTab) => {
-                    if (newTab === 'map') {
-                        nextTick(() => { initMap(); });
-                    }
-                });
+watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
+watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
+watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
+
+// 新增此段落：監聽地圖年份篩選
+watch(selectedMapYear, () => {
+    if (activeTab.value === 'map') {
+        nextTick(() => { initMap(); });
+    }
+});
+
+watch(activeTab, (newTab) => {
+    if (newTab === 'map') {
+        nextTick(() => { initMap(); });
+    }
+});
+
                 const adjustColor = (color, amount) => {
                     let hex = color.replace('#', '');
                     if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
