@@ -557,27 +557,37 @@
 
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
-                <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
-    <div class="flex justify-between items-center">
-        <div>
-            <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                <i class="ph ph-map-trifold text-primary"></i> 追星足跡
-            </h3>
-            <p class="text-xs text-slate-500 mt-1">
-                已解鎖 {{ mappedEventsCount }} 個地點
-                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
-                    ({{ missingCoordsCount }} 個待定位) 
-                </span>
-            </p>
-        </div>
-        <div class="text-right">
-            <div class="text-xl font-bold" :style="{ color: themeColor }">
-                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
+<div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-slate-100">
+    <div class="flex justify-between items-center gap-2">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+            <div class="relative shrink-0">
+                <select v-model="selectedMapYear" @change="initMap" 
+                        class="appearance-none bg-slate-100 border-none text-slate-700 py-1.5 pl-2 pr-6 rounded-lg text-xs font-bold focus:ring-1 focus:ring-primary">
+                    <option value="ALL">全部</option>
+                    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
+                </select>
+                <i class="ph ph-caret-down absolute right-1.5 top-2 text-[10px] pointer-events-none opacity-50"></i>
             </div>
-            <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
+            
+            <div class="truncate">
+                <h3 class="font-bold text-slate-800 text-xs flex items-center gap-1">
+                    已解鎖 {{ filteredMapEventsCount }} 個地點
+                </h3>
+                <p v-if="missingCoordsCount > 0" class="text-[10px] text-orange-500 truncate">
+                    {{ missingCoordsCount }} 待定位
+                </p>
+            </div>
+        </div>
+
+        <div class="text-right shrink-0 border-l border-slate-100 pl-3">
+            <div class="text-lg font-bold leading-none" :style="{ color: themeColor }">
+                {{ totalDistance }} <span class="text-[10px] font-normal text-slate-400">km</span>
+            </div>
+            <div class="text-[9px] text-slate-400 font-medium mt-1">累積里程</div>
         </div>
     </div>
 </div>
+
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
                    
@@ -1047,9 +1057,21 @@ const calculateKm = (lat1, lon1, lat2, lon2) => {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 };
 
-// 自動計算所有足跡的總里程 (按日期排序)
+// 新增：根據年份計算過濾後的點位數量
+const filteredMapEventsCount = computed(() => {
+    const target = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+    return target.filter(e => e.lat && e.lng).length;
+});
+
+// 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    const validPoints = [...events.value]
+    const baseEvents = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+
+    const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -1064,6 +1086,7 @@ const totalDistance = computed(() => {
 });
 
                 const events = ref([]);
+                const selectedMapYear = ref('ALL');
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
@@ -1771,9 +1794,15 @@ const initMap = () => {
  markers.forEach(m => map.removeLayer(m));    
 markers = [];
 
-    const sortedEvents = [...events.value]
+    // 修改：先過濾年度再給地圖繪製
+    const baseEvents = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+
+    const sortedEvents = [...baseEvents]
         .filter(e => e.lat && e.lng)
-       .sort((a, b) => new Date(a.date) - new Date(b.date));
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
 // 修復點：確保 pathCoords 取得所有順序座標
   const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
 
@@ -2006,7 +2035,7 @@ let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-totalDistance, 
+selectedMapYear, filteredMapEventsCount, totalDistance, 
 
                 };
             }
@@ -2014,4 +2043,6 @@ totalDistance,
     </script>
 </body>
 </html>
+
+
 
