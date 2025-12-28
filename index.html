@@ -1751,12 +1751,6 @@ const initMap = () => {
     markers.forEach(m => map.removeLayer(m));
     markers = [];
 
-    // 取得排序後的有效座標點
-    const sortedEvents = [...events.value]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    const pathCoords = [];
     
     // 1. 先將有效座標點按位置分群
 const groupPoints = {};
