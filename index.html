@@ -1795,13 +1795,13 @@ const initMap = () => {
         map.invalidateSize();
     }
 
-    // 重要：切換年度時必須先清除地圖上所有的點與線
+    // 清除舊標記
     if (markers && markers.length > 0) {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
     }
 
-    // 重新根據年度過濾資料
+    // 根據選定年度過濾
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
@@ -1810,8 +1810,9 @@ const initMap = () => {
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-// 修復點：確保 pathCoords 取得所有順序座標
-  const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
+    if (sortedEvents.length === 0) return;
+
+    const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
 
     // 分組畫點邏輯
     const groupPoints = {};
@@ -1823,14 +1824,13 @@ const initMap = () => {
 
     Object.values(groupPoints).forEach(eventsAtLoc => {
         const latest = eventsAtLoc[eventsAtLoc.length - 1];
-      const color = getEventColor(latest);
+        const color = getEventColor(latest);
         
         const marker = L.circleMarker([latest.lat, latest.lng], { 
             radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 
         }).addTo(map);
 
-       // 使用 custom-popup-scroll 類別來取代行內樣式
-let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
+        let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
         [...eventsAtLoc].reverse().forEach(ev => {
             popup += `<div style="border-bottom:1px dashed #eee; margin-bottom:5px; padding-bottom:5px;">
                 <b style="color:${getEventColor(ev)}">${ev.artist}</b><br>
@@ -1852,11 +1852,11 @@ let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
             opacity: 0.6,
             dashArray: '10, 15'
         }).addTo(map);
-        markers.push(polyline);    }
+        markers.push(polyline);
+    }
 
     if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
-};
-
+}; 
 
 
 
