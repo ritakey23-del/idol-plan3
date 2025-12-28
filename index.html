@@ -706,8 +706,10 @@
                 <div class="text-[9px] text-white/40 mb-1">場館</div>
                 <div class="text-xl font-bold">{{ filteredMapEventsCount }}</div>
             </div>
-            <div class="bg-black/20 rounded-2xl p-3 border border-white/5 min-w-0">
-                <div class="text-[9px] text-white/40 mb-1">里程</div>
+<div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5 flex flex-col justify-center min-w-0">
+    <div class="text-[9px] text-white/40 mb-1">總里程</div>
+    <div class="text-base font-bold truncate leading-tight">{{ totalDistance }}<span class="text-[8px] ml-0.5">km</span></div>
+</div>
                 <div class="text-sm font-bold truncate leading-tight">{{ totalDistance }}<span class="text-[8px] ml-0.5">km</span></div>
             </div>
         </div>
@@ -1201,10 +1203,12 @@ const filteredMapEventsCount = computed(() => {
 
 // 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    // 修正：從連動 selectedMapYear 改為連動回顧用的 selectedYear
-    const baseEvents = selectedYear.value === 'ALL' 
+    // 關鍵修正：判斷目前在「地圖」還是「回顧」分頁，選擇對應的年份變數
+    const activeYear = activeTab.value === 'map' ? selectedMapYear.value : selectedYear.value;
+    
+    const baseEvents = activeYear === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(selectedYear.value));
+        : events.value.filter(e => e.date && e.date.startsWith(activeYear));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
@@ -1219,6 +1223,7 @@ const totalDistance = computed(() => {
     }
     return dist.toFixed(1);
 });
+
 
 
 
