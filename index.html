@@ -1796,7 +1796,6 @@ const initMap = () => {
     }
 
     // 重要：切換年度時必須先清除地圖上所有的點與線
-    if (markers && markers.length > 0) {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
     }
