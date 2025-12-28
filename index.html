@@ -657,54 +657,63 @@
                     <div v-else class="text-center text-slate-400 text-sm py-4">區間內無資料</div>
                 </div>
             </div>
-<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[350px] p-8 font-sans text-white" 
+
+<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[375px] h-[667px] p-6 font-sans text-white overflow-hidden" 
      :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #0f172a 100%)' }">
     
-    <div class="backdrop-blur-2xl bg-white/10 rounded-[2.5rem] p-8 border border-white/20 shadow-2xl relative overflow-hidden flex flex-col min-h-[500px]">
+    <div class="backdrop-blur-2xl bg-white/10 rounded-[2rem] p-6 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden">
         
-        <div class="absolute -top-12 -left-12 w-40 h-40 bg-white/5 rounded-full blur-3xl"></div>
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
 
-        <div class="relative z-10 text-center mb-10">
-            <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-2">Yearly Journey</div>
-            <h2 class="text-4xl font-black tracking-tight">{{ selectedYear === 'ALL' ? '追星足跡' : selectedYear }}</h2>
+        <div class="relative z-10 text-center mb-6">
+            <div class="text-[10px] tracking-[0.3em] text-white/40 uppercase mb-1">年度追星里程</div>
+            <h2 class="text-3xl font-black tracking-tight">{{ selectedYear === 'ALL' ? '追星足跡' : selectedYear + ' 年度回顧' }}</h2>
         </div>
 
-        <div class="w-full space-y-4 relative z-10 mb-10">
-            <div class="flex justify-between items-end border-b border-white/10 pb-3">
-                <span class="text-[10px] text-white/50 font-medium italic">Events</span>
-                <span class="text-2xl font-bold tracking-tighter">{{ statsData.count }} <small class="text-[10px] font-normal opacity-50">場</small></span>
+        <div class="grid grid-cols-3 gap-2 mb-6 relative z-10">
+            <div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5">
+                <div class="text-[9px] text-white/40 mb-1">總場次</div>
+                <div class="text-xl font-bold">{{ statsData.count }}</div>
             </div>
-            <div class="flex justify-between items-end border-b border-white/10 pb-3">
-                <span class="text-[10px] text-white/50 font-medium italic">Venues</span>
-                <span class="text-2xl font-bold tracking-tighter">{{ filteredMapEventsCount }} <small class="text-[10px] font-normal opacity-50">處</small></span>
+            <div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5">
+                <div class="text-[9px] text-white/40 mb-1">總場館</div>
+                <div class="text-xl font-bold">{{ filteredMapEventsCount }}</div>
             </div>
-            <div class="flex justify-between items-end border-b border-white/10 pb-3">
-                <span class="text-[10px] text-white/50 font-medium italic">Distance</span>
-                <span class="text-2xl font-bold tracking-tighter">{{ totalDistance }} <small class="text-[10px] font-normal opacity-50">km</small></span>
+            <div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5">
+                <div class="text-[9px] text-white/40 mb-1">總里程</div>
+                <div class="text-lg font-bold">{{ totalDistance }}<span class="text-[9px] ml-0.5">km</span></div>
+            </div>
+        </div>
+
+        <div class="w-full h-40 bg-black/30 rounded-2xl mb-6 overflow-hidden border border-white/10 relative">
+            <div id="map-snapshot" class="w-full h-full opacity-80"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+            <div class="absolute bottom-2 left-3 text-[9px] text-white/60 flex items-center gap-1">
+                <i class="ph ph-map-pin-line"></i> 足跡地圖實錄
             </div>
         </div>
 
         <div class="w-full relative z-10 flex-1">
-            <div class="text-[10px] text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
-                <i class="ph ph-crown"></i> Top Artists
+            <div class="text-[10px] text-white/40 tracking-widest mb-3 flex items-center gap-2">
+                <i class="ph ph-crown-simple"></i> 年度本命排行榜
             </div>
-            <div class="space-y-4">
-                <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" class="flex items-center justify-between bg-white/5 p-3 rounded-2xl border border-white/5">
+            <div class="space-y-3">
+                <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
                     <div class="flex items-center gap-3">
-                        <span class="text-lg font-black italic opacity-20">0{{ index + 1 }}</span>
-                        <span class="text-sm font-bold tracking-wide">{{ artist.name }}</span>
+                        <span class="text-sm font-black italic opacity-20">0{{ index + 1 }}</span>
+                        <span class="text-xs font-bold tracking-wide">{{ artist.name }}</span>
                     </div>
-                    <span class="text-[10px] bg-white/10 px-2 py-1 rounded-lg">{{ artist.count }} 次見面</span>
+                    <span class="text-[10px] opacity-60">{{ artist.count }} 次見面</span>
                 </div>
-                <div v-if="statsData.topArtists.length === 0" class="text-center text-xs text-white/30 py-4 italic">無見面資料</div>
             </div>
         </div>
 
-        <div class="mt-8 text-center relative z-10">
-            <p class="text-[8px] opacity-20 tracking-[0.2em] uppercase">Generated by {{ customTitle }}</p>
+        <div class="mt-4 pt-4 border-t border-white/5 text-center relative z-10">
+            <p class="text-[8px] opacity-20 tracking-[0.2em]">{{ customTitle }} • 自動生成</p>
         </div>
     </div>
 </div>
+
 
 
        </main>
@@ -1143,31 +1152,52 @@
 
 const generateShareCard = async () => {
     if (statsData.value.count === 0) {
-        alert("目前選定的年份沒有資料可以生成回顧喔！");
+        alert("目前選定的區間沒有資料喔！");
         return;
     }
 
-    // 確保捲動至頂部以獲得正確座標
-    window.scrollTo(0, 0);
+    // 提示使用者
+    alert("正在同步地圖與數據，生成中...");
     
+    // 關鍵：將實際地圖的 HTML 內容複製到快照區塊
+    const realMap = document.getElementById('map-container');
+    const snapshotContainer = document.getElementById('map-snapshot');
+    
+    // 清除舊快照並克隆目前的地圖外觀 (僅 CSS 模擬)
+    snapshotContainer.innerHTML = '';
+    const mapClone = realMap.cloneNode(true);
+    snapshotContainer.appendChild(mapClone);
+
     await nextTick();
     const element = document.getElementById('share-card-template');
     
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 3, // 高品質
-            logging: false,
-            useCORS: true
+            scale: 2, // 2倍解析度最適合手機分享且不佔過多記憶體
+            useCORS: true,
+            allowTaint: true,
+            logging: false
         });
 
-        const link = document.createElement('a');
-        link.download = `${selectedYear.value}_My_Idol_Review.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        // 針對 Safari 優化：轉換為 DataURL 後直接開啟新視窗或提示儲存
+        const imgData = canvas.toDataURL('image/png');
+        
+        // 建立一個臨時圖片顯示區，解決 Safari 無法下載問題
+        const newTab = window.open();
+        if (newTab) {
+            newTab.document.write(`<img src="${imgData}" style="width:100%; height:auto;" />`);
+            newTab.document.title = "長按圖片儲存分享到 Threads";
+        } else {
+            // 如果被擋住彈窗，則使用直接下載
+            const link = document.createElement('a');
+            link.download = `追星足跡_${selectedYear.value}.png`;
+            link.href = imgData;
+            link.click();
+        }
     } catch (err) {
-        console.error("分享卡片生成失敗:", err);
-        alert("截圖生成失敗，請再試一次。");
+        console.error("生成錯誤:", err);
+        alert("分享功能在當前瀏覽器受限，請嘗試使用 Chrome 或截圖功能。");
     }
 };
 
