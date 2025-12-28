@@ -1792,6 +1792,7 @@ markers = [];
 
        // 使用 custom-popup-scroll 類別來取代行內樣式
 let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
+let popup = `<div style="max-height:120px; overflow-y:auto; min-width:150px;">`;
         [...eventsAtLoc].reverse().forEach(ev => {
             popup += `<div style="border-bottom:1px dashed #eee; margin-bottom:5px; padding-bottom:5px;">
                 <b style="color:${getEventColor(ev)}">${ev.artist}</b><br>
