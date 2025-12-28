@@ -307,10 +307,16 @@
        
             
                               
-                                <div class="flex items-center gap-2 truncate pr-2">
-                                    <i class="ph ph-map-pin shrink-0" :style="{ color: getEventColor(event) }"></i>
-                                    <span class="truncate">{{ event.location }}</span>
-                                </div>
+                               <div class="flex items-center gap-2 truncate pr-2">
+    <i class="ph ph-map-pin shrink-0" :style="{ color: getEventColor(event) }"></i>
+    <span class="truncate">{{ event.location }}</span>
+    
+    <span v-if="!event.lat || !event.lng" 
+          class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded-md font-bold flex items-center gap-0.5 border border-red-100 animate-pulse">
+        <i class="ph ph-warning-circle"></i> 未定位
+    </span>
+</div>
+
 
                         
           
