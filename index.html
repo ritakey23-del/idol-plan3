@@ -1739,7 +1739,7 @@ const totalDistance = computed(() => {
 
 const initMap = () => {
     if (!map) {
-        (start_span)map = L.map('map-container').setView([23.6978, 120.9605], 7);
+        map = L.map('map-container').setView([23.6978, 120.9605], 7);
        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     } else {
         map.invalidateSize();
