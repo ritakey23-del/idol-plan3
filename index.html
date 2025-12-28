@@ -692,44 +692,52 @@
                 <span class="text-[10px] font-medium">回顧</span>
             </button>
         </nav>
-<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[400px] h-[800px] p-8 font-sans text-white overflow-hidden" 
+<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[380px] h-[780px] p-7 font-sans text-white overflow-hidden" 
      :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #0f172a 100%)' }">
-    <div class="backdrop-blur-2xl bg-white/10 rounded-[2.5rem] p-8 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden text-center">
-        <h2 class="text-4xl font-black tracking-tight mb-6">{{ selectedYear === 'ALL' ? '追星足跡' : selectedYear + ' 年度回顧' }}</h2>
+    
+    <div class="backdrop-blur-2xl bg-white/10 rounded-[2.5rem] p-7 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden text-center">
         
-        <div class="grid grid-cols-3 gap-3 mb-6">
-            <div class="bg-black/20 rounded-2xl p-3 border border-white/5">
-                <div class="text-[9px] text-white/40 mb-1">場次</div>
-                <div class="text-xl font-bold">{{ statsData.count }}</div>
+        <div class="relative z-10 mb-6">
+            <div class="text-[10px] tracking-[0.3em] text-white/30 uppercase mb-1">年度追星足跡回顧</div>
+            <h2 class="text-3xl font-black tracking-tight">{{ selectedYear === 'ALL' ? '追星足跡' : selectedYear + ' 年度回顧' }}</h2>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 mb-6 relative z-10 text-center">
+            <div class="bg-black/20 rounded-2xl py-3 border border-white/5">
+                <div class="text-[8px] text-white/40 mb-1 leading-none">場次</div>
+                <div class="text-lg font-bold">{{ statsData.count }}</div>
             </div>
-            <div class="bg-black/20 rounded-2xl p-3 border border-white/5">
-                <div class="text-[9px] text-white/40 mb-1">場館</div>
-                <div class="text-xl font-bold">{{ filteredMapEventsCount }}</div>
+            <div class="bg-black/20 rounded-2xl py-3 border border-white/5">
+                <div class="text-[8px] text-white/40 mb-1 leading-none">場館</div>
+                <div class="text-lg font-bold">{{ filteredMapEventsCount }}</div>
             </div>
-<div class="bg-black/20 rounded-2xl p-3 text-center border border-white/5 flex flex-col justify-center min-w-0">
-    <div class="text-[9px] text-white/40 mb-1">總里程</div>
-    <div class="text-base font-bold truncate leading-tight">{{ totalDistance }}<span class="text-[8px] ml-0.5">km</span></div>
-</div>
-                <div class="text-sm font-bold truncate leading-tight">{{ totalDistance }}<span class="text-[8px] ml-0.5">km</span></div>
+            <div class="bg-black/20 rounded-2xl py-3 border border-white/5 min-w-0 px-1">
+                <div class="text-[8px] text-white/40 mb-1 leading-none">里程</div>
+                <div class="text-sm font-bold truncate tracking-tighter">{{ totalDistance }}<small class="text-[7px] ml-0.5">km</small></div>
             </div>
         </div>
 
-        <div class="w-full h-44 bg-black/30 rounded-3xl mb-6 overflow-hidden border border-white/10 relative">
+        <div class="w-full h-40 bg-black/30 rounded-3xl mb-6 overflow-hidden border border-white/10 relative">
             <div id="map-snapshot" class="w-full h-full opacity-90"></div>
+            <div class="absolute bottom-2 left-3 text-[9px] text-white/40 italic">📍 Footprints</div>
         </div>
 
-        <div v-if="emotionalSummary" class="mb-6 px-4 py-4 bg-white/5 rounded-2xl border-l-4 border-white/30 italic text-sm text-left">
+        <div v-if="emotionalSummary" class="mb-6 px-4 py-4 bg-white/5 rounded-2xl border-l-2 border-white/30 italic text-xs text-left leading-relaxed">
             「 {{ emotionalSummary }} 」
         </div>
 
-        <div class="w-full relative z-10 flex-1 overflow-hidden text-left">
-            <div class="text-[10px] text-white/40 tracking-widest mb-4 uppercase">Top Artists 排行榜</div>
-            <div class="space-y-3">
-                <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" class="flex items-center justify-between bg-white/5 p-4 rounded-2xl">
-                    <span class="text-sm font-bold">{{ index + 1 }}. {{ artist.name }}</span>
-                    <span class="text-[11px] opacity-70">{{ artist.count }} 次見面</span>
+        <div class="w-full relative z-10 flex-1 text-left overflow-hidden">
+            <div class="text-[9px] text-white/30 uppercase tracking-widest mb-3">Top Artists 排行榜</div>
+            <div class="space-y-2">
+                <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" class="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/5">
+                    <span class="text-xs font-bold truncate mr-2">{{ index + 1 }}. {{ artist.name }}</span>
+                    <span class="text-[9px] opacity-50 shrink-0">{{ artist.count }} 次見面</span>
                 </div>
             </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-white/5 opacity-20 text-[8px] tracking-widest uppercase">
+            {{ customTitle }} • 自動生成
         </div>
     </div>
 </div>
@@ -1138,35 +1146,51 @@
                 let markers = [];
 
 const generateShareCard = async () => {
-    if (statsData.value.count === 0) return alert("選定年份無資料！");
-    alert("正在生成高清回顧卡片...");
+    if (statsData.value.count === 0) return alert("無資料可以分享！");
+    alert("正在同步數據並擷取地圖快照...");
 
-    // 地圖快照處理
+    // 處理地圖快照：將主地圖複製到截圖模板中
     const realMap = document.getElementById('map-container');
     const snapshotContainer = document.getElementById('map-snapshot');
-    if(snapshotContainer && realMap) {
+    if (snapshotContainer && realMap) {
         snapshotContainer.innerHTML = '';
-        snapshotContainer.appendChild(realMap.cloneNode(true));
+        const mapClone = realMap.cloneNode(true);
+        snapshotContainer.appendChild(mapClone);
     }
 
     await nextTick();
     const element = document.getElementById('share-card-template');
+    
     try {
-        const canvas = await html2canvas(element, { backgroundColor: null, scale: 3, useCORS: true });
+        const canvas = await html2canvas(element, {
+            backgroundColor: null,
+            scale: 3, // 高清晰度倍率
+            useCORS: true,
+            logging: false,
+            onclone: (clonedDoc) => {
+                // 確保在克隆的 DOM 中模板是可見的
+                clonedDoc.getElementById('share-card-template').style.left = '0';
+            }
+        });
+
         const imgData = canvas.toDataURL('image/png', 1.0);
         
-        // Safari 相容處理
+        // Safari 與手機瀏覽器相容性處理
         const newTab = window.open();
         if (newTab) {
-            newTab.document.write(`<body style="margin:0;background:#000;display:flex;justify-content:center;align-items:center;"><img src="${imgData}" style="max-width:100%;height:auto;"/></body>`);
+            newTab.document.write(`<body style="margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;"><img src="${imgData}" style="max-width:100%;height:auto;box-shadow:0 0 50px rgba(0,0,0,0.5);"/><p style="position:fixed;bottom:20px;color:white;font-family:sans-serif;font-size:14px;">長按圖片即可儲存分享</p></body>`);
         } else {
             const link = document.createElement('a');
-            link.download = `${selectedYear.value}_追星回顧.png`;
+            link.download = `${selectedYear.value}_追星里程回顧.png`;
             link.href = imgData;
             link.click();
         }
-    } catch (err) { alert("生成失敗"); }
+    } catch (err) {
+        console.error("截圖出錯:", err);
+        alert("圖片生成失敗，請再試一次。");
+    }
 };
+
 
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
@@ -1203,12 +1227,12 @@ const filteredMapEventsCount = computed(() => {
 
 // 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    // 關鍵修正：判斷目前在「地圖」還是「回顧」分頁，選擇對應的年份變數
-    const activeYear = activeTab.value === 'map' ? selectedMapYear.value : selectedYear.value;
+    // 關鍵修正：根據當前分頁判斷使用哪一個年份變數
+    const targetYear = activeTab.value === 'map' ? selectedMapYear.value : selectedYear.value;
     
-    const baseEvents = activeYear === 'ALL' 
+    const baseEvents = targetYear === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(activeYear));
+        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
@@ -1223,7 +1247,6 @@ const totalDistance = computed(() => {
     }
     return dist.toFixed(1);
 });
-
 
 
 
