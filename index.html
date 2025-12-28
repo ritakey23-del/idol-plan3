@@ -1797,11 +1797,9 @@ const initMap = () => {
         map.invalidateSize();
     }
 
-    // 清除舊標記
-    if (markers && markers.length > 0) {
-        markers.forEach(m => map.removeLayer(m));
-        markers = [];
-    }
+    // 關鍵：先清空舊的點與線
+    markers.forEach(m => map.removeLayer(m));
+    markers = [];
 
     // 根據選定年度過濾
     const baseEvents = selectedMapYear.value === 'ALL' 
@@ -1814,9 +1812,8 @@ const initMap = () => {
 
     if (sortedEvents.length === 0) return;
 
+    // 重新畫點與畫線邏輯
     const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
-
-    // 分組畫點邏輯
     const groupPoints = {};
     sortedEvents.forEach(e => {
         const key = `${e.lat}_${e.lng}`;
@@ -1827,11 +1824,7 @@ const initMap = () => {
     Object.values(groupPoints).forEach(eventsAtLoc => {
         const latest = eventsAtLoc[eventsAtLoc.length - 1];
         const color = getEventColor(latest);
-        
-        const marker = L.circleMarker([latest.lat, latest.lng], { 
-            radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 
-        }).addTo(map);
-
+        const marker = L.circleMarker([latest.lat, latest.lng], { radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 }).addTo(map);
         let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
         [...eventsAtLoc].reverse().forEach(ev => {
             popup += `<div style="border-bottom:1px dashed #eee; margin-bottom:5px; padding-bottom:5px;">
@@ -1841,24 +1834,17 @@ const initMap = () => {
             </div>`;
         });
         popup += `</div>`;
-        
         marker.bindPopup(popup);
         markers.push(marker);
     });
 
-    // 重新繪製線條
     if (pathCoords.length > 1) {
-        const polyline = L.polyline(pathCoords, {
-            color: themeColor.value,
-            weight: 3,
-            opacity: 0.6,
-            dashArray: '10, 15'
-        }).addTo(map);
+        const polyline = L.polyline(pathCoords, { color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15' }).addTo(map);
         markers.push(polyline);
     }
-
     if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
-}; 
+};
+
 
 
 
