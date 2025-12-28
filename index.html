@@ -1758,19 +1758,43 @@ const initMap = () => {
 
     const pathCoords = [];
     
-    sortedEvents.forEach(e => {
-        const color = getEventColor(e);
-        const marker = L.circleMarker([e.lat, e.lng], { 
-            radius: 7, 
-            fillColor: color, 
-            color: '#fff', 
-            weight: 2, 
-            fillOpacity: 0.8 
-        }).addTo(map);
-        
-        // 修正：在地圖 Popup 顯示日期
-        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
-        markers.push(marker);
+    // 1. 先將有效座標點按位置分群
+const groupPoints = {};
+sortedEvents.forEach(e => {
+    const key = `${e.lat}_${e.lng}`;
+    if (!groupPoints[key]) groupPoints[key] = [];
+    groupPoints[key].push(e);
+});
+
+// 2. 遍歷分群後的座標，每個位置只畫一個標記
+Object.values(groupPoints).forEach(eventsAtLoc => {
+    // 取得最新的一場行程作為標記顏色代表
+    const latestEvent = eventsAtLoc[eventsAtLoc.length - 1]; 
+    const color = getEventColor(latestEvent);
+    
+    const marker = L.circleMarker([latestEvent.lat, latestEvent.lng], { 
+        radius: 7, 
+        fillColor: color, 
+        color: '#fff', 
+        weight: 2, 
+        fillOpacity: 0.8 
+    }).addTo(map);
+
+    // 3. 組合 Popup 內容，列出該地點所有日期
+    let popupContent = `<div style="max-height: 150px; overflow-y: auto; min-width: 140px;">`;
+    // 將紀錄反轉，讓最新的排在最上面
+    [...eventsAtLoc].reverse().forEach(ev => {
+        popupContent += `
+            <div style="margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px;">
+                <b style="color:${getEventColor(ev)}">${ev.artist}</b><br>
+                <div style="font-size: 12px; font-weight: bold;">${ev.title}</div>
+                <div style="font-size: 11px; color: #64748b;">📅 ${ev.date}</div>
+            </div>`;
+    });
+    popupContent += `</div>`;
+
+    marker.bindPopup(popupContent);
+    markers.push(marker);
         
         // 修正：必須存入座標，標線才能計算路徑
         pathCoords.push([e.lat, e.lng]); 
