@@ -1788,22 +1788,20 @@ const totalDistance = computed(() => {
                 // 修正後的 initMap 邏輯
 
 const initMap = () => {
-    // 偵錯：若主控台沒印出這行，代表 HTML 的 @change 沒連到 JS
-    console.log('執行地圖重繪, 年度:', selectedMapYear.value);
-
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     } else {
-     // 重要：切換分頁或年度時強制修正地圖尺寸
-        setTimeout(() => map.invalidateSize(), 100); 
+        map.invalidateSize();
     }
 
-    // 1. 徹底清除地圖上的所有舊物件
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
+    // 重要：切換年度時必須先清除地圖上所有的點與線
+    if (markers && markers.length > 0) {
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+    }
 
-    // 2. 重新過濾年度資料
+    // 重新根據年度過濾資料
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
@@ -1812,10 +1810,8 @@ const initMap = () => {
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // 3. 即使沒資料也要讓地圖空白，不要 return
-    if (sortedEvents.length > 0) {
-        const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
-    }
+// 修復點：確保 pathCoords 取得所有順序座標
+  const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
 
     // 分組畫點邏輯
     const groupPoints = {};
