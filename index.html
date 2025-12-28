@@ -558,28 +558,32 @@
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
 <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-slate-100">
-    <div class="flex justify-between items-center gap-2">
-        <div class="flex items-center gap-2 flex-1 min-w-0">
-            <div class="relative shrink-0">
-                <select v-model="selectedMapYear" @change="initMap" 
-                        class="appearance-none bg-slate-100 border-none text-slate-700 py-1.5 pl-2 pr-6 rounded-lg text-xs font-bold focus:ring-1 focus:ring-primary">
-                    <option value="ALL">全部</option>
-                    <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
-                </select>
-                <i class="ph ph-caret-down absolute right-1.5 top-2 text-[10px] pointer-events-none opacity-50"></i>
-            </div>
+    <div class="flex justify-between items-start">
+        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                <i class="ph ph-map-trifold text-primary"></i> 追星足跡
+            </h3>
             
-            <div class="truncate">
-                <h3 class="font-bold text-slate-800 text-xs flex items-center gap-1">
-                    已解鎖 {{ filteredMapEventsCount }} 個地點
-                </h3>
-                <p v-if="missingCoordsCount > 0" class="text-[10px] text-orange-500 truncate">
-                    {{ missingCoordsCount }} 待定位
-                </p>
+            <div class="flex items-center gap-2">
+                <div class="relative shrink-0">
+                    <select v-model="selectedMapYear" @change="initMap" 
+                            class="appearance-none bg-slate-100 border-none text-slate-700 py-1 px-2 pr-6 rounded-lg text-[10px] font-bold focus:ring-1 focus:ring-primary">
+                        <option value="ALL">全部年度</option>
+                        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年</option>
+                    </select>
+                    <i class="ph ph-caret-down absolute right-1.5 top-1.5 text-[8px] pointer-events-none opacity-50"></i>
+                </div>
+                
+                <div class="truncate text-[10px] text-slate-500">
+                    已解鎖 {{ filteredMapEventsCount }} 處
+                    <span v-if="missingCoordsCount > 0" class="text-orange-500">
+                        ({{ missingCoordsCount }} 待定位)
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div class="text-right shrink-0 border-l border-slate-100 pl-3">
+        <div class="text-right shrink-0 border-l border-slate-100 pl-3 ml-1">
             <div class="text-lg font-bold leading-none" :style="{ color: themeColor }">
                 {{ totalDistance }} <span class="text-[10px] font-normal text-slate-400">km</span>
             </div>
@@ -1786,18 +1790,21 @@ const totalDistance = computed(() => {
 const initMap = () => {
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
-       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     } else {
         map.invalidateSize();
     }
 
- markers.forEach(m => map.removeLayer(m));    
-markers = [];
+    // 重要：切換年度時必須先清除地圖上所有的點與線
+    if (markers && markers.length > 0) {
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+    }
 
-    // 修改：先過濾年度再給地圖繪製
+    // 重新根據年度過濾資料
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+        : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
 
     const sortedEvents = [...baseEvents]
         .filter(e => e.lat && e.lng)
