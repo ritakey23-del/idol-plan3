@@ -566,11 +566,16 @@
             
             <div class="flex items-center gap-2">
                 <div class="relative shrink-0">
-                    <select v-model="selectedMapYear" @change="initMap" 
-                            class="appearance-none bg-slate-100 border-none text-slate-700 py-1 px-2 pr-6 rounded-lg text-[10px] font-bold focus:ring-1 focus:ring-primary">
-                        <option value="ALL">全部年度</option>
-                        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年</option>
-                    </select>
+<div class="flex items-center bg-slate-100 rounded-lg px-1">
+    <select v-model="selectedMapYear" @change="initMap" 
+            class="appearance-none bg-transparent border-none text-slate-700 py-1 pl-2 pr-6 rounded-lg text-[10px] font-bold focus:ring-0">
+        <option value="ALL">全部年度</option>
+        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年</option>
+    </select>
+    <button @click="initMap" class="p-1 text-slate-400 hover:text-primary transition-colors">
+        <i class="ph ph-arrows-clockwise text-xs"></i>
+    </button>
+</div>
                     <i class="ph ph-caret-down absolute right-1.5 top-1.5 text-[8px] pointer-events-none opacity-50"></i>
                 </div>
                 
