@@ -1683,45 +1683,33 @@ const totalDistance = computed(() => {
                     showChangelogModal.value = true;
                 };
 
-const searchCoordinates = async () => {
+                const searchCoordinates = async () => {
     if (!form.value.location) {
         searchError.value = "請先輸入地點名稱";
         return;
     }
-    // --- 優化：本地快取檢查 ---
-    const cached = events.value.find(e => e.location === form.value.location && e.lat && e.lng);
-    if (cached) {
-        form.value.lat = cached.lat;
-        form.value.lng = cached.lng;
-        searchError.value = `定位成功 (來自本地紀錄)！`;
-        return;
-    }
     isSearching.value = true;
-    searchError.value = '';
-    // 使用對 GitHub Pages 更友善的 Photon API
-    const apiUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(form.value.location)}&limit=1`;
-    try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
-        const data = await response.json();
-        if (data.features && data.features.length > 0) {
-            const [lng, lat] = data.features[0].geometry.coordinates;
-            form.value.lat = lat;
-            form.value.lng = lng;
-            searchError.value = `定位成功！`;
-        } else {
-            form.value.lat = null;
-            form.value.lng = null;
-            searchError.value = "找不到該地點，請輸入更具體的名稱";
-        }
-    } catch (e) {
-        searchError.value = `定位失敗: ${e.message}`;
-    } finally {
-        isSearching.value = false;
-        if (activeTab.value === 'map') nextTick(() => { initMap(); });
-    }
-};
+    searchError.value = '定位中...';
 
+    // 優化：加上時間戳記避免讀取到失敗的快取，並加入隨機身份識別
+    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}&limit=1&t=${Date.now()}`;
+    
+    try {
+        const response = await fetch(apiUrl, {
+            headers: {
+               // 隨機化 User-Agent 讓伺服器認為是不同請求
+               'User-Agent': `IdolDiary/${Math.random().toString(36).substring(7)}`,
+               'Accept-Language': 'zh-TW,zh;q=0.9'
+            }
+        });
+
+        if (response.status === 429) throw new Error("請求太頻繁，請等幾秒再試一次");
+        if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
+
+                        const data = await response.json();
+                        if (data && data.length > 0) {
+                            form.value.lat = parseFloat(data[0].lat);
+                            form.value.lng = parseFloat(data[0].lon);
                             
                             const latFormatted = form.value.lat.toFixed(4);
                             const lngFormatted = form.value.lng.toFixed(4);
@@ -1729,7 +1717,7 @@ const searchCoordinates = async () => {
                         } else {
                             form.value.lat = null;
                             form.value.lng = null;
-                            searchError.value = "找不到該地點的坐標，請嘗試更具體的名稱 (如: 台北小巨蛋)";
+                            searchError.value = "找不到該地點的坐標，請嘗試更具體的名稱 (如:KSPO DOME改成올림픽체조경기장)";
                         }
                     } catch (e) {
                         console.error("地圖定位錯誤:", e);
@@ -1744,15 +1732,15 @@ const searchCoordinates = async () => {
                 // 修正後的 initMap 邏輯
 
 const initMap = () => {
-    nextTick(() => { // 確保地圖容器 div 已就緒
-        if (!map) {
-            map = L.map('map-container').setView([23.6978, 120.9605], 7);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
-                attribution: '© OpenStreetMap' 
-            }).addTo(map);
-        } else { 
-            map.invalidateSize();
-        }
+    if (!map) {
+        map = L.map('map-container').setView([23.6978, 120.9605], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: '© OpenStreetMap' 
+        }).addTo(map);
+    } else { 
+        map.invalidateSize(); 
+    }
+
     // 清除舊標記與線條
     markers.forEach(m => map.removeLayer(m));
     markers = [];
