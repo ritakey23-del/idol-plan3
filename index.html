@@ -709,91 +709,89 @@
             </div>
         </div>
 
-        <div class="flex flex-col items-center mb-10">
-            <div class="relative flex items-center justify-center">
+        <div class="flex flex-col items-center mb-8">
+            <div class="relative flex items-center justify-center h-24 w-24">
                 <div class="absolute w-32 h-32 rounded-full border-2 border-dashed opacity-20 animate-[spin_20s_linear_infinite]" :style="{ borderColor: themeColor }"></div>
-                <div class="absolute w-28 h-28 rounded-full border-4 opacity-10" :style="{ borderColor: themeColor }"></div>
                 <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-100 shadow-xl flex items-center justify-center border-4 border-white relative z-10">
                     <i class="ph-fill ph-trophy text-white text-5xl"></i>
                 </div>
             </div>
-            <div class="mt-4 px-6 py-2 rounded-full text-white font-black text-sm shadow-lg tracking-widest" :style="{ backgroundColor: themeColor }">
+            <div class="mt-4 px-6 py-1.5 rounded-full text-white font-black text-sm shadow-lg tracking-widest" :style="{ backgroundColor: themeColor }">
                 解鎖成就：{{ statsData.count >= 15 ? '核心鐵粉' : '應援模範' }}
             </div>
         </div>
 
-        <div class="w-full space-y-4 mb-10">
+        <div class="w-full space-y-4 mb-8">
             
-            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24" :style="{ borderColor: '#fee2e2' }">
+            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24 overflow-hidden" :style="{ borderColor: '#fee2e2' }">
                 <div class="w-20 h-full flex items-center justify-center rounded-l-2xl bg-red-50">
                     <i class="ph-fill ph-fire text-red-500 text-4xl"></i>
                 </div>
-                <div class="flex-1 px-4 flex flex-col justify-center">
-                    <div class="text-[11px] text-slate-400 font-bold mb-0.5">熱血指數</div>
-                    <div class="text-3xl font-black text-red-500 leading-none">
-                        {{ statsData.count }}<span class="text-xs ml-1 opacity-40">場</span>
+                <div class="flex-1 flex flex-col justify-center px-4 -mt-1"> <div class="text-[10px] text-slate-400 font-bold mb-0.5 uppercase tracking-tighter">熱血指數</div>
+                    <div class="text-3xl font-black text-red-500 flex items-baseline leading-none">
+                        {{ statsData.count }}<span class="text-xs ml-1 opacity-40 font-bold">場</span>
                     </div>
                 </div>
-                <div class="pr-6">
-                    <span class="px-3 py-1 bg-red-500 text-white text-[10px] font-black rounded-lg">{{ statsData.count >= 20 ? '愛意爆表' : '瘋狂在路上' }}</span>
+                <div class="pr-4 flex items-center">
+                    <span class="px-2 py-1 bg-red-500 text-white text-[9px] font-black rounded-lg leading-none shadow-sm">{{ statsData.count >= 20 ? '愛意爆表' : '瘋狂在路上' }}</span>
                 </div>
             </div>
 
-            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24" :style="{ borderColor: '#e0f2fe' }">
+            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24 overflow-hidden" :style="{ borderColor: '#e0f2fe' }">
                 <div class="w-20 h-full flex items-center justify-center rounded-l-2xl bg-blue-50">
                     <i class="ph-fill ph-map-pin text-blue-500 text-4xl"></i>
                 </div>
-                <div class="flex-1 px-4 flex flex-col justify-center">
-                    <div class="text-[11px] text-slate-400 font-bold mb-0.5">場館獵人</div>
-                    <div class="text-3xl font-black text-blue-500 leading-none">
-                        {{ filteredMapEventsCount }}<span class="text-xs ml-1 opacity-40">館</span>
+                <div class="flex-1 flex flex-col justify-center px-4 -mt-1">
+                    <div class="text-[10px] text-slate-400 font-bold mb-0.5 uppercase tracking-tighter">場館獵人</div>
+                    <div class="text-3xl font-black text-blue-500 flex items-baseline leading-none">
+                        {{ filteredMapEventsCount }}<span class="text-xs ml-1 opacity-40 font-bold">館</span>
                     </div>
                 </div>
-                <div class="pr-6">
-                    <span class="px-3 py-1 bg-blue-500 text-white text-[10px] font-black rounded-lg">{{ filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地圖解鎖' }}</span>
+                <div class="pr-4 flex items-center">
+                    <span class="px-2 py-1 bg-blue-500 text-white text-[9px] font-black rounded-lg leading-none shadow-sm">{{ filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地圖解鎖' }}</span>
                 </div>
             </div>
 
-            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24" :style="{ borderColor: '#f3e8ff' }">
+            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24 overflow-hidden" :style="{ borderColor: '#f3e8ff' }">
                 <div class="w-20 h-full flex items-center justify-center rounded-l-2xl bg-purple-50">
                     <i class="ph-fill ph-rocket-launch text-purple-600 text-4xl"></i>
                 </div>
-                <div class="flex-1 px-4 flex flex-col justify-center">
-                    <div class="text-[11px] text-slate-400 font-bold mb-0.5">跨越銀河</div>
-                    <div class="text-2xl font-black text-purple-600 leading-none tracking-tighter">
-                        {{ Math.floor(totalDistance) }}<span class="text-[10px] ml-0.5 opacity-40 font-bold">KM</span>
+                <div class="flex-1 flex flex-col justify-center px-4 -mt-1">
+                    <div class="text-[10px] text-slate-400 font-bold mb-0.5 uppercase tracking-tighter">跨越銀河</div>
+                    <div class="text-2xl font-black text-purple-600 flex items-baseline tracking-tighter leading-none">
+                        {{ Math.floor(totalDistance) }}<span class="text-[9px] ml-0.5 opacity-40 font-black uppercase">KM</span>
                     </div>
                 </div>
-                <div class="pr-6">
-                    <span class="px-3 py-1 bg-purple-600 text-white text-[10px] font-black rounded-lg">{{ totalDistance >= 1000 ? '奔波無阻' : '只想見到你' }}</span>
+                <div class="pr-4 flex items-center">
+                    <span class="px-2 py-1 bg-purple-600 text-white text-[9px] font-black rounded-lg leading-none shadow-sm">{{ totalDistance >= 1000 ? '奔波無阻' : '只想見到你' }}</span>
                 </div>
             </div>
-
         </div>
 
-        <div class="w-full px-2 mb-6">
-            <div class="text-[11px] text-slate-300 font-black mb-5 flex items-center gap-2 tracking-[0.2em] uppercase">
+        <div class="w-full px-2 mb-4">
+            <div class="text-[11px] text-slate-300 font-black mb-4 flex items-center gap-2 tracking-[0.2em] uppercase">
                 <i class="ph-fill ph-heart text-red-400"></i> TOP ARTISTS 排行榜
             </div>
             <div class="space-y-3 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-slate-50/50 p-4 rounded-3xl border border-slate-100 shadow-sm h-16">
+                     class="flex items-center justify-between bg-slate-50/50 p-4 rounded-3xl border border-slate-100 shadow-sm h-16 overflow-hidden">
                     <div class="flex items-center gap-4 flex-1 h-full">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border border-slate-100 shrink-0">
+                        <div class="w-9 h-9 flex items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border border-slate-100 shrink-0">
                              <span :style="{ color: themeColor }">{{ index + 1 }}</span>
                         </div>
-                        <span class="text-sm font-bold text-slate-700 truncate tracking-wide">{{ artist.name }}</span>
+                        <span class="text-sm font-bold text-slate-700 truncate tracking-wide -mt-0.5">{{ artist.name }}</span>
                     </div>
-                    <span class="text-xs font-black text-slate-400 shrink-0 ml-2">{{ artist.count }} 次見面</span>
+                    <span class="text-[11px] font-black text-slate-400 shrink-0 ml-2">{{ artist.count }} 次見面</span>
                 </div>
             </div>
         </div>
 
-        <div class="w-full mt-auto pt-8 border-t border-slate-50 opacity-20 text-[9px] tracking-[0.5em] text-center">
+        <div class="w-full mt-auto pt-6 border-t border-slate-50 opacity-20 text-[9px] tracking-[0.5em] text-center">
             {{ customTitle }} • 珍藏每一份熱愛
         </div>
     </div>
 </div>
+
 
 
         <transition name="fade">
@@ -1201,7 +1199,7 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    alert("正在授予榮譽稱號並優化排版對齊...");
+    alert("正在授予榮譽勳章並精準校對文字位置...");
 
     await nextTick();
     window.scrollTo(0, 0); 
@@ -1214,8 +1212,8 @@ const generateShareCard = async () => {
             scale: 4, 
             useCORS: true,
             logging: false,
-            // 關鍵設定：強制讓文字基線對齊
-            letterRendering: true,
+            // 強制文字渲染模式，解決部分手機瀏覽器文字偏移
+            textDrawingMode: 'glyph',
             onclone: (clonedDoc) => {
                 const clonedEl = clonedDoc.getElementById('share-card-template');
                 clonedEl.style.left = '0';
@@ -1223,36 +1221,36 @@ const generateShareCard = async () => {
                 clonedEl.style.display = 'block';
                 clonedEl.style.height = 'auto';
                 
-                // 強制修正克隆 DOM 中的圖示渲染
-                const icons = clonedEl.querySelectorAll('.ph-fill');
-                icons.forEach(icon => {
-                    icon.style.display = 'flex';
-                    icon.style.alignItems = 'center';
-                    icon.style.justifyContent = 'center';
-                    icon.style.lineHeight = '0';
+                // 強制克隆後的文字容器維持置中
+                const containers = clonedEl.querySelectorAll('.flex-col');
+                containers.forEach(c => {
+                    c.style.display = 'flex';
+                    c.style.flexDirection = 'column';
+                    c.style.justifyContent = 'center';
                 });
             }
         });
 
-        const imgData = canvas.toDataURL('image/png', 1.0);
-        const newTab = window.open();
+        [cite_start]const imgData = canvas.toDataURL('image/png', 1.0);[span_0](end_span)
+        [span_1](start_span)const newTab = window.open();[span_1](end_span)
         if (newTab) {
             newTab.document.write(`
                 <body style="margin:0; background:#f8fafc; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding: 20px; font-family:sans-serif;">
                     <img src="${imgData}" style="max-width:92vw; height:auto; border-radius:30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);" />
-                    <p style="color:#94a3b8; margin-top:20px; font-size:14px; font-weight:bold;">✨ 長按圖片儲存回顧長圖 ✨</p>
+                    <p style="color:#94a3b8; margin-top:20px; font-size:14px; font-weight:bold;">✨ 長按圖片儲存精準對齊長圖 ✨</p>
                 </body>
-            `);
+            [cite_start]`); [cite: 294-295]
         } else {
-            const link = document.createElement('a');
-            link.download = `${selectedYear.value}_追星榮譽回顧.png`;
-            link.href = imgData;
-            link.click();
+            [cite_start]const link = document.createElement('a'); [cite: 296-297]
+            [cite_start]link.download = `${selectedYear.value}_追星榮譽回顧.png`; [cite: 296-297]
+            [cite_start]link.href = imgData; [cite: 296-297]
+            [cite_start]link.click(); [cite: 296-297]
         }
     } catch (err) {
-        alert("生成失敗，請再試一次。");
+        [cite_start]alert("生成失敗，請再試一次。"); [cite: 297-298]
     }
 };
+
 
 
 
