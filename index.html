@@ -738,17 +738,16 @@
                         <div class="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 text-xs shrink-0 font-black">
                              {{ index === 0 ? '🥇' : (index === 1 ? '🥈' : '🥉') }}
                         </div>
-                        <span class="text-sm font-bold truncate">{{ artist.name }}</span>
+                        <span class="text-sm font-bold truncate leading-tight">{{ artist.name }}</span>
                     </div>
                     <div class="text-right shrink-0 ml-2">
                         <span class="text-xs font-black text-white block">{{ artist.count }} <small class="text-[8px] font-normal opacity-40">次</small></span>
                     </div>
                 </div>
-                <div v-if="!statsData.topArtists || statsData.topArtists.length === 0" class="text-white/20 italic text-[10px] py-4 text-center">尚無心動紀錄</div>
             </div>
         </div>
 
-        <div class="w-full mt-4 pt-4 border-t border-white/5 opacity-20 text-[8px] tracking-[0.4em] text-center">
+        <div class="w-full mt-4 pt-4 border-t border-white/5 opacity-20 text-[8px] tracking-[0.4em]">
             {{ customTitle }} • 讓愛意有跡可循
         </div>
     </div>
@@ -1162,7 +1161,7 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
- // 自訂稱號授予提示
+    // 1. 保留生成提示
     alert("正在為您授予榮譽稱號並生成回顧卡...");
 
     await nextTick();
@@ -1171,7 +1170,7 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 4, // 極致清晰度
+            scale: 4, // 提高清晰度
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
@@ -1184,17 +1183,18 @@ const generateShareCard = async () => {
 
         const imgData = canvas.toDataURL('image/png', 1.0);
         
-       // Safari 與手機瀏覽器優化：開啟新視窗顯示圖片        const newTab = window.open();
+        // 2. 針對 Safari 與手機端優化：開啟新分頁顯示圖片
+        const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
                 <body style="margin:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh;">
                     <img src="${imgData}" style="max-height:92vh; width:auto; border-radius:30px; border:1px solid rgba(255,255,255,0.1);" />
-                    <p style="color:white; margin-top:15px; font-family:sans-serif; opacity:0.6; font-size:13px; letter-spacing:1px;">長按儲存</p>
+                    <p style="color:white; margin-top:15px; font-family:sans-serif; opacity:0.6; font-size:13px; letter-spacing:1px;">長按儲存 Threads 回顧卡</p>
                 </body>
             `);
         } else {
             const link = document.createElement('a');
-            link.download = `${selectedYear.value}_年度回顧.png`;
+            link.download = `年度回顧_${selectedYear.value}.png`;
             link.href = imgData;
             link.click();
         }
@@ -1203,7 +1203,6 @@ const generateShareCard = async () => {
         alert("卡片生成失敗，請再試一次。");
     }
 };
-
 
 
 
