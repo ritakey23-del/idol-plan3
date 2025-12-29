@@ -18,13 +18,10 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
-
 
     <script>
         tailwind.config = {
@@ -44,14 +41,12 @@
         }
     </script>
 
-
     <style>
         :root {
             --primary-color: #63b3b0;
             --primary-dark: #4a8f8c;
             --primary-light: #e0f2f1;
         }
-
 
         body {
             background-color: #f8fafc;
@@ -60,41 +55,12 @@
             width: 100vw;
             overflow: hidden;
         }
-/* 彈窗專用的滾動容器 */
-.custom-popup-scroll {
-    max-height: 150px;
-    overflow-y: auto !important;
-    padding-right: 8px;
-}
 
-
-/* 強制顯示精緻的捲軸 */
-.custom-popup-scroll::-webkit-scrollbar {
-    width: 6px;
-    display: block !important; /* 確保不被全域隱藏設定覆蓋 */
-}
-
-
-/* 捲軸軌道 */
-.custom-popup-scroll::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
-}
-
-
-/* 捲軸拉條 */
-.custom-popup-scroll::-webkit-scrollbar-thumb {
-    background: #cbd5e1; /* 淺灰色，提示效果明顯 */
-    border-radius: 10px;
-    border: 1px solid #f1f5f9;
-}
-
-
-
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 800px; opacity: 1; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
-
 
         .slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease-out; }
         .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); opacity: 0; }
@@ -102,13 +68,11 @@
         .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
 
-
         .custom-checkbox:checked + div { text-decoration: line-through; color: #94a3b8; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         #map-container { height: 100%; width: 100%; z-index: 1; }
         .leaflet-bottom { z-index: 400 !important; }
 .leaflet-top.leaflet-left { margin-top: 85px !important; }
-
 
         /* Ticket Styles */
         .ticket-stub {
@@ -144,19 +108,15 @@
             cursor: pointer;
         }
     </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
-
 
     <button onclick="forceReset()" id="rescue-btn"
         style="position: fixed; top: 10px; left: 10px; z-index: 99999; background-color: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;">
         ⚠️ 畫面全白點我修復
     </button>
 
-
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
-
 
         <header :class="headerTextColor" class="pt-4 pb-4 px-5 shadow-lg rounded-b-[1.5rem] z-20 shrink-0 transition-colors duration-200"
             :style="{ backgroundColor: themeColor }">
@@ -194,7 +154,6 @@
             </div>
         </header>
 
-
         <main class="flex-1 overflow-y-auto no-scrollbar scroll-smooth w-full relative bg-slate-50">
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
                 <div class="relative">
@@ -206,7 +165,6 @@
                         <i class="ph ph-x-circle-fill"></i>
                     </button>
                 </div>
-
 
                 <div class="flex bg-slate-200 p-1 rounded-full relative mb-2">
                     <div class="w-1/2 h-full absolute bg-white rounded-full shadow-sm transition-all duration-300 transform"
@@ -223,7 +181,6 @@
                     </button>
                 </div>
 
-
                 <div v-if="filteredEvents.length === 0" class="text-center py-12 px-4 opacity-80 flex flex-col items-center">
                     <div class="bg-slate-100 p-6 rounded-full mb-4">
                         <i class="ph ph-magnifying-glass text-5xl text-slate-300" v-if="searchQuery"></i>
@@ -238,7 +195,6 @@
                         {{ viewMode === 'upcoming' ? '快去買門票，為愛燃燒！🔥' : '愛你的心意，已經讓回憶閃閃發光 ✨' }}
                     </p>
 
-
                     <button v-if="!searchQuery" @click="openModal()" 
                             :style="{ color: themeColor, borderColor: themeColor }"
                             class="bg-white border-2 px-6 py-2 rounded-full font-bold shadow-sm active:scale-95 transition-transform text-sm flex items-center gap-2">
@@ -248,7 +204,6 @@
          
                <button v-else @click="searchQuery = ''" class="text-slate-500 underline text-sm">清除搜尋</button>
                 </div>
-
 
                 <transition-group name="fade" tag="div" class="space-y-4">
                     <div v-for="event in filteredEvents" :key="event.id" 
@@ -273,7 +228,6 @@
                             </div>
          
                         </div>
-
 
         
                         <div class="p-5 cursor-pointer relative" @click="toggleExpand(event.id)">
@@ -306,7 +260,6 @@
                                 </div>
                             </div>
 
-
  
                             <div v-if="event.coverUrl" class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2 text-slate-700">
@@ -319,7 +272,6 @@
              
                                 <span v-if="event.sticker" class="text-xl">{{ event.sticker }}</span>
                             </div>
-
 
                         
                             <div class="pl-2 space-y-3 text-sm text-slate-600">
@@ -355,18 +307,10 @@
        
             
                               
-                               <div class="flex items-center gap-2 truncate pr-2">
-    <i class="ph ph-map-pin shrink-0" :style="{ color: getEventColor(event) }"></i>
-    <span class="truncate">{{ event.location }}</span>
-    
-    <span v-if="!event.lat || !event.lng" 
-          class="bg-red-50 text-red-500 text-[10px] px-1.5 py-0.5 rounded-md font-bold flex items-center gap-0.5 border border-red-100 animate-pulse">
-        <i class="ph ph-warning-circle"></i> 未定位
-    </span>
-</div>
-
-
-
+                                <div class="flex items-center gap-2 truncate pr-2">
+                                    <i class="ph ph-map-pin shrink-0" :style="{ color: getEventColor(event) }"></i>
+                                    <span class="truncate">{{ event.location }}</span>
+                                </div>
 
                         
           
@@ -479,7 +423,6 @@
                 </transition-group>
             </div>
 
-
             <div v-if="activeTab === 'fandom'" class="space-y-6 p-5 pb-32">
                 <div class="flex justify-between items-center">
                     <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-heart-straight-fill text-red-500"></i> 入坑紀念日 💖</h2>
@@ -500,7 +443,6 @@
     
                                 <img :src="fan.coverUrl" class="w-full h-full object-cover rounded-xl" alt="Fandom Cover" onerror="this.style.display='none'">
                             </div>
-
 
                             <div class="flex justify-between items-start p-4 shrink-0 border-b border-slate-100">
  
@@ -574,7 +516,6 @@
    
                         </div>
 
-
                     </div>
                 </div>
                 <div v-else class="text-center py-4 px-4 opacity-80 flex flex-col items-center">
@@ -585,66 +526,44 @@
                 </div>
             </div>
 
-
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
-<div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-3 rounded-2xl shadow-lg border border-slate-100">
-    <div class="flex justify-between items-start">
-        <div class="flex flex-col gap-1.5 flex-1 min-w-0">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                <div class="absolute top-4 left-4 right-4 z-30 bg-white/90 backdrop-blur-sm p-4 rounded-2xl shadow-lg border border-slate-100">
+    <div class="flex justify-between items-center">
+        <div>
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
                 <i class="ph ph-map-trifold text-primary"></i> 追星足跡
             </h3>
-            
-            <div class="flex items-center gap-2">
-                <div class="relative shrink-0">
-                    <select v-model="selectedMapYear" @change="initMap" 
-                            class="appearance-none bg-slate-100 border-none text-slate-700 py-1 px-2 pr-6 rounded-lg text-[10px] font-bold focus:ring-1 focus:ring-primary">
-                        <option value="ALL">全部年度</option>
-                        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年</option>
-                    </select>
-                    <i class="ph ph-caret-down absolute right-1.5 top-1.5 text-[8px] pointer-events-none opacity-50"></i>
-                </div>
-                
-<div class="truncate text-[10px] text-slate-500">
-    已征戰 {{ filteredMapEventsCount }} 個場館
-                    <span v-if="missingCoordsCount > 0" class="text-orange-500">
-                        ({{ missingCoordsCount }} 待定位)
-                    </span>
-                </div>
-            </div>
+            <p class="text-xs text-slate-500 mt-1">
+                已解鎖 {{ mappedEventsCount }} 個地點
+                <span v-if="missingCoordsCount > 0" class="text-orange-500 ml-1">
+                    ({{ missingCoordsCount }} 個待定位) 
+                </span>
+            </p>
         </div>
-
-
-        <div class="text-right shrink-0 border-l border-slate-100 pl-3 ml-1">
-            <div class="text-lg font-bold leading-none" :style="{ color: themeColor }">
-                {{ totalDistance }} <span class="text-[10px] font-normal text-slate-400">km</span>
+        <div class="text-right">
+            <div class="text-xl font-bold" :style="{ color: themeColor }">
+                {{ totalDistance }} <span class="text-xs font-normal text-slate-400">km</span>
             </div>
-            <div class="text-[9px] text-slate-400 font-medium mt-1">累積里程</div>
+            <div class="text-[10px] text-slate-400 font-medium">累計征戰里程</div>
         </div>
     </div>
 </div>
-
-
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-    <div class="flex justify-between items-center mb-2">
-        <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-        <div class="flex gap-2">
-            <button @click="downloadPoster" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-                <i class="ph ph-share-network text-lg"></i> 分享回顧
-            </button>
-            <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-                <i class="ph ph-download-simple text-lg"></i> 匯入
-            </button>
-        </div>
-    </div>
-    <div class="space-y-4">
-        <div class="relative">
-            <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                <option value="ALL">🗓️ 全部年份總回顧</option>
-                <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
-        </div>
+                 <div class="flex justify-between items-center mb-2">
+                   
+                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+                </div>
+                <div class="space-y-4">
+                 
+                    <div class="relative">
+    <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <option value="ALL">🗓️ 全部年份總回顧</option>
+        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
+    </select>
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
+</div>
 
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
@@ -692,13 +611,11 @@
   
        </main>
 
-
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
             class="absolute bottom-24 right-6 w-14 h-14 text-white rounded-full shadow-lg shadow-primary/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 z-30 mb-safe"
             v-if="activeTab === 'home'">
             <i class="ph ph-plus text-2xl font-bold"></i>
         </button>
-
 
         <nav class="bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shrink-0 w-full z-40 safe-pb">
             <button @click="activeTab = 'home'" class="flex flex-col items-center gap-1 transition-colors w-16" 
@@ -712,7 +629,6 @@
                 <span class="text-[10px] font-medium">紀念日</span>
             </button>
 
-
             <button @click="activeTab = 'map'" class="flex flex-col items-center gap-1 transition-colors w-16"
                 :class="activeTab === 'map' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'map' ? themeColor : '' }">
                 <i class="ph text-2xl ph-map-trifold" :class="{ 'ph-fill': activeTab === 'map', 'ph-bold': activeTab !== 'map' }"></i>
@@ -724,7 +640,6 @@
                 <span class="text-[10px] font-medium">回顧</span>
             </button>
         </nav>
-
 
         <transition name="fade">
             
@@ -786,7 +701,6 @@
  
           </transition>
 
-
         <transition name="slide-up">
             <div v-if="calendarEvent && showCalendarModal" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" @click.self="showCalendarModal = false">
                 <div class="bg-white w-full max-w-sm rounded-t-3xl p-6 relative shadow-2xl safe-pb transform transition-transform duration-300 translate-y-0">
@@ -807,7 +721,6 @@
             </div>
         </transition>
 
-
         <transition name="slide-up">
   
             <div v-if="showChangelogModal" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
@@ -819,7 +732,6 @@
                         <button @click="showChangelogModal = false" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200"><i class="ph ph-x"></i></button>
                     </div>
                     <div class="overflow-y-auto flex-1 no-scrollbar space-y-6">
-
 
                         <div v-for="log in changelogContent" :key="log.version" class="border-b pb-4 border-slate-100 last:border-0">
                             <div class="flex justify-between items-start mb-2">
@@ -834,7 +746,6 @@
                  
                         <p class="text-center text-sm text-slate-400 pt-2">— 這是所有歷史版本紀錄 —</p>
 
-
                     </div>
                     <div class="shrink-0 pt-4">
             
@@ -843,7 +754,6 @@
                 </div>
             </div>
         </transition>
-
 
         <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
@@ -879,7 +789,6 @@
   
                <hr class="border-slate-100 my-4">
 
-
                 <div class="mt-4 border-t border-slate-100 pt-4 text-xs text-slate-400 text-center">
                     <p class="inline-block mr-4">當前版本: <span class="font-mono text-slate-800">{{ appVersion }}</span></p>
                     <button @click="showChangelog" 
@@ -889,7 +798,6 @@
                     </button>
             
                 </div>
-
 
                 <button @click="showSettingsModal = false" class="mt-2 text-sm text-slate-400 hover:text-slate-600">完成</button>
             </div>
@@ -915,7 +823,6 @@
                      
                         <div><label class="block text-sm font-medium text-slate-500 mb-1">代表貼紙 (Emoji)</label><input v-model="fandomForm.sticker" type="text" placeholder="✨" maxlength="3" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800 text-xl text-center"></div>
 
-
                             <div>
                                 <label class="block text-sm font-medium text-slate-500 mb-1">封面圖片 (選填)</label>
                                 
@@ -925,7 +832,6 @@
                                         <i class="ph ph-x-circle-fill"></i> 清除圖片
                                     </button>
                                 </div>
-
 
                                 <div v-else>
                                     <div v-if="fandomForm.useUrl" class="relative">
@@ -938,7 +844,6 @@
                                         <input type="file" @change="handleFileUpload($event, 'fandom')" accept="image/*" class="hidden">
                                     </label>
 
-
                                     <button @click="fandomForm.useUrl = !fandomForm.useUrl; fandomForm.coverUrl = ''" class="mt-2 text-xs font-medium text-slate-500 hover:text-slate-700 underline">
                                         {{ fandomForm.useUrl ? '改為上傳 Base64 圖片' : '改為貼上圖片 URL' }}
                                     </button>
@@ -947,13 +852,11 @@
                             </div>
                             <hr class="border-slate-100 my-2">
 
-
     
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">生日 (YYYY-MM-DD, 選填)</label><input v-model="fandomForm.birthday" type="text" @change="fandomForm.birthday = fandomForm.birthday.replace(/\//g, '-')" placeholder="1991-09-23" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800"></div>
                             
                           
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">出道日 (YYYY-MM-DD, 選填)</label><input v-model="fandomForm.debutDate" type="text" @change="fandomForm.debutDate = fandomForm.debutDate.replace(/\//g, '-')" placeholder="2008-05-25" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800"></div>
-
 
                         </div>
           
@@ -965,8 +868,6 @@
             </div>
         
         </transition>
-
-
 
 
         <transition name="slide-up">
@@ -994,7 +895,6 @@
                                     </button>
                                 </div>
 
-
                                 <div v-else>
                                     <div v-if="form.useUrl" class="relative">
                                         <i class="ph ph-link absolute left-3 top-3.5 text-slate-400"></i>
@@ -1005,7 +905,6 @@
                                         <i class="ph ph-image-square text-lg"></i> 選擇圖片檔案 (Base64, < 1MB)
                                         <input type="file" @change="handleFileUpload($event, 'event')" accept="image/*" class="hidden">
                                     </label>
-
 
                                     <button @click="form.useUrl = !form.useUrl; form.coverUrl = ''" class="mt-2 text-xs font-medium text-slate-500 hover:text-slate-700 underline">
                                         {{ form.useUrl ? '改為上傳 Base64 圖片' : '改為貼上圖片 URL' }}
@@ -1023,7 +922,6 @@
                        
       
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">心情貼紙 (Emoji)</label><input v-model="form.sticker" type="text" placeholder="輸入一個 Emoji" maxlength="3" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800 text-xl text-center"></div>
-
 
                             <div class="grid grid-cols-2 gap-4">
        
@@ -1051,7 +949,6 @@
                     
                         </div>
 
-
   
                         <hr class="border-slate-100 my-2">
                         
@@ -1065,51 +962,62 @@
             </div>
         </transition>
 
-<transition name="fade">
-    <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
-        <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
-            <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
-                <h2 class="text-2xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
-                <p class="text-slate-400 mt-1 text-[10px] uppercase tracking-widest font-bold">
-                    {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Review
-                </p>
-            </div>
-            
-            <div class="px-8 py-4 grid grid-cols-3 gap-2 text-center border-y border-slate-50">
-                <div><div class="text-[9px] text-slate-400 font-bold uppercase mb-1">心動</div><div class="text-xl font-bold" :style="{ color: themeColor }">{{ statsData.count }}</div></div>
-                <div><div class="text-[9px] text-slate-400 font-bold uppercase mb-1">足跡</div><div class="text-xl font-bold" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div></div>
-                <div><div class="text-[9px] text-slate-400 font-bold uppercase mb-1">里程</div><div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }}</div></div>
-            </div>
-
-            <div class="p-6 text-center">
-                <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 text-xs border border-slate-100 shadow-inner">"{{ emotionalSummary }}"</div>
-            </div>
-
-            <div class="px-8 pb-6 flex flex-wrap justify-center gap-4">
-                <div v-for="badge in unlockedBadges" :key="badge.name" class="flex flex-col items-center gap-1.5">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg" :style="{ backgroundColor: themeColor }">
-                        <i :class="'ph ph-bold ' + badge.icon" class="text-lg"></i>
+       <transition name="fade">
+            <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
+                <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
+                    <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
+                        <h2 class="text-2xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
+                        <p class="text-slate-400 mt-1 text-[10px] uppercase tracking-widest font-bold">
+                            {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Stargazer Review
+                        </p>
                     </div>
-                    <span class="text-[8px] font-bold text-slate-400">{{ badge.name }}</span>
+
+                    <div class="px-8 py-4 grid grid-cols-3 gap-2 text-center border-y border-slate-50">
+                        <div>
+                            <div class="text-[9px] text-slate-400 font-bold uppercase mb-1">心動</div>
+                            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ statsData.count }}</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-slate-400 font-bold uppercase mb-1">足跡</div>
+                            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-slate-400 font-bold uppercase mb-1">里程</div>
+                            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }}</div>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 leading-relaxed text-xs text-center border border-slate-100 shadow-inner">
+                            "{{ emotionalSummary }}"
+                        </div>
+                    </div>
+
+                    <div class="px-8 pb-6 flex flex-wrap justify-center gap-4">
+                        <div v-for="badge in unlockedBadges" :key="badge.name" class="flex flex-col items-center gap-1.5">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg" :style="{ backgroundColor: themeColor }">
+                                <i :class="'ph ph-bold ' + badge.icon" class="text-lg"></i>
+                            </div>
+                            <span class="text-[8px] font-bold text-slate-400">{{ badge.name }}</span>
+                        </div>
+                    </div>
+
+                    <div class="px-8 pb-10 space-y-3">
+                        <div class="text-[9px] font-bold text-slate-300 tracking-[0.3em] uppercase border-b border-slate-50 pb-1">Timeline</div>
+                        <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 items-start border-b border-dotted border-slate-100 pb-2 last:border-0 text-left">
+                            <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}</div>
+                            <div class="flex-1">
+                                <div class="text-xs font-bold text-slate-700 leading-tight">{{ event.title }}</div>
+                                <div class="text-[9px] text-slate-400">{{ event.artist }} @ {{ event.location }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <button @click="showPosterModal = false" class="absolute top-6 right-6 text-white/50 hover:text-white">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
             </div>
-
-            <div class="px-8 pb-10 space-y-3 text-left">
-                <div class="text-[9px] font-bold text-slate-300 tracking-[0.3em] uppercase border-b border-slate-50 pb-1">Timeline</div>
-                <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 items-start border-b border-dotted border-slate-100 pb-2 last:border-0">
-                    <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}</div>
-                    <div class="flex-1 text-xs font-bold text-slate-700 leading-tight">{{ event.title }}</div>
-                </div>
-            </div>
-        </div>
-        <button @click="showPosterModal = false" class="absolute top-6 right-6 text-white/50 hover:text-white">
-            <i class="ph ph-x-circle text-3xl"></i>
-        </button>
-    </div>
-</transition>
-
-
-
+        </transition>
 
 
         <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
@@ -1131,7 +1039,6 @@
                     </ul>
                 </div>
 
-
                 <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：
 [
   {
@@ -1151,9 +1058,7 @@
             </div>
         </div>
 
-
     </div>
-
 
     <script>
         
@@ -1161,9 +1066,34 @@
         createApp({
             setup() {
 
+// 計算兩點間的球面距離 (Haversine 公式)
+const calculateKm = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // 地球半徑 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+};
+
+// 自動計算所有足跡的總里程 (按日期排序)
+const totalDistance = computed(() => {
+    const validPoints = [...events.value]
+        .filter(e => e.lat && e.lng)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let dist = 0;
+    for (let i = 0; i < validPoints.length - 1; i++) {
+        dist += calculateKm(
+            validPoints[i].lat, validPoints[i].lng,
+            validPoints[i+1].lat, validPoints[i+1].lng
+        );
+    }
+    return dist.toFixed(1);
+});
 
                 const events = ref([]);
-                const selectedMapYear = ref('ALL');
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
@@ -1180,6 +1110,7 @@
                 
                 const showModal = ref(false);
                 const showSettingsModal = ref(false); 
+                
                 const showImportModal = ref(false);
                 const showPosterModal = ref(false);
 
@@ -1196,70 +1127,6 @@
                 const importJson = ref('');
                 let map = null;
                 let markers = [];
-
-
-// 計算兩點間的球面距離 (Haversine 公式)
-const calculateKm = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // 地球半徑 (km)
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon/2) * Math.sin(dLon/2);
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-};
-
-
-// 新增：根據年份計算過濾後的點位數量
-const filteredMapEventsCount = computed(() => {
-    // 1. 先根據年度過濾資料
-    const target = selectedMapYear.value === 'ALL' 
-        ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
-
-
-    // 2. 建立一個 Set 來儲存唯一的經緯度組合字串
-    const uniqueLocations = new Set();
-    
-    target.forEach(e => {
-        if (e.lat && e.lng) {
-            // 將經緯度組合成字串作為 key，例如 "25.05_121.53"
-            uniqueLocations.add(`${e.lat}_${e.lng}`);
-        }
-    });
-
-
-    // 3. 回傳 Set 的大小，即為不重複的地點數量
-    return uniqueLocations.size;
-});
-
-
-
-
-// 更新：totalDistance 也要隨著年份變動
-const totalDistance = computed(() => {
-    const baseEvents = selectedMapYear.value === 'ALL' 
-        ? events.value 
-        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
-
-
-    const validPoints = [...baseEvents]
-        .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-
-    let dist = 0;
-    for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(
-            validPoints[i].lat, validPoints[i].lng,
-            validPoints[i+1].lat, validPoints[i+1].lng
-        );
-    }
-    return dist.toFixed(1);
-});
-
-
-
 
                 const defaultForm = {
                     id: null, title: '', artist: '', date: '', time: '19:00', location: '', 
@@ -1288,9 +1155,7 @@ const totalDistance = computed(() => {
                 const fandomForm = ref({...defaultFandomForm});
                 // --- END FANDOM STATES ---
 
-
                 const changelogContent = ref([ 
-
 
 { version: 'v1.0.5', date: '2025/12/28', items: [
     '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
@@ -1329,7 +1194,6 @@ const totalDistance = computed(() => {
                     localStorage.setItem('fandomFandoms', JSON.stringify(fandoms.value));
                 };
 
-
                 const openFandomModal = () => {
                     isFandomEditing.value = false;
                     editFandomIndex.value = null;
@@ -1344,12 +1208,10 @@ const totalDistance = computed(() => {
                     showFandomModal.value = true;
                 };
 
-
                 const closeFandomModal = () => {
                     showFandomModal.value = false;
                     fandomForm.value = {...defaultFandomForm};
                 };
-
 
                 const validateDate = (dateString) => {
                     if (!dateString) return true;
@@ -1367,7 +1229,6 @@ const totalDistance = computed(() => {
                     return date instanceof Date && !isNaN(date);
                 };
 
-
                 const addFandom = () => {
                     if (!fandomForm.value.name.trim()) {
                         return alert('錯誤：偶像名稱不能為空！');
@@ -1375,7 +1236,6 @@ const totalDistance = computed(() => {
                     if (!fandomForm.value.date) {
                          return alert('錯誤：入坑日期不能為空！');
                     }
-
 
                     if (!validateDate(fandomForm.value.date)) {
                         return alert('錯誤：入坑日期格式無效！請使用 YYYY-MM-DD 格式。');
@@ -1387,10 +1247,8 @@ const totalDistance = computed(() => {
                         return alert('錯誤：出道日期格式無效！請使用 YYYY-MM-DD 格式。');
                     }
 
-
                     const fandomToSave = JSON.parse(JSON.stringify(fandomForm.value));
                     delete fandomToSave.useUrl;
-
 
                     if(isFandomEditing.value && editFandomIndex.value !== null) {
                         fandoms.value[editFandomIndex.value] = fandomToSave;
@@ -1400,7 +1258,6 @@ const totalDistance = computed(() => {
                     saveFandoms();
                     closeFandomModal();
                 };
-
 
                 const removeFandom = (index) => {
                     if (confirm('確定要刪除這個入坑紀念日嗎？此操作無法恢復。')) {
@@ -1445,26 +1302,11 @@ const totalDistance = computed(() => {
                 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
                 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
                 
-watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
-watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
-watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
-
-
-// 新增此段落：監聽地圖年份篩選
-watch(selectedMapYear, () => {
-    if (activeTab.value === 'map') {
-        nextTick(() => { initMap(); });
-    }
-});
-
-
-watch(activeTab, (newTab) => {
-    if (newTab === 'map') {
-        nextTick(() => { initMap(); });
-    }
-});
-
-
+                watch(activeTab, (newTab) => {
+                    if (newTab === 'map') {
+                        nextTick(() => { initMap(); });
+                    }
+                });
                 const adjustColor = (color, amount) => {
                     let hex = color.replace('#', '');
                     if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -1488,7 +1330,6 @@ watch(activeTab, (newTab) => {
                     return hsp > 180;
                 };
 
-
                 const cssVars = computed(() => ({
                     '--primary-color': themeColor.value,
                     '--primary-dark': adjustColor(themeColor.value, -30),
@@ -1505,7 +1346,6 @@ watch(activeTab, (newTab) => {
                     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
                     return diffDays > 0 ? diffDays : 0;
                 };
-
 
                 const calculateDaysToNextDate = (dateStr) => {
                     if (!dateStr || !validateDate(dateStr)) return 'N/A';
@@ -1525,18 +1365,15 @@ watch(activeTab, (newTab) => {
                     const diffTime = nextDate.getTime() - today.getTime();
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-
                     if (diffDays === 0) return 0;
                     return diffDays;
                 };
-
 
                 const calculateYearsAndDaysSinceDebut = (dateStr) => {
                     if (!dateStr || !validateDate(dateStr)) return 'N/A';
                     const debut = new Date(dateStr);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
-
 
                     let years = today.getFullYear() - debut.getFullYear();
                     const hasPassed = (today.getMonth() > debut.getMonth() || (today.getMonth() === debut.getMonth() && today.getDate() >= debut.getDate()));
@@ -1550,7 +1387,6 @@ watch(activeTab, (newTab) => {
                     }
                     lastAnniversary.setHours(0, 0, 0, 0);
                     const diffDays = Math.floor((today.getTime() - lastAnniversary.getTime()) / (1000 * 60 * 60 * 24));
-
 
                     if (years < 0) return '尚未出道';
                     if (years === 0) return `第 ${diffDays} 天`;
@@ -1585,7 +1421,6 @@ watch(activeTab, (newTab) => {
                     return messages[Math.floor(Math.random() * messages.length)];
                 };
 
-
                 const getDebutCongrats = (name) => {
                     const messages = [
                         `🎉 恭喜 ${name} 出道紀念日！感謝你選擇這條路！💖`,
@@ -1613,8 +1448,6 @@ watch(activeTab, (newTab) => {
                     ];
                     return messages[Math.floor(Math.random() * messages.length)];
                 };
-
-
 
 
                 const fandomMessageStatic = (fandom) => {
@@ -1650,7 +1483,6 @@ watch(activeTab, (newTab) => {
                     };
                 };
 
-
                 const fandomMessage = computed(() => { 
                     if (fandoms.value.length === 0 || fandoms.value.every(f => !f.date)) {
                         return "👋 點擊設定，開始你的入坑紀念日紀錄！";
@@ -1659,9 +1491,7 @@ watch(activeTab, (newTab) => {
                     const activeFandoms = fandoms.value.filter(f => f.date);
                     if (activeFandoms.length === 0) return "👋 點擊設定，開始你的入坑紀念日紀錄！";
 
-
                     const currentFandom = activeFandoms[currentFandomIndex.value % activeFandoms.length];
-
 
                     const { message, days } = fandomMessageStatic(currentFandom);
                     
@@ -1707,12 +1537,10 @@ watch(activeTab, (newTab) => {
                         });
                     }
 
-
                     return viewMode.value === 'upcoming' 
                         ? sorted.filter(e => e.date >= today) 
                         : sorted.filter(e => e.date < today).reverse();
                 });
-
 
                 const upcomingCount = computed(() => events.value.filter(e => e.date >= new Date().toISOString().split('T')[0]).length);
                 const currentYearExpense = computed(() => {
@@ -1732,7 +1560,6 @@ watch(activeTab, (newTab) => {
                     if (selectedYear.value !== 'ALL') {
                         targetEvents = events.value.filter(e => e.date.match(new RegExp(`^${selectedYear.value}`)));
                     }
-
                     const count = targetEvents.length;
           
                     const totalSpent = targetEvents.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0);
@@ -1820,7 +1647,6 @@ watch(activeTab, (newTab) => {
                     return pools[category][count % pools[category].length];
                 });
 
-
                 const idolNagging = computed(() => {
                     const { totalSpent, topArtists } = statsData.value;
                     const name = topArtists.length > 0 ? topArtists[0].name : '我';
@@ -1845,7 +1671,6 @@ watch(activeTab, (newTab) => {
                     }, 0);
                 };
 
-
                 const addExpenseItem = (n) => form.value.expenses.push({ item: n, amount: '' });
                 const removeExpenseItem = (i) => form.value.expenses.splice(i, 1);
                 const addChecklistItem = () => form.value.checklist.push({ text: '', checked: false });
@@ -1865,7 +1690,6 @@ watch(activeTab, (newTab) => {
                     showModal.value = true;
                 };
 
-
                 const editEvent = (evt) => {
                     isEditing.value = true;
                     form.value = { 
@@ -1881,7 +1705,6 @@ watch(activeTab, (newTab) => {
                     showModal.value = true;
                 };
 
-
                 const closeModal = () => showModal.value = false;
                 const saveEvent = () => {
                     if (!form.value.title || !form.value.date) return alert('請填寫活動名稱與日期 🥺');
@@ -1889,10 +1712,8 @@ watch(activeTab, (newTab) => {
                     form.value.checklist = form.value.checklist.filter(c => c.text && c.text.trim() !== '');
                     if (form.value.color === themeColor.value) form.value.color = '';
 
-
                     const eventToSave = JSON.parse(JSON.stringify(form.value));
                     delete eventToSave.useUrl;
-
 
                     if (isEditing.value) {
                         const idx = events.value.findIndex(e => e.id === form.value.id);
@@ -1902,7 +1723,6 @@ watch(activeTab, (newTab) => {
                     }
                     closeModal();
                 };
-
 
                 const deleteEvent = (id) => {
                     if (confirm('確定要刪除此行程嗎？此操作無法恢復。')) {
@@ -1924,32 +1744,24 @@ watch(activeTab, (newTab) => {
                     showChangelogModal.value = true;
                 };
 
-
                 const searchCoordinates = async () => {
-    if (!form.value.location) {
-        searchError.value = "請先輸入地點名稱";
-        return;
-    }
-    isSearching.value = true;
-    searchError.value = '定位中...';
-
-
-    // 優化：加上時間戳記避免讀取到失敗的快取，並加入隨機身份識別
-    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}&limit=1&t=${Date.now()}`;
-    
-    try {
-        const response = await fetch(apiUrl, {
-            headers: {
-               // 隨機化 User-Agent 讓伺服器認為是不同請求
-               'User-Agent': `IdolDiary/${Math.random().toString(36).substring(7)}`,
-               'Accept-Language': 'zh-TW,zh;q=0.9'
-            }
-        });
-
-
-        if (response.status === 429) throw new Error("請求太頻繁，請等幾秒再試一次");
-        if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
-
+                    if (!form.value.location) {
+                        searchError.value = "請先輸入地點名稱";
+                        return;
+                    }
+                    isSearching.value = true;
+                    searchError.value = '';
+                    
+                    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}&limit=1`;
+                    try {
+                        const response = await fetch(apiUrl, {
+                            headers: {
+                               'User-Agent': 'MyIdolTrackerApp/1.0 (contact@example.com)' 
+                            }
+                        });
+                        if (!response.ok) {
+                             throw new Error(`HTTP 錯誤! 狀態碼: ${response.status}`);
+                        }
 
                         const data = await response.json();
                         if (data && data.length > 0) {
@@ -1962,7 +1774,7 @@ watch(activeTab, (newTab) => {
                         } else {
                             form.value.lat = null;
                             form.value.lng = null;
-                            searchError.value = "找不到該地點的坐標，請嘗試更具體的名稱 (如:KSPO DOME改成올림픽체조경기장)";
+                            searchError.value = "找不到該地點的坐標，請嘗試更具體的名稱 (如: 台北小巨蛋)";
                         }
                     } catch (e) {
                         console.error("地圖定位錯誤:", e);
@@ -1976,94 +1788,59 @@ watch(activeTab, (newTab) => {
                 };
                 // 修正後的 initMap 邏輯
 
-
 const initMap = () => {
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    } else {
-        map.invalidateSize();
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+            attribution: '© OpenStreetMap' 
+        }).addTo(map);
+    } else { 
+        map.invalidateSize(); 
     }
 
-
-    // 關鍵：先清空舊的點與線
+    // 清除舊標記與線條
     markers.forEach(m => map.removeLayer(m));
     markers = [];
 
-
-    // 根據選定年度過濾
-    const baseEvents = selectedMapYear.value === 'ALL' 
-        ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
-
-
-    const sortedEvents = [...baseEvents]
+    // 取得排序後的有效座標點
+    const sortedEvents = [...events.value]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-
-    if (sortedEvents.length === 0) return;
-
-
-    // 重新畫點與畫線邏輯
-    const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
-    const groupPoints = {};
+    const pathCoords = [];
+    
     sortedEvents.forEach(e => {
-        const key = `${e.lat}_${e.lng}`;
-        if (!groupPoints[key]) groupPoints[key] = [];
-        groupPoints[key].push(e);
-    });
-
-
-    Object.values(groupPoints).forEach(eventsAtLoc => {
-        const latest = eventsAtLoc[eventsAtLoc.length - 1];
-        const color = getEventColor(latest);
-        const marker = L.circleMarker([latest.lat, latest.lng], { radius: 7, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.8 }).addTo(map);
-        let popup = `<div class="custom-popup-scroll" style="min-width:150px;">`;
-        [...eventsAtLoc].reverse().forEach(ev => {
-            popup += `<div style="border-bottom:1px dashed #eee; margin-bottom:5px; padding-bottom:5px;">
-                <b style="color:${getEventColor(ev)}">${ev.artist}</b><br>
-                <small>${ev.title}</small><br>
-                <small style="color:#666">📅 ${ev.date}</small>
-            </div>`;
-        });
-        popup += `</div>`;
-        marker.bindPopup(popup);
+        const color = getEventColor(e);
+        const marker = L.circleMarker([e.lat, e.lng], { 
+            radius: 7, 
+            fillColor: color, 
+            color: '#fff', 
+            weight: 2, 
+            fillOpacity: 0.8 
+        }).addTo(map);
+        
+        // 修正：在地圖 Popup 顯示日期
+        marker.bindPopup(`<b>${e.artist}</b><br>${e.title}<br>📅 ${e.date}`);
         markers.push(marker);
+        
+        // 修正：必須存入座標，標線才能計算路徑
+        pathCoords.push([e.lat, e.lng]); 
     });
 
-
+    // 繪製追星標線 (虛線效果)
     if (pathCoords.length > 1) {
-        const polyline = L.polyline(pathCoords, { color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15' }).addTo(map);
+        const polyline = L.polyline(pathCoords, {
+            color: themeColor.value,
+            weight: 3,
+            opacity: 0.6,
+            dashArray: '10, 15', 
+            lineJoin: 'round'
+        }).addTo(map);
         markers.push(polyline);
     }
+
     if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
 };
-
-
-// 1. 任務勳章邏輯
-const unlockedBadges = computed(() => {
-    const badges = [];
-    if (filteredMapEventsCount.value > 1) badges.push({ name: '征戰四方', icon: 'ph-map-pin' });
-    if (statsData.value.series.length > 0) badges.push({ name: '全勤模範生', icon: 'ph-student' });
-    if (parseFloat(totalDistance.value) > 100) badges.push({ name: '奔跑勇者', icon: 'ph-boot' });
-    return badges;
-});
-
-// 2. 海報明細清單（不含費用）
-const filteredEventsInYear = computed(() => {
-    let list = (selectedYear.value === 'ALL') 
-        ? [...events.value] 
-        : events.value.filter(e => e.date.startsWith(selectedYear.value));
-    return list.sort((a, b) => new Date(a.date) - new Date(b.date));
-});
-
-// 3. 分享按鈕函數：點了之後把開關設為 true
-const downloadPoster = () => {
-    showPosterModal.value = true;
-};
-
-
 
 
 
@@ -2072,7 +1849,6 @@ const downloadPoster = () => {
                     calendarEvent.value = event;
                     showCalendarModal.value = true;
                 };
-
 
                 const addToiCal = () => {
                     showCalendarModal.value = false;
@@ -2095,7 +1871,6 @@ const downloadPoster = () => {
                     const event = calendarEvent.value;
                     if (!event) return;
 
-
                     const { title, date, time, location, artist } = event;
                     const start = date.replace(/-/g, '') + 'T' + time.replace(/:/g, '') + '00';
                     const endDateObj = new Date(new Date(`${date}T${time}`).getTime() + 3*60*60*1000);
@@ -2112,7 +1887,6 @@ const downloadPoster = () => {
                     ticketEvent.value = evt;
                     showTicketModal.value = true;
                 }
-
 
                 const downloadBackup = () => {
                     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events.value));
@@ -2145,7 +1919,6 @@ const downloadPoster = () => {
                     };
                     reader.readAsText(file);
                 };
-
 
                 const processImport = () => {
                     try {
@@ -2204,7 +1977,6 @@ const downloadPoster = () => {
                     const file = event.target.files[0];
                     if (!file) return;
 
-
                     // 檢查檔案大小，限制在 1MB (1024 * 1024 bytes)
                     if (file.size > 1024 * 1024) {
                         alert('檔案大小超過 1MB 限制，請選擇更小的圖片。');
@@ -2213,7 +1985,6 @@ const downloadPoster = () => {
                         else if (type === 'fandom') fandomForm.value.coverUrl = '';
                         return;
                     }
-
 
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -2255,8 +2026,7 @@ const downloadPoster = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, unlockedBadges, filteredEventsInYear, downloadPoster, 
-
+totalDistance, showPosterModal, unlockedBadges, filteredEventsInYear, downloadPoster,  
 
                 };
             }
@@ -2264,5 +2034,4 @@ selectedMapYear, filteredMapEventsCount, totalDistance, unlockedBadges, filtered
     </script>
 </body>
 </html>
-
 
