@@ -695,39 +695,39 @@
 <div id="share-card-template" class="fixed -left-[9999px] top-0 w-[420px] h-[850px] p-8 font-sans text-white overflow-hidden" 
      :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #0a0f1e 100%)' }">
     
-    <div class="backdrop-blur-3xl bg-white/10 rounded-[3rem] p-8 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden text-center">
+    <div class="backdrop-blur-3xl bg-white/10 rounded-[3rem] p-8 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden">
         
-        <div class="relative z-10 mb-8">
+        <div class="relative z-10 mb-8 text-center">
             <div class="text-xs tracking-[0.4em] text-white/30 uppercase mb-2 font-bold">Idol Tracker Review</div>
             <h2 class="text-4xl font-black tracking-tight drop-shadow-lg">{{ selectedYear === 'ALL' ? '追星足跡' : selectedYear + ' 年度回顧' }}</h2>
         </div>
 
         <div class="grid grid-cols-3 gap-3 mb-8 relative z-10">
-            <div class="bg-white/10 rounded-3xl py-4 border border-white/10 flex flex-col items-center">
+            <div class="bg-white/10 rounded-3xl py-4 border border-white/10 flex flex-col justify-center items-center">
                 <div class="text-[10px] text-white/50 mb-1">征戰</div>
-                <div class="text-3xl font-black leading-none">{{ statsData.count }}<small class="text-xs ml-0.5">場</small></div>
-                <div class="text-[9px] mt-1.5 px-2 py-0.5 bg-white/20 rounded-full font-bold">熱血值 100%</div>
+                <div class="text-3xl font-black">{{ statsData.count }}<small class="text-xs ml-0.5">場</small></div>
+                <div class="text-[9px] mt-1 px-2 py-0.5 bg-white/20 rounded-full font-bold">熱血程度 100%</div>
             </div>
-            <div class="bg-white/10 rounded-3xl py-4 border border-white/10 flex flex-col items-center">
+            <div class="bg-white/10 rounded-3xl py-4 border border-white/10 flex flex-col justify-center items-center">
                 <div class="text-[10px] text-white/50 mb-1">解鎖</div>
-                <div class="text-3xl font-black leading-none">{{ filteredMapEventsCount }}<small class="text-xs ml-0.5">館</small></div>
-                <div class="text-[9px] mt-1.5 px-2 py-0.5 bg-white/20 rounded-full font-bold">場館獵人</div>
+                <div class="text-3xl font-black">{{ filteredMapEventsCount }}<small class="text-xs ml-0.5">館</small></div>
+                <div class="text-[9px] mt-1 px-2 py-0.5 bg-white/20 rounded-full font-bold">場館獵人</div>
             </div>
-            <div class="bg-white/10 rounded-3xl py-4 border border-white/10 flex flex-col items-center overflow-hidden">
+            <div class="bg-white/10 rounded-3xl py-4 border border-white/10 flex flex-col justify-center items-center overflow-hidden">
                 <div class="text-[10px] text-white/50 mb-1">奔波</div>
                 <div class="text-2xl font-black truncate w-full px-1">{{ Math.floor(totalDistance) }}<small class="text-[10px] ml-0.5 font-normal">km</small></div>
-                <div class="text-[9px] mt-1.5 px-2 py-0.5 bg-white/20 rounded-full font-bold uppercase tracking-tighter">跨越銀河去見你</div>
+                <div class="text-[9px] mt-1 px-2 py-0.5 bg-white/20 rounded-full font-bold">跨越銀河</div>
             </div>
         </div>
 
-        <div class="w-full h-48 bg-black/40 rounded-[2rem] mb-8 overflow-hidden border border-white/10 relative">
+        <div class="w-full h-48 bg-black/40 rounded-[2rem] mb-8 overflow-hidden border border-white/10 relative shadow-inner">
             <div id="map-snapshot" class="w-full h-full opacity-90 scale-110"></div>
-            <div class="absolute bottom-3 left-4 text-[11px] text-white/50 font-bold bg-black/40 px-3 py-1 rounded-full italic">
+            <div class="absolute bottom-3 left-4 text-[11px] text-white/50 font-bold bg-black/40 px-3 py-1 rounded-full backdrop-blur-md italic">
                 📍 足跡實景紀錄
             </div>
         </div>
 
-        <div v-if="emotionalSummary" class="mb-8 px-6 py-5 bg-white/5 rounded-3xl border-l-4 border-white/40 italic text-base text-left leading-relaxed">
+        <div v-if="emotionalSummary" class="mb-8 px-6 py-5 bg-white/5 rounded-3xl border-l-4 border-white/40 italic text-base text-left leading-relaxed shadow-lg">
             「 {{ emotionalSummary }} 」
         </div>
 
@@ -735,20 +735,20 @@
             <div class="text-xs text-white/30 uppercase tracking-[0.2em] mb-4 font-black">🌟 年度心動排行榜</div>
             <div class="space-y-4">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/10">
+                     class="flex items-center justify-between bg-white/10 p-4 rounded-2xl border border-white/10 shadow-sm transition-transform hover:scale-[1.02]">
                     <div class="flex items-center gap-4 min-w-0 flex-1 mr-2">
                         <span class="text-2xl font-black italic opacity-20 text-white shrink-0">0{{ index + 1 }}</span>
-                        <span class="text-lg font-bold truncate tracking-wide">{{ artist.name }}</span>
+                        <span class="text-lg font-bold tracking-wide truncate">{{ artist.name }}</span>
                     </div>
-                    <div class="text-right shrink-0">
-                        <span class="text-sm font-black text-white leading-none block">{{ artist.count }} 次</span>
+                    <div class="flex flex-col items-end shrink-0">
+                        <span class="text-sm font-black text-white leading-none">{{ artist.count }} 次</span>
                         <span class="text-[9px] text-white/40 font-bold mt-1 uppercase">見面達成</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-4 pt-6 border-t border-white/5 opacity-30 text-[10px] tracking-[0.5em] font-medium uppercase">
+        <div class="mt-4 pt-6 border-t border-white/5 opacity-30 text-[10px] tracking-[0.5em] font-medium text-center uppercase">
             {{ customTitle }} • 珍藏每一份熱愛
         </div>
     </div>
@@ -1159,14 +1159,16 @@
                 let markers = [];
 
 const generateShareCard = async () => {
-    if (statsData.value.count === 0) return alert("暫無數據可以分享！快去記錄第一場行程吧 🚀");
-    
-    [cite_start]// 地圖快照處理 [cite: 1916-1933]
+    if (statsData.value.count === 0) return alert("無資料可以分享！");
+    alert("正在同步數據並擷取地圖快照...");
+
+    // 處理地圖快照：將主地圖複製到截圖模板中
     const realMap = document.getElementById('map-container');
-    const snapshotArea = document.getElementById('map-snapshot');
-    if (snapshotArea && realMap) {
-        snapshotArea.innerHTML = '';
-        snapshotArea.appendChild(originalMap.cloneNode(true)); //
+    const snapshotContainer = document.getElementById('map-snapshot');
+    if (snapshotContainer && realMap) {
+        snapshotContainer.innerHTML = '';
+        const mapClone = realMap.cloneNode(true);
+        snapshotContainer.appendChild(mapClone);
     }
 
     await nextTick();
@@ -1175,38 +1177,32 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 4, // 提升至 4 倍解析度，確保字體在手機瀏覽時極致銳利
+            scale: 3, // 高清晰度倍率
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
+                // 確保在克隆的 DOM 中模板是可見的
                 clonedDoc.getElementById('share-card-template').style.left = '0';
             }
         });
 
         const imgData = canvas.toDataURL('image/png', 1.0);
         
-        // Safari 與手機瀏覽器優化預覽視窗
+        // Safari 與手機瀏覽器相容性處理
         const newTab = window.open();
         if (newTab) {
-            newTab.document.write(`
-                <body style="margin:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; font-family:sans-serif;">
-                    <img src="${imgData}" style="max-width:90%; height:auto; border-radius:20px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);" />
-                    <p style="color:#ffffff; margin-top:20px; font-size:16px; font-weight:bold; opacity:0.8; letter-spacing:1px;">✨ 長按圖片儲存，分享你的追星成就 ✨</p>
-                </body>
-            `);
+            newTab.document.write(`<body style="margin:0;background:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;"><img src="${imgData}" style="max-width:100%;height:auto;box-shadow:0 0 50px rgba(0,0,0,0.5);"/><p style="position:fixed;bottom:20px;color:white;font-family:sans-serif;font-size:14px;">長按圖片即可儲存分享</p></body>`);
         } else {
             const link = document.createElement('a');
-            link.download = `${selectedYear.value}_年度追星回顧.png`;
+            link.download = `${selectedYear.value}_追星里程回顧.png`;
             link.href = imgData;
             link.click();
         }
     } catch (err) {
-        console.error(err);
-        alert("卡片生成失敗，請再試一次。");
+        console.error("截圖出錯:", err);
+        alert("圖片生成失敗，請再試一次。");
     }
 };
-
-
 
 
 // 計算兩點間的球面距離 (Haversine 公式)
