@@ -133,8 +133,12 @@
 /* 產圖容器樣式 (9:16) */
 .share-canvas {
     width: 360px; height: 640px; position: fixed; left: -9999px; top: 0;
-    padding: 30px; display: flex; flex-direction: column;
+    padding: 40px 30px; display: flex; flex-direction: column;
+    justify-content: flex-start; z-index: -1; pointer-events: none; 
 }
+.share-content { height: 100%; display: flex; flex-direction: column; } 
+.summary-text { font-size: 14px; line-height: 1.6; margin-bottom: 20px; } 
+
 .event-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; opacity: 0.8; }
 .artist-tag { font-weight: bold; margin-right: 10px; font-size: 18px; }
 
@@ -1155,23 +1159,24 @@ const isGenerating = ref(false);
 const shareImagePreview = ref(null);
 const currentStyleClass = ref('style-creamy');
 
-const generateShareImage = async () => {
-    // 隨機切換風格
+cconst generateShareImage = async () => {
+    shareImagePreview.value = null; // [cite: 829] 先清空舊圖
     const styles = ['style-creamy', 'style-glitter', 'style-vintage'];
-    currentStyleClass.value = styles[Math.floor(Math.random() * styles.length)];
-    
-    isGenerating.value = true; // 顯示模板以利抓取
-    
-    await nextTick(); // 等待 DOM 渲染 [cite: 332]
-    
+    currentStyleClass.value = styles[Math.floor(Math.random() * styles.length)]; // [cite: 831]
+    isGenerating.value = true; // [cite: 831]
+    await nextTick(); // [cite: 832]
+
     const element = document.getElementById('share-template');
     html2canvas(element, {
-        useCORS: true,
-        scale: 3, // 提高解析度
-        backgroundColor: null
+        useCORS: true, // [cite: 833] 支援圖片跨網域
+        scale: 2, // [cite: 833] 適中的解析度，避免 Safari 內存崩潰
+        logging: false
     }).then(canvas => {
-        shareImagePreview.value = canvas.toDataURL("image/png");
-        isGenerating.value = false; // 抓完後再次隱藏模板
+        shareImagePreview.value = canvas.toDataURL("image/png"); // [cite: 833]
+        isGenerating.value = false; // [cite: 833]
+    }).catch(err => {
+        alert("產生圖片失敗，請重試");
+        isGenerating.value = false;
     });
 };
 
@@ -1700,10 +1705,19 @@ watch(activeTab, (newTab) => {
                     const titleMap = {};
                     const excludeKeywords = ['사전녹화', '事前錄製', '簽售會', '簽名會', '錄製'];
                     targetEvents.forEach(e => {
-                        const t = e.title.trim();
-                        if (!excludeKeywords.some(k => t.includes(k))) titleMap[t] = (titleMap[t] || 0) + 1;
-                    });
-                    const series = Object.keys(titleMap).map(key => ({ title: key, count: titleMap[key] })).filter(item => item.count > 1).sort((a, b) => b.count - a.count);
+    const t = e.title.trim();
+    if (!excludeKeywords.some(k => t.includes(k))) {
+        if (!titleMap[t]) titleMap[t] = { count: 0, date: e.date };
+        titleMap[t].count++;
+    }
+});
+// 修正對應的 series 輸出
+const series = Object.keys(titleMap).map(key => ({ 
+    title: key, 
+    count: titleMap[key].count, 
+    date: titleMap[key].date 
+})).filter(item => item.count > 1).sort((a, b) => b.count - a.count);
+
                     return { 
                         count, 
                         totalSpent, 
