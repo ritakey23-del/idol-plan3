@@ -20,7 +20,7 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://html2canvas.hertzenberg.com/dist/html2canvas.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
@@ -130,26 +130,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;
             cursor: pointer;
         }
-/* 產圖容器樣式 (9:16) */
-.share-canvas {
-    width: 360px; height: 640px; position: fixed; left: -9999px; top: 0;
-    padding: 40px 30px; display: flex; flex-direction: column;
-    justify-content: flex-start; z-index: -1; pointer-events: none; 
-}
-.share-content { height: 100%; display: flex; flex-direction: column; } 
-.summary-text { font-size: 14px; line-height: 1.6; margin-bottom: 20px; } 
-
-.event-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; opacity: 0.8; }
-.artist-tag { font-weight: bold; margin-right: 10px; font-size: 18px; }
-
-/* 風格 A：奶油極簡 */
-.style-creamy { background: #FFFDF5; color: #444; }
-/* 風格 B：應援光芒 */
-.style-glitter { background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%); }
-/* 風格 C：復古票券 */
-.style-vintage { background: #f8fafc; border: 10px solid var(--primary-color); }
-
-
     </style>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
@@ -613,53 +593,11 @@
 </div>
 
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+                 <div class="flex justify-between items-center mb-2">
                    
-                   <div class="flex justify-between items-center mb-2">
-    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-    <div class="flex gap-2">
-        <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-share-network text-lg"></i> 分享
-        </button>
-        <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-download-simple text-lg"></i> 匯入 
-        </button>
-    </div>
-</div>
-
-<div id="share-template" v-if="isGenerating" :class="'share-canvas ' + currentStyleClass" :style="cssVars">
-    <div class="share-content">
-        <h1 class="text-2xl font-bold mb-2">{{ selectedYear === 'ALL' ? '追星總回顧' : selectedYear + ' 年度回顧' }}</h1>
-        <p class="summary-text">"{{ emotionalSummary }}" </p>
-        
-        <div class="artist-cloud my-6">
-            <span v-for="a in statsData.topArtists" :key="a.name" class="artist-tag" :style="{ color: themeColor }">
-                #{{ a.name }} 
-            </span>
-        </div>
-
-        <div class="event-list-container">
-            <h3 class="text-xs font-bold opacity-50 mb-2">年度行程明細</h3>
-            <div v-for="item in statsData.series" :key="item.title" class="event-row">
-                <span class="date">{{ item.date || '' }}</span>
-                <span class="title">{{ item.title }}</span> 
-            </div>
-        </div>
-
-        <div class="footer-stats mt-auto pt-6 border-t border-dashed">
-            <div class="flex justify-between">
-                <span>累計場次: {{ statsData.count }} </span>
-                <span>追星里程: {{ totalDistance }} km </span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div v-if="shareImagePreview" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 p-4" @click="shareImagePreview = null">
-    <p class="text-white mb-4 font-bold">✨ 長按圖片儲存，分享至 Threads ✨</p>
-    <img :src="shareImagePreview" class="max-w-full rounded-xl shadow-2xl border border-white/20">
-</div>
-
-
+                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+                </div>
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -1146,40 +1084,6 @@
                 const importJson = ref('');
                 let map = null;
                 let markers = [];
-
-const shareStyles = ['creamy', 'glitter', 'vintage'];
-const currentShareStyle = ref('creamy');
-
-const generateRandomStyle = () => {
-    const randomIndex = Math.floor(Math.random() * shareStyles.length);
-    currentShareStyle.value = shareStyles[randomIndex];
-};
-
-const isGenerating = ref(false);
-const shareImagePreview = ref(null);
-const currentStyleClass = ref('style-creamy');
-
-cconst generateShareImage = async () => {
-    shareImagePreview.value = null; // 先清空舊圖
-    const styles = ['style-creamy', 'style-glitter', 'style-vintage'];
-    currentStyleClass.value = styles[Math.floor(Math.random() * styles.length)];    isGenerating.value = true; 
-    await nextTick(); //
-
-    const element = document.getElementById('share-template');
-    html2canvas(element, {
-        useCORS: true, //  支援圖片跨網域
-        scale: 2, // 適中的解析度，避免 Safari 內存崩潰
-        logging: false
-    }).then(canvas => {
-        shareImagePreview.value = canvas.toDataURL("image/png"); 
-        isGenerating.value = false; 
-    }).catch(err => {
-        alert("產生圖片失敗，請重試");
-        isGenerating.value = false;
-    });
-};
-
-
 
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
@@ -1704,19 +1608,10 @@ watch(activeTab, (newTab) => {
                     const titleMap = {};
                     const excludeKeywords = ['사전녹화', '事前錄製', '簽售會', '簽名會', '錄製'];
                     targetEvents.forEach(e => {
-    const t = e.title.trim();
-    if (!excludeKeywords.some(k => t.includes(k))) {
-        if (!titleMap[t]) titleMap[t] = { count: 0, date: e.date };
-        titleMap[t].count++;
-    }
-});
-// 修正對應的 series 輸出
-const series = Object.keys(titleMap).map(key => ({ 
-    title: key, 
-    count: titleMap[key].count, 
-    date: titleMap[key].date 
-})).filter(item => item.count > 1).sort((a, b) => b.count - a.count);
-
+                        const t = e.title.trim();
+                        if (!excludeKeywords.some(k => t.includes(k))) titleMap[t] = (titleMap[t] || 0) + 1;
+                    });
+                    const series = Object.keys(titleMap).map(key => ({ title: key, count: titleMap[key] })).filter(item => item.count > 1).sort((a, b) => b.count - a.count);
                     return { 
                         count, 
                         totalSpent, 
@@ -2161,7 +2056,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, isGenerating, shareImagePreview, currentStyleClass, generateShareImage, 
+selectedMapYear, filteredMapEventsCount, totalDistance, 
 
                 };
             }
@@ -2169,8 +2064,6 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isGenerating, shareImage
     </script>
 </body>
 </html>
-
-
 
 
 
