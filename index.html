@@ -692,65 +692,64 @@
                 <span class="text-[10px] font-medium">回顧</span>
             </button>
         </nav>
-<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[420px] h-[850px] p-10 font-sans text-white overflow-hidden text-center" 
+<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[400px] h-[711px] p-8 font-sans text-white overflow-hidden text-center flex flex-col items-center justify-between" 
      :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #0a0f1e 100%)' }">
     
-    <div class="backdrop-blur-3xl bg-white/10 rounded-[3.5rem] p-10 border border-white/20 shadow-2xl h-full flex flex-col relative overflow-hidden items-center justify-between">
+    <div class="backdrop-blur-3xl bg-white/10 rounded-[3rem] p-8 border border-white/20 shadow-2xl h-full w-full flex flex-col relative overflow-hidden items-center">
         
-        <div class="w-full">
-            <div class="text-sm tracking-[0.5em] text-white/30 uppercase mb-3 font-bold">Idol Tracker Review</div>
-            <div class="inline-block px-6 py-2 rounded-full bg-white/20 border border-white/30 text-lg font-black mb-6 shadow-lg animate-pulse">
-                {{ statsData.count >= 15 ? '🏆 核心鐵粉' : (totalDistance >= 5000 ? '✈️ 跨海追隨者' : '✨ 閃耀應援者') }}
+        <div class="w-full mb-6">
+            <div class="text-[10px] tracking-[0.4em] text-white/30 uppercase mb-2 font-bold">Idol Tracker Review</div>
+            <div class="inline-block px-4 py-1 rounded-full bg-white/20 border border-white/30 text-sm font-black mb-4 shadow-lg">
+                {{ statsData.count >= 15 ? [span_2](start_span)'🏆 核心鐵粉' : (totalDistance >= 5000 ? '✈️ 跨海追隨者' : '✨ 閃耀應援者') }}[span_2](end_span)
             </div>
-            <h2 class="text-5xl font-black tracking-tight drop-shadow-lg">{{ selectedYear === 'ALL' ? '追星總足跡' : selectedYear + ' 年度回顧' }}</h2>
+            <h2 class="text-3xl font-black tracking-tight drop-shadow-lg">{{ selectedYear === 'ALL' ? [span_3](start_span)'追星總足跡' : selectedYear + ' 年度回顧' }}[span_3](end_span)</h2>
         </div>
 
-        <div class="grid grid-cols-3 gap-4 w-full mb-8">
-            <div class="bg-white/10 rounded-[2.5rem] py-6 border border-white/10 flex flex-col items-center relative">
-                <span class="absolute -top-3 px-2 py-0.5 bg-yellow-500 text-[8px] font-black rounded-md text-black">HOT</span>
-                <div class="text-xs text-white/50 mb-2">征戰場次</div>
-                <div class="text-4xl font-black leading-none">{{ statsData.count }}</div>
-                <div class="text-[10px] mt-3 opacity-60 font-bold italic tracking-tighter">熱血滿格</div>
+        <div class="grid grid-cols-3 gap-3 w-full mb-6">
+            <div class="bg-white/10 rounded-2xl py-4 border border-white/10 flex flex-col items-center">
+                <div class="text-[9px] text-white/50 mb-1">場次</div>
+                <div class="text-2xl font-black leading-none">{{ statsData.count }}</div>
+                <div class="text-[8px] mt-2 opacity-60 font-bold">{{ statsData.count > 10 ? '熱血滿格' : '心動紀錄' }}</div>
             </div>
-            <div class="bg-white/10 rounded-[2.5rem] py-6 border border-white/10 flex flex-col items-center relative">
-                <span class="absolute -top-3 px-2 py-0.5 bg-blue-500 text-[8px] font-black rounded-md text-white">PRO</span>
-                <div class="text-xs text-white/50 mb-2">解鎖場館</div>
-                <div class="text-4xl font-black leading-none">{{ filteredMapEventsCount }}</div>
-                <div class="text-[10px] mt-3 opacity-60 font-bold italic tracking-tighter">場館收藏家</div>
+            <div class="bg-white/10 rounded-2xl py-4 border border-white/10 flex flex-col items-center">
+                <div class="text-[9px] text-white/50 mb-1">場館</div>
+                [span_4](start_span)<div class="text-2xl font-black leading-none">{{ filteredMapEventsCount }}[span_4](end_span)</div>
+                <div class="text-[8px] mt-2 opacity-60 font-bold">{{ filteredMapEventsCount > 5 ? '場館獵人' : '足跡打卡' }}</div>
             </div>
-            <div class="bg-white/10 rounded-[2.5rem] py-6 border border-white/10 flex flex-col items-center overflow-hidden relative px-1">
-                <span class="absolute -top-3 px-2 py-0.5 bg-purple-500 text-[8px] font-black rounded-md text-white">ULTRA</span>
-                <div class="text-xs text-white/50 mb-2">奔波里程</div>
-                <div class="text-3xl font-black truncate w-full tracking-tighter">{{ Math.floor(totalDistance) }}<small class="text-xs ml-0.5">km</small></div>
-                <div class="text-[10px] mt-3 opacity-60 font-bold italic tracking-tighter">跨越銀河</div>
+            <div class="bg-white/10 rounded-2xl py-4 border border-white/10 flex flex-col items-center overflow-hidden">
+                <div class="text-[9px] text-white/50 mb-1">里程</div>
+                [span_5](start_span)<div class="text-xl font-black truncate w-full px-1 tracking-tighter">{{ Math.floor(totalDistance) }}[span_5](end_span)</div>
+                <div class="text-[8px] mt-2 opacity-60 font-bold">跨越銀河去見你</div>
             </div>
         </div>
 
-        <div v-if="emotionalSummary" class="w-full mb-8 px-8 py-8 bg-black/20 rounded-[2.5rem] border-l-8 border-white/40 italic text-xl text-left leading-relaxed shadow-xl">
-            「 {{ emotionalSummary }} 」
+        <div v-if="emotionalSummary" class="w-full mb-6 px-6 py-6 bg-black/20 rounded-[2rem] border-l-4 border-white/40 italic text-sm text-left leading-relaxed relative z-20">
+            [span_6](start_span)「 {{ emotionalSummary }} 」[span_6](end_span)
         </div>
 
-        <div class="w-full flex-1 flex flex-col justify-start overflow-hidden">
-            <div class="text-xs text-white/30 uppercase tracking-[0.3em] mb-6 font-black">🌟 年度心動排行榜</div>
-            <div class="space-y-4 w-full">
+        <div class="w-full flex-1 flex flex-col justify-start overflow-hidden relative z-20">
+            <div class="text-[10px] text-white/30 uppercase tracking-[0.3em] mb-4 font-black">🌟 年度心動排行榜</div>
+            <div class="space-y-3 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-white/10 p-5 rounded-[1.5rem] border border-white/10">
-                    <div class="flex items-center gap-5 flex-1 min-w-0">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-xl font-black shrink-0">
+                     class="flex items-center justify-between bg-white/10 p-4 rounded-[1.2rem] border border-white/10">
+                    <div class="flex items-center gap-4 flex-1 min-w-0 text-left">
+                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-base shrink-0">
                              {{ index === 0 ? '🥇' : (index === 1 ? '🥈' : '🥉') }}
                         </div>
-                        <span class="text-xl font-bold truncate">{{ artist.name }}</span>
+                        <span class="text-sm font-bold truncate leading-tight">{{ artist.name }}</span>
                     </div>
-                    <div class="text-right shrink-0">
-                        <span class="text-lg font-black text-white block">{{ artist.count }} <small class="text-xs font-normal opacity-50">次</small></span>
-                        <div class="text-[9px] px-2 py-0.5 bg-primary/40 rounded-md font-bold mt-1">本命達成</div>
+                    <div class="text-right shrink-0 ml-2">
+                        <span class="text-sm font-black text-white block leading-none">{{ artist.count }} <small class="text-[10px] font-normal opacity-50">次</small></span>
                     </div>
+                </div>
+                <div v-if="!statsData.topArtists || statsData.topArtists.length === 0" class="text-white/20 italic text-xs py-4">
+                    [span_7](start_span)尚無見面紀錄[span_7](end_span)
                 </div>
             </div>
         </div>
 
-        <div class="w-full mt-6 pt-8 border-t border-white/5 opacity-30 text-xs tracking-[0.5em] font-medium uppercase">
-            {{ customTitle }} • 讓愛意有跡可循
+        <div class="w-full mt-4 pt-4 border-t border-white/5 opacity-30 text-[9px] tracking-[0.5em] font-medium uppercase">
+            [span_8](start_span){{ customTitle }}[span_8](end_span)
         </div>
     </div>
 </div>
@@ -1161,18 +1160,15 @@
                 let markers = [];
 
 const generateShareCard = async () => {
-    if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
-    alert("正在為您授予榮譽稱號並生成回顧卡...");
-
+    [span_15](start_span)if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");    
     await nextTick();
     const element = document.getElementById('share-card-template');
     
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 4, // 4倍高清倍率，確保字體與徽章極度銳利
+            scale: 3, // 高清倍率
             useCORS: true,
-            logging: false,
             onclone: (clonedDoc) => {
                 const clonedEl = clonedDoc.getElementById('share-card-template');
                 clonedEl.style.left = '0';
@@ -1181,26 +1177,24 @@ const generateShareCard = async () => {
         });
 
         const imgData = canvas.toDataURL('image/png', 1.0);
-        
         const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
                 <body style="margin:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh;">
-                    <img src="${imgData}" style="max-width:92%; height:auto; border-radius:30px; box-shadow:0 30px 60px rgba(0,0,0,0.6);" />
-                    <p style="color:white; margin-top:25px; font-family:sans-serif; font-size:16px; font-weight:bold; opacity:0.8; letter-spacing:2px;">長按圖片即可儲存分享 ✨</p>
+                    <img src="${imgData}" style="max-width:92%; height:auto; border-radius:30px; border:1px solid rgba(255,255,255,0.1);" />
+                    <p style="color:white; margin-top:20px; font-family:sans-serif; opacity:0.6; font-size:14px;">長按儲存回顧卡，分享到 Threads</p>
                 </body>
             `);
         } else {
             const link = document.createElement('a');
-            link.download = `${selectedYear.value}_追星榮譽回顧.png`;
+            link.download = `${selectedYear.value}_年度回顧.png`;
             link.href = imgData;
             link.click();
         }
     } catch (err) {
-        alert("卡片生成失敗，請再試一次。");
+        alert("生成失敗，請再試一次。");
     }
 };
-
 
 
 // 計算兩點間的球面距離 (Haversine 公式)
@@ -1238,23 +1232,20 @@ const filteredMapEventsCount = computed(() => {
 
 // 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    // 關鍵修正：根據當前分頁判斷使用哪一個年份變數
-    const targetYear = activeTab.value === 'map' ? selectedMapYear.value : selectedYear.value;
+    // 同步回顧模式下的年份
+       const targetYear = activeTab.value === 'stats' ? selectedYear.value : selectedMapYear.value;
     
     const baseEvents = targetYear === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
+  : events.value.filter(e => e.date && e.date.startsWith(targetYear));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
+.sort((a, b) => new Date(a.date) - new Date(b.date));)
 
     let dist = 0;
     for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(
-            validPoints[i].lat, validPoints[i].lng,
-            validPoints[i+1].lat, validPoints[i+1].lng
-        );
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
     }
     return dist.toFixed(1);
 });
