@@ -698,104 +698,102 @@
     <div class="bg-white rounded-[3rem] p-8 border-4 shadow-2xl w-full h-auto flex flex-col relative overflow-hidden items-center"
          :style="{ borderColor: themeColor }">
         
-        <div class="w-full flex flex-col items-center mb-8">
-            <h2 class="text-3xl font-black tracking-tight mb-4" :style="{ color: themeColor }">
+        <div class="w-full text-center mb-6">
+            <h2 class="text-3xl font-black tracking-tighter mb-4" :style="{ color: themeColor }">
                 {{ selectedYear === 'ALL' ? '追星總足跡' : selectedYear + ' 年度回顧' }}
             </h2>
             
-            <div v-if="emotionalSummary" class="w-full mb-8 px-6 py-5 rounded-2xl border-2 italic text-sm text-center leading-relaxed bg-slate-50 shadow-inner"
+            <div v-if="emotionalSummary" class="w-full px-6 py-5 rounded-2xl border-2 italic text-sm text-left leading-relaxed bg-slate-50 shadow-inner"
                  :style="{ borderColor: themeColor + '30', color: '#475569' }">
                 「 {{ emotionalSummary }} 」
             </div>
+        </div>
 
-            <div class="relative flex flex-col items-center mb-4">
-                <div class="relative flex items-center justify-center">
-                    <div class="absolute w-28 h-28 rounded-full border-2 border-dashed animate-[spin_15s_linear_infinite]" :style="{ borderColor: themeColor + '20' }"></div>
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-200 shadow-lg flex items-center justify-center border-4 border-white relative z-10">
-                        <i class="ph-fill ph-trophy text-white text-4xl"></i>
-                    </div>
+        <div class="flex flex-col items-center mb-10">
+            <div class="relative flex items-center justify-center">
+                <div class="absolute w-32 h-32 rounded-full border-2 border-dashed opacity-20 animate-[spin_20s_linear_infinite]" :style="{ borderColor: themeColor }"></div>
+                <div class="absolute w-28 h-28 rounded-full border-4 opacity-10" :style="{ borderColor: themeColor }"></div>
+                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-100 shadow-xl flex items-center justify-center border-4 border-white relative z-10">
+                    <i class="ph-fill ph-trophy text-white text-5xl"></i>
                 </div>
-                <div class="mt-4 px-6 py-1.5 rounded-full text-white font-black text-xs shadow-md tracking-widest" :style="{ backgroundColor: themeColor }">
-                    解鎖榮譽：{{ statsData.count >= 15 ? '核心鐵粉' : '應援模範' }}
-                </div>
+            </div>
+            <div class="mt-4 px-6 py-2 rounded-full text-white font-black text-sm shadow-lg tracking-widest" :style="{ backgroundColor: themeColor }">
+                解鎖成就：{{ statsData.count >= 15 ? '核心鐵粉' : '應援模範' }}
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-5 w-full mb-10">
+        <div class="w-full space-y-4 mb-10">
             
-            <div class="rounded-[2.5rem] px-6 py-5 border-2 flex items-center bg-white shadow-sm h-28 relative overflow-hidden" :style="{ borderColor: '#fee2e2' }">
-                <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mr-5 shrink-0">
-                    <i class="ph-fill ph-fire text-red-500 text-3xl"></i>
+            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24" :style="{ borderColor: '#fee2e2' }">
+                <div class="w-20 h-full flex items-center justify-center rounded-l-2xl bg-red-50">
+                    <i class="ph-fill ph-fire text-red-500 text-4xl"></i>
                 </div>
-                <div class="flex-1 flex flex-col justify-center h-full">
-                    <div class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">熱血指數</div>
-                    <div class="text-3xl font-black leading-none text-red-500 flex items-baseline">
-                        {{ statsData.count }}<span class="text-xs ml-1 opacity-40 font-bold">場</span>
+                <div class="flex-1 px-4 flex flex-col justify-center">
+                    <div class="text-[11px] text-slate-400 font-bold mb-0.5">熱血指數</div>
+                    <div class="text-3xl font-black text-red-500 leading-none">
+                        {{ statsData.count }}<span class="text-xs ml-1 opacity-40">場</span>
                     </div>
                 </div>
-                <div class="bg-red-500 text-white px-4 py-1.5 rounded-full font-black text-[10px] shadow-sm shrink-0 self-center">
-                    {{ statsData.count >= 20 ? '愛意爆表' : '瘋狂在路上' }}
+                <div class="pr-6">
+                    <span class="px-3 py-1 bg-red-500 text-white text-[10px] font-black rounded-lg">{{ statsData.count >= 20 ? '愛意爆表' : '瘋狂在路上' }}</span>
                 </div>
             </div>
 
-            <div class="rounded-[2.5rem] px-6 py-5 border-2 flex items-center bg-white shadow-sm h-28 relative overflow-hidden" :style="{ borderColor: '#e0f2fe' }">
-                <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mr-5 shrink-0">
-                    <i class="ph-fill ph-map-pin text-blue-500 text-3xl"></i>
+            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24" :style="{ borderColor: '#e0f2fe' }">
+                <div class="w-20 h-full flex items-center justify-center rounded-l-2xl bg-blue-50">
+                    <i class="ph-fill ph-map-pin text-blue-500 text-4xl"></i>
                 </div>
-                <div class="flex-1 flex flex-col justify-center h-full">
-                    <div class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">場館獵人</div>
-                    <div class="text-3xl font-black leading-none text-blue-500 flex items-baseline">
-                        {{ filteredMapEventsCount }}<span class="text-xs ml-1 opacity-40 font-bold">館</span>
+                <div class="flex-1 px-4 flex flex-col justify-center">
+                    <div class="text-[11px] text-slate-400 font-bold mb-0.5">場館獵人</div>
+                    <div class="text-3xl font-black text-blue-500 leading-none">
+                        {{ filteredMapEventsCount }}<span class="text-xs ml-1 opacity-40">館</span>
                     </div>
                 </div>
-                <div class="bg-blue-500 text-white px-4 py-1.5 rounded-full font-black text-[10px] shadow-sm shrink-0 self-center">
-                    {{ filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地標解鎖' }}
+                <div class="pr-6">
+                    <span class="px-3 py-1 bg-blue-500 text-white text-[10px] font-black rounded-lg">{{ filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地圖解鎖' }}</span>
                 </div>
             </div>
 
-            <div class="rounded-[2.5rem] px-6 py-5 border-2 flex items-center bg-white shadow-sm h-28 relative overflow-hidden" :style="{ borderColor: '#f3e8ff' }">
-                <div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center mr-5 shrink-0">
-                    <i class="ph-fill ph-rocket-launch text-purple-600 text-3xl"></i>
+            <div class="rounded-3xl p-1 border-2 bg-white shadow-sm flex items-center h-24" :style="{ borderColor: '#f3e8ff' }">
+                <div class="w-20 h-full flex items-center justify-center rounded-l-2xl bg-purple-50">
+                    <i class="ph-fill ph-rocket-launch text-purple-600 text-4xl"></i>
                 </div>
-                <div class="flex-1 flex flex-col justify-center h-full">
-                    <div class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">跨越銀河</div>
-                    <div class="text-2xl font-black leading-none text-purple-600 flex items-baseline tracking-tighter">
-                        {{ Math.floor(totalDistance) }}<span class="text-[10px] ml-0.5 opacity-40 font-bold uppercase">km</span>
+                <div class="flex-1 px-4 flex flex-col justify-center">
+                    <div class="text-[11px] text-slate-400 font-bold mb-0.5">跨越銀河</div>
+                    <div class="text-2xl font-black text-purple-600 leading-none tracking-tighter">
+                        {{ Math.floor(totalDistance) }}<span class="text-[10px] ml-0.5 opacity-40 font-bold">KM</span>
                     </div>
                 </div>
-                <div class="bg-purple-600 text-white px-4 py-1.5 rounded-full font-black text-[10px] shadow-sm shrink-0 self-center">
-                    {{ totalDistance >= 1000 ? '奔波無阻' : '只想見到你' }}
+                <div class="pr-6">
+                    <span class="px-3 py-1 bg-purple-600 text-white text-[10px] font-black rounded-lg">{{ totalDistance >= 1000 ? '奔波無阻' : '只想見到你' }}</span>
                 </div>
             </div>
 
         </div>
 
-        <div class="w-full text-left px-1 mb-6">
-            <div class="text-[11px] text-slate-400 tracking-[0.4em] mb-5 font-black flex items-center gap-2 uppercase">
-                <i class="ph-fill ph-heart text-red-400"></i> Top Artists 排行榜
+        <div class="w-full px-2 mb-6">
+            <div class="text-[11px] text-slate-300 font-black mb-5 flex items-center gap-2 tracking-[0.2em] uppercase">
+                <i class="ph-fill ph-heart text-red-400"></i> TOP ARTISTS 排行榜
             </div>
-            <div class="space-y-4 w-full">
+            <div class="space-y-3 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-slate-50 p-4 rounded-3xl border border-slate-100 shadow-sm h-20">
-                    <div class="flex items-center gap-4 min-w-0 flex-1 h-full">
-                        <div class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-sm font-black shadow-inner border border-slate-100 shrink-0">
+                     class="flex items-center justify-between bg-slate-50/50 p-4 rounded-3xl border border-slate-100 shadow-sm h-16">
+                    <div class="flex items-center gap-4 flex-1 h-full">
+                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border border-slate-100 shrink-0">
                              <span :style="{ color: themeColor }">{{ index + 1 }}</span>
                         </div>
-                        <span class="text-base font-bold text-slate-700 truncate tracking-wide">{{ artist.name }}</span>
+                        <span class="text-sm font-bold text-slate-700 truncate tracking-wide">{{ artist.name }}</span>
                     </div>
-                    <span class="text-sm font-black text-slate-500 shrink-0 ml-2">{{ artist.count }} 次見面</span>
+                    <span class="text-xs font-black text-slate-400 shrink-0 ml-2">{{ artist.count }} 次見面</span>
                 </div>
             </div>
         </div>
 
-        <div class="w-full mt-auto pt-8 border-t opacity-30 text-[10px] tracking-[0.5em] text-center" :style="{ borderColor: themeColor + '20' }">
+        <div class="w-full mt-auto pt-8 border-t border-slate-50 opacity-20 text-[9px] tracking-[0.5em] text-center">
             {{ customTitle }} • 珍藏每一份熱愛
         </div>
     </div>
 </div>
-
-
-
 
 
         <transition name="fade">
@@ -1203,21 +1201,21 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    // 授予榮譽稱號提示
-    alert("正在為您授予榮譽稱號並生成高清回顧卡...");
+    alert("正在授予榮譽稱號並優化排版對齊...");
 
     await nextTick();
-    window.scrollTo(0, 0); // 避免截圖偏移
+    window.scrollTo(0, 0); 
     
     const element = document.getElementById('share-card-template');
     
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: '#f8fafc',
-            scale: 4, // 確保高清
+            scale: 4, 
             useCORS: true,
             logging: false,
-            // 關鍵修復：等待字體與圖示渲染
+            // 關鍵設定：強制讓文字基線對齊
+            letterRendering: true,
             onclone: (clonedDoc) => {
                 const clonedEl = clonedDoc.getElementById('share-card-template');
                 clonedEl.style.left = '0';
@@ -1225,12 +1223,13 @@ const generateShareCard = async () => {
                 clonedEl.style.display = 'block';
                 clonedEl.style.height = 'auto';
                 
-                // 強制修正克隆 DOM 中的圖示對齊
+                // 強制修正克隆 DOM 中的圖示渲染
                 const icons = clonedEl.querySelectorAll('.ph-fill');
                 icons.forEach(icon => {
-                    icon.style.display = 'inline-block';
-                    icon.style.verticalAlign = 'middle';
-                    icon.style.lineHeight = '1';
+                    icon.style.display = 'flex';
+                    icon.style.alignItems = 'center';
+                    icon.style.justifyContent = 'center';
+                    icon.style.lineHeight = '0';
                 });
             }
         });
@@ -1239,9 +1238,9 @@ const generateShareCard = async () => {
         const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
-                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding: 20px; font-family:sans-serif;">
-                    <img src="${imgData}" style="max-width:92vw; height:auto; border-radius:30px; box-shadow: 0 25px 60px rgba(0,0,0,0.2);" />
-                    <p style="color:#64748b; margin-top:20px; font-weight:bold; font-size:16px;">✨ 長按圖片儲存高清回顧長圖 ✨</p>
+                <body style="margin:0; background:#f8fafc; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding: 20px; font-family:sans-serif;">
+                    <img src="${imgData}" style="max-width:92vw; height:auto; border-radius:30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);" />
+                    <p style="color:#94a3b8; margin-top:20px; font-size:14px; font-weight:bold;">✨ 長按圖片儲存回顧長圖 ✨</p>
                 </body>
             `);
         } else {
