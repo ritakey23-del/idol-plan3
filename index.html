@@ -57,15 +57,6 @@
             overflow: hidden;
         }
 
-    /* 隱藏生成圖專用的容器，平時不顯示 */
-    #share-canvas-wrapper {
-        position: fixed;
-        left: -9999px;
-        top: 0;
-        width: 375px; /* 標準手機寬度 */
-        background: #f8fafc;
-    }
-
 /* 彈窗專用的滾動容器 */
 .custom-popup-scroll {
     max-height: 150px;
@@ -606,46 +597,48 @@
 
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
-                   
-                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-<div class="flex gap-2">
-    <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-        <i class="ph ph-share-network text-lg"></i> 分享
-    </button>
-    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-        <i class="ph ph-download-simple text-lg"></i> 匯入
-    </button>
+    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+    <div class="flex gap-2">
+        <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+            <i class="ph ph-share-network text-lg"></i> 分享回顧
+        </button>
+        <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+            <i class="ph ph-download-simple text-lg"></i> 匯入
+        </button>
+    </div>
 </div>
 
-<div id="share-canvas-wrapper" ref="shareTemplate">
+<div id="share-canvas-wrapper" ref="shareTemplate" class="bg-slate-50">
     <div class="p-8 text-center" :style="{ borderTop: '8px solid ' + themeColor }">
-        <h2 class="text-2xl font-bold mb-1">{{ customTitle }}</h2>
-        <p class="text-slate-400 text-xs mb-6">{{ selectedYear === 'ALL' ? '歷年總回顧' : selectedYear + ' 年度回顧' }}</p>
+        <h2 class="text-2xl font-bold mb-1 text-slate-800">{{ customTitle }}</h2>
+        <p class="text-slate-400 text-[10px] mb-6 uppercase tracking-widest">{{ selectedYear === 'ALL' ? 'Lifetime Memories' : selectedYear + ' Year in Music' }}</p>
         
         <div class="bg-white rounded-3xl p-6 shadow-sm mb-6 text-left border border-slate-100">
-            <p class="text-sm font-bold text-slate-600 italic mb-4">"{{ emotionalSummary }}"</p>
-            <div class="grid grid-cols-2 gap-4">
+            <p class="text-sm font-bold text-slate-700 italic leading-relaxed">"{{ emotionalSummary }}"</p>
+            <div class="grid grid-cols-2 gap-4 mt-6 border-t border-slate-50 pt-4">
                 <div>
-                    <p class="text-[10px] text-slate-400">累計場次</p>
-                    <p class="text-xl font-bold">{{ statsData.count }} 場</p>
+                    <p class="text-[10px] text-slate-400 mb-1">累計場次</p>
+                    <p class="text-xl font-bold text-slate-800">{{ statsData.count }} <span class="text-xs font-normal">場</span></p>
                 </div>
                 <div>
-                    <p class="text-[10px] text-slate-400">累計投資</p>
-                    <p class="text-xl font-bold">${{ formatMoney(statsData.totalSpent) }}</p>
+                    <p class="text-[10px] text-slate-400 mb-1">累計投資</p>
+                    <p class="text-xl font-bold text-slate-800">${{ formatMoney(statsData.totalSpent) }}</p>
                 </div>
             </div>
         </div>
 
-        <div v-if="statsData.topArtists.length > 0" class="text-left mb-6">
-            <h3 class="font-bold text-sm mb-3">本命排行榜 Top 3</h3>
-            <div v-for="(artist, i) in statsData.topArtists" :key="i" class="flex items-center gap-3 mb-2">
-                <span class="text-lg font-black italic opacity-20">0{{i+1}}</span>
-                <span class="font-bold flex-1">{{ artist.name }}</span>
-                <span class="text-xs bg-slate-100 px-2 py-1 rounded-lg">{{ artist.count }} 次</span>
+        <div v-if="statsData.topArtists.length > 0" class="text-left bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <h3 class="font-bold text-xs text-slate-400 mb-4 flex items-center gap-2"><i class="ph ph-crown"></i> 本命排行榜 TOP 3</h3>
+            <div class="space-y-4">
+                <div v-for="(artist, i) in statsData.topArtists" :key="i" class="flex items-center gap-3">
+                    <span class="text-2xl font-black italic opacity-10 w-8 text-center">0{{i+1}}</span>
+                    <span class="font-bold text-slate-700 flex-1">{{ artist.name }}</span>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-50 text-slate-400">{{ artist.count }} 次見面</span>
+                </div>
             </div>
         </div>
         
-        <div class="text-[10px] text-slate-300 mt-8 font-barcode text-2xl">IDOL TRACKER MEMORIES</div>
+        <div class="text-[10px] text-slate-300 mt-8 font-barcode text-3xl opacity-50 uppercase">Idol Tracker Official Record</div>
     </div>
 </div>
 
