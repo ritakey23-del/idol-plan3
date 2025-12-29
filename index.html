@@ -693,7 +693,7 @@
             </>
         </nav>
 <div id="share-card-template" class="fixed -left-[9999px] top-0 w-[375px] p-4 font-sans text-slate-800 overflow-hidden text-center flex flex-col items-center" 
-     :style="{ backgroundColor: '#f1f5f9' }">
+     style="background-color: #f1f5f9;">
     
     <div class="bg-white rounded-[2.5rem] p-8 border-4 shadow-2xl w-full h-auto flex flex-col relative overflow-hidden items-center"
          :style="{ borderColor: themeColor }">
@@ -708,60 +708,68 @@
                 「 {{ emotionalSummary }} 」
             </div>
 
-            <div class="flex flex-col items-center gap-2 mb-2">
-                <div class="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-4xl shadow-md border-4 border-white">
-                    {{ statsData.count >= 15 ? '👑' : (totalDistance >= 5000 ? '✈️' : '🌟') }}
+            <div class="flex flex-col items-center mb-6">
+                <div class="relative flex items-center justify-center">
+                    <div class="w-24 h-24 rounded-full border-4 border-dashed animate-[spin_10s_linear_infinite]" :style="{ borderColor: themeColor + '40' }"></div>
+                    <div class="absolute w-20 h-20 rounded-full border-2" :style="{ borderColor: themeColor + '60' }"></div>
+                    <div class="absolute w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center text-3xl border-2" :style="{ borderColor: themeColor }">
+                        <template v-if="statsData.count >= 15">🏆</template>
+                        <template v-else-if="totalDistance >= 5000">✈️</template>
+                        <template v-else>✨</template>
+                    </div>
                 </div>
-                <div class="px-6 py-1.5 rounded-full text-white font-black text-sm shadow-sm"
-                     :style="{ backgroundColor: themeColor }">
-                    解鎖成就：{{ statsData.count >= 15 ? '核心鐵粉' : (totalDistance >= 5000 ? '跨海追隨者' : '閃耀應援者') }}
+                <div class="mt-3 px-4 py-1 rounded-full text-white font-bold text-xs shadow-md" :style="{ backgroundColor: themeColor }">
+                    解鎖成就：{{ statsData.count >= 15 ? '核心鐵粉' : (totalDistance >= 5000 ? '跨海追隨者' : '應援模範生') }}
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 w-full mb-10">
-            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '20' }">
+        <div class="grid grid-cols-3 gap-3 w-full mb-8">
+            <div class="rounded-2xl py-4 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '20' }">
                 <div class="text-[10px] text-slate-400 mb-1">熱血指數</div>
-                <div class="text-2xl font-black" :style="{ color: themeColor }">{{ statsData.count }}</div>
-                <div class="text-[8px] mt-2 px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold">瘋狂在路上</div>
+                <div class="text-2xl font-black leading-none" :style="{ color: themeColor }">{{ statsData.count }}</div>
+                <div class="text-[8px] mt-2 font-bold opacity-60">愛意爆表</div>
             </div>
-            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '20' }">
-                <div class="text-[10px] text-slate-400 mb-1">場館獵人</div>
-                <div class="text-2xl font-black" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
-                <div class="text-[8px] mt-2 px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold">地圖收藏家</div>
+            <div class="rounded-2xl py-4 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '20' }">
+                <div class="text-[9px] text-slate-400 mb-1">場館獵人</div>
+                <div class="text-2xl font-black leading-none" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
+                <div class="text-[8px] mt-2 font-bold opacity-60">地圖收藏</div>
             </div>
-            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm overflow-hidden" :style="{ borderColor: themeColor + '20' }">
-                <div class="text-[10px] text-slate-400 mb-1 leading-none">跨越銀河</div>
-                <div class="text-xl font-black truncate w-full tracking-tighter my-1" :style="{ color: themeColor }">{{ Math.floor(totalDistance) }}km</div>
-                <div class="text-[8px] mt-1 px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold truncate w-full">只想見到你</div>
+            <div class="rounded-2xl py-4 border flex flex-col items-center justify-center bg-white shadow-sm overflow-hidden" :style="{ borderColor: themeColor + '20' }">
+                <div class="text-[9px] text-slate-400 mb-1">跨越銀河</div>
+                <div class="text-lg font-black truncate w-full tracking-tighter" :style="{ color: themeColor }">{{ Math.floor(totalDistance) }}<small class="text-[8px] font-normal">km</small></div>
+                <div class="text-[8px] mt-2 font-bold opacity-60">距離非問題</div>
             </div>
         </div>
 
         <div class="w-full text-left px-1 mb-6">
-            <div class="text-xs text-slate-400 uppercase tracking-widest mb-4 font-black flex items-center gap-2">
-                <i class="ph ph-medal-fill" :style="{ color: themeColor }"></i> 年度心動榜單
+            <div class="text-[10px] text-slate-400 uppercase tracking-[0.3em] mb-4 font-black flex items-center gap-2">
+                <i class="ph ph-crown text-yellow-500"></i> 年度心動榜單
             </div>
-            <div class="space-y-4 w-full">
+            <div class="space-y-3 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border" :style="{ borderColor: themeColor + '10' }">
+                     class="flex items-center justify-between bg-slate-50 p-4 rounded-[1.5rem] border border-white shadow-sm"
+                     style="border-color: rgba(0,0,0,0.05);">
                     <div class="flex items-center gap-4 min-w-0 flex-1">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full text-sm shrink-0 font-black text-white" :style="{ backgroundColor: themeColor }">
-                             {{ index + 1 }}
+                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-base shrink-0 font-black shadow-inner border border-slate-100">
+                             {{ index === 0 ? '🥇' : (index === 1 ? '🥈' : '🥉') }}
                         </div>
                         <span class="text-base font-bold truncate text-slate-700">{{ artist.name }}</span>
                     </div>
                     <div class="text-right shrink-0 ml-2">
-                        <span class="text-sm font-black block text-slate-600">{{ artist.count }} 次見面</span>
+                        <span class="text-sm font-black block text-slate-600">{{ artist.count }} <small class="text-[10px] font-normal opacity-50">次見面</small></span>
                     </div>
                 </div>
+                <div v-if="!statsData.topArtists || statsData.topArtists.length === 0" class="text-slate-300 italic text-xs py-4 text-center">尚未開啟心動旅程</div>
             </div>
         </div>
 
-        <div class="w-full mt-auto pt-8 border-t opacity-30 text-[10px] tracking-[0.4em] text-center" :style="{ borderColor: themeColor + '20' }">
-            {{ customTitle }} • 珍藏熱愛
+        <div class="w-full mt-auto pt-6 border-t opacity-30 text-[10px] tracking-[0.4em] text-center" :style="{ borderColor: themeColor + '20' }">
+            {{ customTitle }} • 珍藏每一份熱愛
         </div>
     </div>
 </div>
+
 
 
 
@@ -1172,49 +1180,50 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    // 提示
-    alert("正在為您授予榮譽稱號並生成回顧長圖...");
+    [span_2](start_span)// 提示使用者開始生成[span_2](end_span)
+    alert("正在為您授予榮譽稱號並生成高清回顧長圖...");
 
     await nextTick();
-    // 確保頁面回到最頂端，防止 html2canvas 偏移
-    window.scrollTo(0, 0);
-    
     const element = document.getElementById('share-card-template');
     
+    // 確保截圖時頁面在最上方，避免 html2canvas 偏移
+    window.scrollTo(0, 0);
+
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: '#f1f5f9',
-            scale: 4, // 提高到4倍，保證文字邊緣極度銳利
+            scale: 4, // 提高到 4 倍高清倍率，確保文字極度銳利
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
                 const clonedEl = clonedDoc.getElementById('share-card-template');
                 clonedEl.style.left = '0';
                 clonedEl.style.position = 'relative';
-                clonedEl.style.display = 'block';
-                clonedEl.style.height = 'auto'; // 重要：讓高度隨內容撐開
+                clonedEl.style.display = 'flex';
+                [span_3](start_span)clonedEl.style.height = 'auto'; // 強制高度隨內容撐開，不設死 667px[span_3](end_span)
             }
         });
 
-        const imgData = canvas.toDataURL('image/png', 1.0);
+        const imgData = canvas.toDataURL('image/png', 1.0); [span_4](start_span)//[span_4](end_span)
         const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
-                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; padding:20px; font-family:sans-serif;">
-                    <img src="${imgData}" style="max-width:95vw; height:auto; border-radius:20px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);" />
-                    <p style="color:#64748b; margin-top:20px; font-size:16px; font-weight:bold;">✨ 長按圖片儲存高清長圖 ✨</p>
+                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; font-family:sans-serif; padding: 20px;">
+                    <img src="${imgData}" style="max-width:95vw; height:auto; border-radius:30px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);" />
+                    <p style="color:#64748b; margin-top:20px; font-size:16px; font-weight:bold; letter-spacing:1px;">✨ 長按圖片儲存高清回顧長圖 ✨</p>
                 </body>
-            `);
+            `); [span_5](start_span)//[span_5](end_span)
         } else {
-            const link = document.createElement('a');
-            link.download = `${selectedYear.value}_追星榮譽回顧.png`;
+            const link = document.createElement('a'); [span_6](start_span)//[span_6](end_span)
+            link.download = `${selectedYear.value}_追星榮譽回顧.png`; [span_7](start_span)//[span_7](end_span)
             link.href = imgData;
             link.click();
         }
     } catch (err) {
-        alert("Please try again.");
+        alert("生成失敗，請確認網路穩定後再試一次。"); [span_8](start_span)//[span_8](end_span)
     }
 };
+
 
 
 
