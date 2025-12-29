@@ -144,6 +144,7 @@
             cursor: pointer;
         }
     </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
 
@@ -633,12 +634,18 @@
                 <div class="space-y-4">
                  
                     <div class="relative">
-                        <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                            <option value="ALL">🗓️ 全部年份總回顧</option>
-                            <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
-                    </div>
+                        <div class="flex gap-2">
+    <select v-model="selectedYear" class="flex-1 appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none">
+        <option value="ALL">🗓️ 全部年份總回顧</option>
+        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
+    </select>
+    <button v-if="selectedYear !== 'ALL'" @click="alert('海報已準備好！請截圖分享您的追星足跡 ✨')" 
+            class="bg-white border border-slate-200 px-4 rounded-xl shadow-sm active:scale-95 transition-transform" 
+            :style="{ color: themeColor }">
+        <i class="ph ph-share-network text-xl"></i>
+    </button>
+</div>
+
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
                         <p class="text-sm font-bold text-slate-700 italic">"{{ emotionalSummary }}"</p>
@@ -1058,6 +1065,51 @@
             </div>
         </transition>
 
+<div id="share-poster" v-if="selectedYear !== 'ALL'" class="fixed -left-[2000px] w-[500px] bg-white p-10 flex flex-col gap-8" :style="{ borderTop: '20px solid ' + themeColor }">
+    <div class="text-center">
+        <h2 class="text-3xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
+        <p class="text-slate-400 mt-2 text-sm uppercase tracking-tighter">{{ selectedYear }} REVIEW</p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4 border-y py-6 border-slate-100">
+        <div class="text-center border-r border-slate-100">
+            <div class="text-[10px] text-slate-400 mb-1 uppercase">心動瞬間</div>
+            <div class="text-2xl font-bold" :style="{ color: themeColor }">{{ statsData.count }}</div>
+        </div>
+        <div class="text-center border-r border-slate-100">
+            <div class="text-[10px] text-slate-400 mb-1 uppercase">征戰場館</div>
+            <div class="text-2xl font-bold" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
+        </div>
+        <div class="text-center">
+            <div class="text-[10px] text-slate-400 mb-1 uppercase">里程 (km)</div>
+            <div class="text-2xl font-bold" :style="{ color: themeColor }">{{ totalDistance }}</div>
+        </div>
+    </div>
+
+    <div class="bg-slate-50 p-6 rounded-2xl italic text-slate-600 leading-relaxed text-sm">
+        "{{ emotionalSummary }}"
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-6">
+        <div v-for="badge in unlockedBadges" :key="badge.name" class="flex flex-col items-center gap-2">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-md" :style="{ backgroundColor: themeColor }">
+                <i :class="'ph ph-bold ' + badge.icon" class="text-xl"></i>
+            </div>
+            <span class="text-[10px] font-bold text-slate-500 tracking-tighter">{{ badge.name }}</span>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <div class="text-[10px] font-bold text-slate-400 tracking-[0.2em] border-b pb-2">TIMELINE MEMORIES</div>
+        <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-4 items-start border-b border-slate-50 pb-3 last:border-0">
+            <div class="text-[10px] font-mono text-slate-300 pt-1">{{ event.date.slice(5) }}</div>
+            <div class="flex-1">
+                <div class="text-sm font-bold text-slate-700 leading-tight">{{ event.title }}</div>
+                <div class="text-[10px] text-slate-400 mt-1">{{ event.artist }} @ {{ event.location }}</div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md m-4">
@@ -1680,6 +1732,31 @@ watch(activeTab, (newTab) => {
                     if (selectedYear.value !== 'ALL') {
                         targetEvents = events.value.filter(e => e.date.match(new RegExp(`^${selectedYear.value}`)));
                     }
+
+// 判斷解鎖徽章 [cite: 418, 281, 282]
+const unlockedBadges = computed(() => {
+    const badges = [];
+    if (filteredMapEventsCount.value > 1) {
+        badges.push({ name: '征戰四方', icon: 'ph-map-pin' });
+    }
+    if (statsData.value.series.length > 0) {
+        badges.push({ name: '全勤模範生', icon: 'ph-student' });
+    }
+    if (parseFloat(totalDistance.value) > 100) {
+        badges.push({ name: '奔跑勇者', icon: 'ph-boot' });
+    }
+    return badges;
+});
+
+// 過濾該年度的所有活動清單（用於海報列出明細） 
+const filteredEventsInYear = computed(() => {
+    if (selectedYear.value === 'ALL') return [];
+    return events.value
+        .filter(e => e.date.startsWith(selectedYear.value))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+});
+
+
                     const count = targetEvents.length;
           
                     const totalSpent = targetEvents.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0);
@@ -2192,3 +2269,5 @@ selectedMapYear, filteredMapEventsCount, totalDistance,
     </script>
 </body>
 </html>
+
+
