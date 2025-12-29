@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
@@ -130,6 +132,24 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;
             cursor: pointer;
         }
+/* 分享卡片隱藏容器，僅供生圖使用 */
+#share-canvas-container {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 375px; /* 標準手機螢幕寬度 */
+    background: white;
+    padding: 20px;
+}
+.share-artist-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 10px;
+    margin: 2px;
+    color: white;
+}
+
     </style>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
@@ -596,8 +616,15 @@
                  <div class="flex justify-between items-center mb-2">
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
-                </div>
+<div class="flex gap-2">
+    <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+        <i class="ph ph-export text-lg"></i> 分享
+    </button>
+    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+        <i class="ph ph-download-simple text-lg"></i> 匯入
+    </button>
+</div>
+
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -1053,6 +1080,8 @@
 
                 const events = ref([]);
                 const selectedMapYear = ref('ALL');
+               const shareImageUrl = ref(null);
+               const shareTemplate = ref(null);
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
@@ -1871,7 +1900,33 @@ const initMap = () => {
     if (pathCoords.length > 0) map.fitBounds(pathCoords, { padding: [50, 50] });
 };
 
+const generateShareImage = async () => {
+    // 隨機風格選擇
+    const styles = ['minimal', 'gradient', 'ticket'];
+    const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+    const el = shareTemplate.value;
 
+    // 根據風格動態調整樣式
+    if (randomStyle === 'minimal') {
+        el.style.background = '#ffffff';
+        el.style.color = '#334155';
+    } else if (randomStyle === 'gradient') {
+        el.style.background = `linear-gradient(135deg, ${themeColor.value}22, #ffffff)`;
+    } else {
+        el.style.background = '#f8fafc';
+        el.style.border = `2px dashed ${themeColor.value}`;
+    }
+
+    // 轉為 canvas
+    const canvas = await html2canvas(el, {
+        scale: 2, // 提高解析度
+        useCORS: true,
+        logging: false,
+        backgroundColor: null
+    });
+
+    shareImageUrl.value = canvas.toDataURL('image/png');
+};
 
 
                 // Calendar
@@ -2056,14 +2111,63 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, 
+selectedMapYear, filteredMapEventsCount, totalDistance, shareImageUrl, shareTemplate, generateShareImage, 
 
                 };
             }
         }).mount('#app');
     </script>
+<div id="share-canvas-container" ref="shareTemplate" :style="{ borderColor: themeColor }" class="border-t-8">
+    <div class="text-center mb-4">
+        <h2 class="text-xl font-bold">{{ selectedYear === 'ALL' ? '追星總回顧' : selectedYear + ' 追星回顧' }}</h2>
+        <p class="text-xs text-slate-400">Created by {{ customTitle }}</p>
+    </div>
+    
+    <div class="bg-slate-50 p-4 rounded-xl mb-4 italic text-sm text-slate-700 text-center">
+        "{{ emotionalSummary }}"
+    </div>
+
+    <div class="flex flex-wrap justify-center mb-4">
+        <span v-for="artist in statsData.topArtists" :key="artist.name" 
+              class="share-artist-tag" :style="{ backgroundColor: themeColor }">
+            # {{ artist.name }}
+        </span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 mb-4">
+        <div class="bg-slate-50 p-3 rounded-lg text-center">
+            <div class="text-[10px] text-slate-400">參戰場次</div>
+            <div class="font-bold">{{ statsData.count }}</div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-lg text-center">
+            <div class="text-[10px] text-slate-400">累積里程</div>
+            <div class="font-bold">{{ totalDistance }} km</div>
+        </div>
+    </div>
+
+    <div class="space-y-2 mb-4">
+        <div v-for="event in filteredEvents.slice(0, 8)" class="text-[10px] flex justify-between border-b pb-1">
+            <span>{{ event.date }} {{ event.title }}</span>
+            <span class="font-mono">{{ event.location }}</span>
+        </div>
+        <p v-if="filteredEvents.length > 8" class="text-[8px] text-center text-slate-400">...以及其他 {{ filteredEvents.length - 8 }} 場活動</p>
+    </div>
+
+    <div class="text-center pt-2 border-t border-dashed">
+        <div class="font-barcode text-3xl opacity-50">IDOL DIARY</div>
+    </div>
+</div>
+
+<div v-if="shareImageUrl" class="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-6">
+    <img :src="shareImageUrl" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl mb-6">
+    <p class="text-white text-sm mb-4">長按圖片即可儲存或分享</p>
+    <button @click="shareImageUrl = null" class="bg-white px-8 py-3 rounded-full font-bold">關閉預覽</button>
+</div>
+
 </body>
 </html>
+
+
 
 
 
