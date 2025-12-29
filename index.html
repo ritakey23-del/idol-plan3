@@ -18,11 +18,13 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://html2canvas.hertzenberg.com/dist/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
+
 
     <script>
         tailwind.config = {
@@ -42,12 +44,14 @@
         }
     </script>
 
+
     <style>
         :root {
             --primary-color: #63b3b0;
             --primary-dark: #4a8f8c;
             --primary-light: #e0f2f1;
         }
+
 
         body {
             background-color: #f8fafc;
@@ -56,7 +60,6 @@
             width: 100vw;
             overflow: hidden;
         }
-
 /* 彈窗專用的滾動容器 */
 .custom-popup-scroll {
     max-height: 150px;
@@ -64,17 +67,20 @@
     padding-right: 8px;
 }
 
+
 /* 強制顯示精緻的捲軸 */
 .custom-popup-scroll::-webkit-scrollbar {
     width: 6px;
     display: block !important; /* 確保不被全域隱藏設定覆蓋 */
 }
 
+
 /* 捲軸軌道 */
 .custom-popup-scroll::-webkit-scrollbar-track {
     background: #f1f5f9;
     border-radius: 10px;
 }
+
 
 /* 捲軸拉條 */
 .custom-popup-scroll::-webkit-scrollbar-thumb {
@@ -84,8 +90,11 @@
 }
 
 
+
+
         .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 800px; opacity: 1; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+
 
         .slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease-out; }
         .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); opacity: 0; }
@@ -93,11 +102,13 @@
         .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
 
+
         .custom-checkbox:checked + div { text-decoration: line-through; color: #94a3b8; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         #map-container { height: 100%; width: 100%; z-index: 1; }
         .leaflet-bottom { z-index: 400 !important; }
 .leaflet-top.leaflet-left { margin-top: 85px !important; }
+
 
         /* Ticket Styles */
         .ticket-stub {
@@ -133,16 +144,18 @@
             cursor: pointer;
         }
     </style>
-
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
+
 
     <button onclick="forceReset()" id="rescue-btn"
         style="position: fixed; top: 10px; left: 10px; z-index: 99999; background-color: #ef4444; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;">
         ⚠️ 畫面全白點我修復
     </button>
 
+
     <div id="app" :style="cssVars" class="h-full flex flex-col relative w-full">
+
 
         <header :class="headerTextColor" class="pt-4 pb-4 px-5 shadow-lg rounded-b-[1.5rem] z-20 shrink-0 transition-colors duration-200"
             :style="{ backgroundColor: themeColor }">
@@ -180,6 +193,7 @@
             </div>
         </header>
 
+
         <main class="flex-1 overflow-y-auto no-scrollbar scroll-smooth w-full relative bg-slate-50">
             <div v-if="activeTab === 'home'" class="space-y-4 p-5 pb-32">
                 <div class="relative">
@@ -191,6 +205,7 @@
                         <i class="ph ph-x-circle-fill"></i>
                     </button>
                 </div>
+
 
                 <div class="flex bg-slate-200 p-1 rounded-full relative mb-2">
                     <div class="w-1/2 h-full absolute bg-white rounded-full shadow-sm transition-all duration-300 transform"
@@ -207,6 +222,7 @@
                     </button>
                 </div>
 
+
                 <div v-if="filteredEvents.length === 0" class="text-center py-12 px-4 opacity-80 flex flex-col items-center">
                     <div class="bg-slate-100 p-6 rounded-full mb-4">
                         <i class="ph ph-magnifying-glass text-5xl text-slate-300" v-if="searchQuery"></i>
@@ -221,6 +237,7 @@
                         {{ viewMode === 'upcoming' ? '快去買門票，為愛燃燒！🔥' : '愛你的心意，已經讓回憶閃閃發光 ✨' }}
                     </p>
 
+
                     <button v-if="!searchQuery" @click="openModal()" 
                             :style="{ color: themeColor, borderColor: themeColor }"
                             class="bg-white border-2 px-6 py-2 rounded-full font-bold shadow-sm active:scale-95 transition-transform text-sm flex items-center gap-2">
@@ -230,6 +247,7 @@
          
                <button v-else @click="searchQuery = ''" class="text-slate-500 underline text-sm">清除搜尋</button>
                 </div>
+
 
                 <transition-group name="fade" tag="div" class="space-y-4">
                     <div v-for="event in filteredEvents" :key="event.id" 
@@ -254,6 +272,7 @@
                             </div>
          
                         </div>
+
 
         
                         <div class="p-5 cursor-pointer relative" @click="toggleExpand(event.id)">
@@ -286,6 +305,7 @@
                                 </div>
                             </div>
 
+
  
                             <div v-if="event.coverUrl" class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-2 text-slate-700">
@@ -298,6 +318,7 @@
              
                                 <span v-if="event.sticker" class="text-xl">{{ event.sticker }}</span>
                             </div>
+
 
                         
                             <div class="pl-2 space-y-3 text-sm text-slate-600">
@@ -342,6 +363,8 @@
         <i class="ph ph-warning-circle"></i> 未定位
     </span>
 </div>
+
+
 
 
                         
@@ -455,6 +478,7 @@
                 </transition-group>
             </div>
 
+
             <div v-if="activeTab === 'fandom'" class="space-y-6 p-5 pb-32">
                 <div class="flex justify-between items-center">
                     <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-heart-straight-fill text-red-500"></i> 入坑紀念日 💖</h2>
@@ -475,6 +499,7 @@
     
                                 <img :src="fan.coverUrl" class="w-full h-full object-cover rounded-xl" alt="Fandom Cover" onerror="this.style.display='none'">
                             </div>
+
 
                             <div class="flex justify-between items-start p-4 shrink-0 border-b border-slate-100">
  
@@ -548,6 +573,7 @@
    
                         </div>
 
+
                     </div>
                 </div>
                 <div v-else class="text-center py-4 px-4 opacity-80 flex flex-col items-center">
@@ -557,6 +583,7 @@
                     <p class="text-sm text-slate-400 mb-4">快來記錄你與偶像相遇的日子吧！</p>
                 </div>
             </div>
+
 
             <div v-show="activeTab === 'map'" class="w-full h-full relative">
                 <div id="map-container" class="w-full h-full bg-slate-200"></div>
@@ -586,6 +613,7 @@
             </div>
         </div>
 
+
         <div class="text-right shrink-0 border-l border-slate-100 pl-3 ml-1">
             <div class="text-lg font-bold leading-none" :style="{ color: themeColor }">
                 {{ totalDistance }} <span class="text-[10px] font-normal text-slate-400">km</span>
@@ -595,53 +623,13 @@
     </div>
 </div>
 
+
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                  <div class="flex justify-between items-center mb-2">
-    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-    <div class="flex gap-2">
-        <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-share-network text-lg"></i> 分享回顧
-        </button>
-        <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-download-simple text-lg"></i> 匯入
-        </button>
-    </div>
-</div>
-
-<div id="share-canvas-wrapper" ref="shareTemplate" class="bg-slate-50">
-    <div class="p-8 text-center" :style="{ borderTop: '8px solid ' + themeColor }">
-        <h2 class="text-2xl font-bold mb-1 text-slate-800">{{ customTitle }}</h2>
-        <p class="text-slate-400 text-[10px] mb-6 uppercase tracking-widest">{{ selectedYear === 'ALL' ? 'Lifetime Memories' : selectedYear + ' Year in Music' }}</p>
-        
-        <div class="bg-white rounded-3xl p-6 shadow-sm mb-6 text-left border border-slate-100">
-            <p class="text-sm font-bold text-slate-700 italic leading-relaxed">"{{ emotionalSummary }}"</p>
-            <div class="grid grid-cols-2 gap-4 mt-6 border-t border-slate-50 pt-4">
-                <div>
-                    <p class="text-[10px] text-slate-400 mb-1">累計場次</p>
-                    <p class="text-xl font-bold text-slate-800">{{ statsData.count }} <span class="text-xs font-normal">場</span></p>
+                   
+                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
                 </div>
-                <div>
-                    <p class="text-[10px] text-slate-400 mb-1">累計投資</p>
-                    <p class="text-xl font-bold text-slate-800">${{ formatMoney(statsData.totalSpent) }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div v-if="statsData.topArtists.length > 0" class="text-left bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-            <h3 class="font-bold text-xs text-slate-400 mb-4 flex items-center gap-2"><i class="ph ph-crown"></i> 本命排行榜 TOP 3</h3>
-            <div class="space-y-4">
-                <div v-for="(artist, i) in statsData.topArtists" :key="i" class="flex items-center gap-3">
-                    <span class="text-2xl font-black italic opacity-10 w-8 text-center">0{{i+1}}</span>
-                    <span class="font-bold text-slate-700 flex-1">{{ artist.name }}</span>
-                    <span class="text-[10px] font-bold px-2 py-1 rounded-lg bg-slate-50 text-slate-400">{{ artist.count }} 次見面</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="text-[10px] text-slate-300 mt-8 font-barcode text-3xl opacity-50 uppercase">Idol Tracker Official Record</div>
-    </div>
-</div>
-
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -697,11 +685,13 @@
   
        </main>
 
+
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
             class="absolute bottom-24 right-6 w-14 h-14 text-white rounded-full shadow-lg shadow-primary/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 z-30 mb-safe"
             v-if="activeTab === 'home'">
             <i class="ph ph-plus text-2xl font-bold"></i>
         </button>
+
 
         <nav class="bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shrink-0 w-full z-40 safe-pb">
             <button @click="activeTab = 'home'" class="flex flex-col items-center gap-1 transition-colors w-16" 
@@ -715,6 +705,7 @@
                 <span class="text-[10px] font-medium">紀念日</span>
             </button>
 
+
             <button @click="activeTab = 'map'" class="flex flex-col items-center gap-1 transition-colors w-16"
                 :class="activeTab === 'map' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'map' ? themeColor : '' }">
                 <i class="ph text-2xl ph-map-trifold" :class="{ 'ph-fill': activeTab === 'map', 'ph-bold': activeTab !== 'map' }"></i>
@@ -726,6 +717,7 @@
                 <span class="text-[10px] font-medium">回顧</span>
             </button>
         </nav>
+
 
         <transition name="fade">
             
@@ -787,6 +779,7 @@
  
           </transition>
 
+
         <transition name="slide-up">
             <div v-if="calendarEvent && showCalendarModal" class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm" @click.self="showCalendarModal = false">
                 <div class="bg-white w-full max-w-sm rounded-t-3xl p-6 relative shadow-2xl safe-pb transform transition-transform duration-300 translate-y-0">
@@ -807,6 +800,7 @@
             </div>
         </transition>
 
+
         <transition name="slide-up">
   
             <div v-if="showChangelogModal" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
@@ -818,6 +812,7 @@
                         <button @click="showChangelogModal = false" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200"><i class="ph ph-x"></i></button>
                     </div>
                     <div class="overflow-y-auto flex-1 no-scrollbar space-y-6">
+
 
                         <div v-for="log in changelogContent" :key="log.version" class="border-b pb-4 border-slate-100 last:border-0">
                             <div class="flex justify-between items-start mb-2">
@@ -832,6 +827,7 @@
                  
                         <p class="text-center text-sm text-slate-400 pt-2">— 這是所有歷史版本紀錄 —</p>
 
+
                     </div>
                     <div class="shrink-0 pt-4">
             
@@ -840,6 +836,7 @@
                 </div>
             </div>
         </transition>
+
 
         <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 text-center">
@@ -875,6 +872,7 @@
   
                <hr class="border-slate-100 my-4">
 
+
                 <div class="mt-4 border-t border-slate-100 pt-4 text-xs text-slate-400 text-center">
                     <p class="inline-block mr-4">當前版本: <span class="font-mono text-slate-800">{{ appVersion }}</span></p>
                     <button @click="showChangelog" 
@@ -884,6 +882,7 @@
                     </button>
             
                 </div>
+
 
                 <button @click="showSettingsModal = false" class="mt-2 text-sm text-slate-400 hover:text-slate-600">完成</button>
             </div>
@@ -909,6 +908,7 @@
                      
                         <div><label class="block text-sm font-medium text-slate-500 mb-1">代表貼紙 (Emoji)</label><input v-model="fandomForm.sticker" type="text" placeholder="✨" maxlength="3" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800 text-xl text-center"></div>
 
+
                             <div>
                                 <label class="block text-sm font-medium text-slate-500 mb-1">封面圖片 (選填)</label>
                                 
@@ -918,6 +918,7 @@
                                         <i class="ph ph-x-circle-fill"></i> 清除圖片
                                     </button>
                                 </div>
+
 
                                 <div v-else>
                                     <div v-if="fandomForm.useUrl" class="relative">
@@ -930,6 +931,7 @@
                                         <input type="file" @change="handleFileUpload($event, 'fandom')" accept="image/*" class="hidden">
                                     </label>
 
+
                                     <button @click="fandomForm.useUrl = !fandomForm.useUrl; fandomForm.coverUrl = ''" class="mt-2 text-xs font-medium text-slate-500 hover:text-slate-700 underline">
                                         {{ fandomForm.useUrl ? '改為上傳 Base64 圖片' : '改為貼上圖片 URL' }}
                                     </button>
@@ -938,11 +940,13 @@
                             </div>
                             <hr class="border-slate-100 my-2">
 
+
     
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">生日 (YYYY-MM-DD, 選填)</label><input v-model="fandomForm.birthday" type="text" @change="fandomForm.birthday = fandomForm.birthday.replace(/\//g, '-')" placeholder="1991-09-23" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800"></div>
                             
                           
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">出道日 (YYYY-MM-DD, 選填)</label><input v-model="fandomForm.debutDate" type="text" @change="fandomForm.debutDate = fandomForm.debutDate.replace(/\//g, '-')" placeholder="2008-05-25" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800"></div>
+
 
                         </div>
           
@@ -954,6 +958,8 @@
             </div>
         
         </transition>
+
+
 
 
         <transition name="slide-up">
@@ -981,6 +987,7 @@
                                     </button>
                                 </div>
 
+
                                 <div v-else>
                                     <div v-if="form.useUrl" class="relative">
                                         <i class="ph ph-link absolute left-3 top-3.5 text-slate-400"></i>
@@ -991,6 +998,7 @@
                                         <i class="ph ph-image-square text-lg"></i> 選擇圖片檔案 (Base64, < 1MB)
                                         <input type="file" @change="handleFileUpload($event, 'event')" accept="image/*" class="hidden">
                                     </label>
+
 
                                     <button @click="form.useUrl = !form.useUrl; form.coverUrl = ''" class="mt-2 text-xs font-medium text-slate-500 hover:text-slate-700 underline">
                                         {{ form.useUrl ? '改為上傳 Base64 圖片' : '改為貼上圖片 URL' }}
@@ -1008,6 +1016,7 @@
                        
       
                             <div><label class="block text-sm font-medium text-slate-500 mb-1">心情貼紙 (Emoji)</label><input v-model="form.sticker" type="text" placeholder="輸入一個 Emoji" maxlength="3" class="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-primary/50 text-slate-800 text-xl text-center"></div>
+
 
                             <div class="grid grid-cols-2 gap-4">
        
@@ -1035,6 +1044,7 @@
                     
                         </div>
 
+
   
                         <hr class="border-slate-100 my-2">
                         
@@ -1047,6 +1057,7 @@
                 </div>
             </div>
         </transition>
+
 
         <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md m-4">
@@ -1067,6 +1078,7 @@
                     </ul>
                 </div>
 
+
                 <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：
 [
   {
@@ -1086,13 +1098,17 @@
             </div>
         </div>
 
+
     </div>
+
 
     <script>
         
         const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
         createApp({
             setup() {
+
+
 
 
                 const events = ref([]);
@@ -1119,7 +1135,6 @@
                 const showCalendarModal = ref(false); 
                 const showChangelogModal = ref(false); 
                 const showFandomModal = ref(false); 
-                const shareTemplate = ref(null); // 對應 HTML 的 ref
                 const calendarEvent = ref(null);     
   
                 const ticketEvent = ref({});
@@ -1129,42 +1144,6 @@
                 const importJson = ref('');
                 let map = null;
                 let markers = [];
-
-const generateShareImage = async () => {
-    // 1. 生成圖前的提示
-    alert('正在準備您的追星回顧卡片，請稍候... ✨');
-
-    try {
-        // 確保 DOM 已渲染
-        await nextTick();
-        
-        // 2. 使用 html2canvas 轉換圖片
-        const canvas = await html2canvas(shareTemplate.value, {
-            useCORS: true, // 支援跨域圖片
-            scale: 2,      // 提高清晰度
-            backgroundColor: '#f8fafc'
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-
-        // 3. Safari 與行動裝置相容性處理：直接在新視窗開啟圖片或下載
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = `追星回顧_${selectedYear.value}.png`;
-        
-        // 在行動裝置（特別是 Safari）建議開啟新分頁讓用戶長按儲存
-        if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android)/i)) {
-            const newWindow = window.open();
-            newWindow.document.write(`<img src="${imgData}" style="width:100%;" />`);
-            newWindow.document.title = "長按圖片儲存回顧";
-        } else {
-            link.click();
-        }
-    } catch (err) {
-        console.error('生成分享圖失敗:', err);
-        alert('抱歉，生成圖片時發生錯誤。');
-    }
-};
 
 
 // 計算兩點間的球面距離 (Haversine 公式)
@@ -1178,12 +1157,14 @@ const calculateKm = (lat1, lon1, lat2, lon2) => {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 };
 
+
 // 新增：根據年份計算過濾後的點位數量
 const filteredMapEventsCount = computed(() => {
     // 1. 先根據年度過濾資料
     const target = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
+
 
     // 2. 建立一個 Set 來儲存唯一的經緯度組合字串
     const uniqueLocations = new Set();
@@ -1195,9 +1176,12 @@ const filteredMapEventsCount = computed(() => {
         }
     });
 
+
     // 3. 回傳 Set 的大小，即為不重複的地點數量
     return uniqueLocations.size;
 });
+
+
 
 
 // 更新：totalDistance 也要隨著年份變動
@@ -1206,9 +1190,11 @@ const totalDistance = computed(() => {
         ? events.value 
         : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
 
+
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
+
 
     let dist = 0;
     for (let i = 0; i < validPoints.length - 1; i++) {
@@ -1219,6 +1205,8 @@ const totalDistance = computed(() => {
     }
     return dist.toFixed(1);
 });
+
+
 
 
                 const defaultForm = {
@@ -1248,7 +1236,9 @@ const totalDistance = computed(() => {
                 const fandomForm = ref({...defaultFandomForm});
                 // --- END FANDOM STATES ---
 
+
                 const changelogContent = ref([ 
+
 
 { version: 'v1.0.5', date: '2025/12/28', items: [
     '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
@@ -1287,6 +1277,7 @@ const totalDistance = computed(() => {
                     localStorage.setItem('fandomFandoms', JSON.stringify(fandoms.value));
                 };
 
+
                 const openFandomModal = () => {
                     isFandomEditing.value = false;
                     editFandomIndex.value = null;
@@ -1301,10 +1292,12 @@ const totalDistance = computed(() => {
                     showFandomModal.value = true;
                 };
 
+
                 const closeFandomModal = () => {
                     showFandomModal.value = false;
                     fandomForm.value = {...defaultFandomForm};
                 };
+
 
                 const validateDate = (dateString) => {
                     if (!dateString) return true;
@@ -1322,6 +1315,7 @@ const totalDistance = computed(() => {
                     return date instanceof Date && !isNaN(date);
                 };
 
+
                 const addFandom = () => {
                     if (!fandomForm.value.name.trim()) {
                         return alert('錯誤：偶像名稱不能為空！');
@@ -1329,6 +1323,7 @@ const totalDistance = computed(() => {
                     if (!fandomForm.value.date) {
                          return alert('錯誤：入坑日期不能為空！');
                     }
+
 
                     if (!validateDate(fandomForm.value.date)) {
                         return alert('錯誤：入坑日期格式無效！請使用 YYYY-MM-DD 格式。');
@@ -1340,8 +1335,10 @@ const totalDistance = computed(() => {
                         return alert('錯誤：出道日期格式無效！請使用 YYYY-MM-DD 格式。');
                     }
 
+
                     const fandomToSave = JSON.parse(JSON.stringify(fandomForm.value));
                     delete fandomToSave.useUrl;
+
 
                     if(isFandomEditing.value && editFandomIndex.value !== null) {
                         fandoms.value[editFandomIndex.value] = fandomToSave;
@@ -1351,6 +1348,7 @@ const totalDistance = computed(() => {
                     saveFandoms();
                     closeFandomModal();
                 };
+
 
                 const removeFandom = (index) => {
                     if (confirm('確定要刪除這個入坑紀念日嗎？此操作無法恢復。')) {
@@ -1399,6 +1397,7 @@ watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
 
+
 // 新增此段落：監聽地圖年份篩選
 watch(selectedMapYear, () => {
     if (activeTab.value === 'map') {
@@ -1406,11 +1405,13 @@ watch(selectedMapYear, () => {
     }
 });
 
+
 watch(activeTab, (newTab) => {
     if (newTab === 'map') {
         nextTick(() => { initMap(); });
     }
 });
+
 
                 const adjustColor = (color, amount) => {
                     let hex = color.replace('#', '');
@@ -1435,6 +1436,7 @@ watch(activeTab, (newTab) => {
                     return hsp > 180;
                 };
 
+
                 const cssVars = computed(() => ({
                     '--primary-color': themeColor.value,
                     '--primary-dark': adjustColor(themeColor.value, -30),
@@ -1451,6 +1453,7 @@ watch(activeTab, (newTab) => {
                     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
                     return diffDays > 0 ? diffDays : 0;
                 };
+
 
                 const calculateDaysToNextDate = (dateStr) => {
                     if (!dateStr || !validateDate(dateStr)) return 'N/A';
@@ -1470,15 +1473,18 @@ watch(activeTab, (newTab) => {
                     const diffTime = nextDate.getTime() - today.getTime();
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
+
                     if (diffDays === 0) return 0;
                     return diffDays;
                 };
+
 
                 const calculateYearsAndDaysSinceDebut = (dateStr) => {
                     if (!dateStr || !validateDate(dateStr)) return 'N/A';
                     const debut = new Date(dateStr);
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+
 
                     let years = today.getFullYear() - debut.getFullYear();
                     const hasPassed = (today.getMonth() > debut.getMonth() || (today.getMonth() === debut.getMonth() && today.getDate() >= debut.getDate()));
@@ -1492,6 +1498,7 @@ watch(activeTab, (newTab) => {
                     }
                     lastAnniversary.setHours(0, 0, 0, 0);
                     const diffDays = Math.floor((today.getTime() - lastAnniversary.getTime()) / (1000 * 60 * 60 * 24));
+
 
                     if (years < 0) return '尚未出道';
                     if (years === 0) return `第 ${diffDays} 天`;
@@ -1526,6 +1533,7 @@ watch(activeTab, (newTab) => {
                     return messages[Math.floor(Math.random() * messages.length)];
                 };
 
+
                 const getDebutCongrats = (name) => {
                     const messages = [
                         `🎉 恭喜 ${name} 出道紀念日！感謝你選擇這條路！💖`,
@@ -1553,6 +1561,8 @@ watch(activeTab, (newTab) => {
                     ];
                     return messages[Math.floor(Math.random() * messages.length)];
                 };
+
+
 
 
                 const fandomMessageStatic = (fandom) => {
@@ -1588,6 +1598,7 @@ watch(activeTab, (newTab) => {
                     };
                 };
 
+
                 const fandomMessage = computed(() => { 
                     if (fandoms.value.length === 0 || fandoms.value.every(f => !f.date)) {
                         return "👋 點擊設定，開始你的入坑紀念日紀錄！";
@@ -1596,7 +1607,9 @@ watch(activeTab, (newTab) => {
                     const activeFandoms = fandoms.value.filter(f => f.date);
                     if (activeFandoms.length === 0) return "👋 點擊設定，開始你的入坑紀念日紀錄！";
 
+
                     const currentFandom = activeFandoms[currentFandomIndex.value % activeFandoms.length];
+
 
                     const { message, days } = fandomMessageStatic(currentFandom);
                     
@@ -1642,10 +1655,12 @@ watch(activeTab, (newTab) => {
                         });
                     }
 
+
                     return viewMode.value === 'upcoming' 
                         ? sorted.filter(e => e.date >= today) 
                         : sorted.filter(e => e.date < today).reverse();
                 });
+
 
                 const upcomingCount = computed(() => events.value.filter(e => e.date >= new Date().toISOString().split('T')[0]).length);
                 const currentYearExpense = computed(() => {
@@ -1704,6 +1719,7 @@ watch(activeTab, (newTab) => {
                     };
                 });
 
+
                 const emotionalSummary = computed(() => {
                     const { count, totalSpent, topArtists } = statsData.value;
                     if (count === 0) return "準備好開啟新的追星旅程了嗎？🌟";
@@ -1752,6 +1768,7 @@ watch(activeTab, (newTab) => {
                     return pools[category][count % pools[category].length];
                 });
 
+
                 const idolNagging = computed(() => {
                     const { totalSpent, topArtists } = statsData.value;
                     const name = topArtists.length > 0 ? topArtists[0].name : '我';
@@ -1776,6 +1793,7 @@ watch(activeTab, (newTab) => {
                     }, 0);
                 };
 
+
                 const addExpenseItem = (n) => form.value.expenses.push({ item: n, amount: '' });
                 const removeExpenseItem = (i) => form.value.expenses.splice(i, 1);
                 const addChecklistItem = () => form.value.checklist.push({ text: '', checked: false });
@@ -1795,6 +1813,7 @@ watch(activeTab, (newTab) => {
                     showModal.value = true;
                 };
 
+
                 const editEvent = (evt) => {
                     isEditing.value = true;
                     form.value = { 
@@ -1810,6 +1829,7 @@ watch(activeTab, (newTab) => {
                     showModal.value = true;
                 };
 
+
                 const closeModal = () => showModal.value = false;
                 const saveEvent = () => {
                     if (!form.value.title || !form.value.date) return alert('請填寫活動名稱與日期 🥺');
@@ -1817,8 +1837,10 @@ watch(activeTab, (newTab) => {
                     form.value.checklist = form.value.checklist.filter(c => c.text && c.text.trim() !== '');
                     if (form.value.color === themeColor.value) form.value.color = '';
 
+
                     const eventToSave = JSON.parse(JSON.stringify(form.value));
                     delete eventToSave.useUrl;
+
 
                     if (isEditing.value) {
                         const idx = events.value.findIndex(e => e.id === form.value.id);
@@ -1828,6 +1850,7 @@ watch(activeTab, (newTab) => {
                     }
                     closeModal();
                 };
+
 
                 const deleteEvent = (id) => {
                     if (confirm('確定要刪除此行程嗎？此操作無法恢復。')) {
@@ -1849,6 +1872,7 @@ watch(activeTab, (newTab) => {
                     showChangelogModal.value = true;
                 };
 
+
                 const searchCoordinates = async () => {
     if (!form.value.location) {
         searchError.value = "請先輸入地點名稱";
@@ -1856,6 +1880,7 @@ watch(activeTab, (newTab) => {
     }
     isSearching.value = true;
     searchError.value = '定位中...';
+
 
     // 優化：加上時間戳記避免讀取到失敗的快取，並加入隨機身份識別
     const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(form.value.location)}&limit=1&t=${Date.now()}`;
@@ -1869,8 +1894,10 @@ watch(activeTab, (newTab) => {
             }
         });
 
+
         if (response.status === 429) throw new Error("請求太頻繁，請等幾秒再試一次");
         if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
+
 
                         const data = await response.json();
                         if (data && data.length > 0) {
@@ -1897,6 +1924,7 @@ watch(activeTab, (newTab) => {
                 };
                 // 修正後的 initMap 邏輯
 
+
 const initMap = () => {
     if (!map) {
         map = L.map('map-container').setView([23.6978, 120.9605], 7);
@@ -1905,20 +1933,25 @@ const initMap = () => {
         map.invalidateSize();
     }
 
+
     // 關鍵：先清空舊的點與線
     markers.forEach(m => map.removeLayer(m));
     markers = [];
+
 
     // 根據選定年度過濾
     const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
 
+
     const sortedEvents = [...baseEvents]
         .filter(e => e.lat && e.lng)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
+
     if (sortedEvents.length === 0) return;
+
 
     // 重新畫點與畫線邏輯
     const pathCoords = sortedEvents.map(e => [e.lat, e.lng]);
@@ -1928,6 +1961,7 @@ const initMap = () => {
         if (!groupPoints[key]) groupPoints[key] = [];
         groupPoints[key].push(e);
     });
+
 
     Object.values(groupPoints).forEach(eventsAtLoc => {
         const latest = eventsAtLoc[eventsAtLoc.length - 1];
@@ -1946,6 +1980,7 @@ const initMap = () => {
         markers.push(marker);
     });
 
+
     if (pathCoords.length > 1) {
         const polyline = L.polyline(pathCoords, { color: themeColor.value, weight: 3, opacity: 0.6, dashArray: '10, 15' }).addTo(map);
         markers.push(polyline);
@@ -1956,11 +1991,16 @@ const initMap = () => {
 
 
 
+
+
+
+
                 // Calendar
                 const showCalendarOptions = (event) => {
                     calendarEvent.value = event;
                     showCalendarModal.value = true;
                 };
+
 
                 const addToiCal = () => {
                     showCalendarModal.value = false;
@@ -1983,6 +2023,7 @@ const initMap = () => {
                     const event = calendarEvent.value;
                     if (!event) return;
 
+
                     const { title, date, time, location, artist } = event;
                     const start = date.replace(/-/g, '') + 'T' + time.replace(/:/g, '') + '00';
                     const endDateObj = new Date(new Date(`${date}T${time}`).getTime() + 3*60*60*1000);
@@ -1999,6 +2040,7 @@ const initMap = () => {
                     ticketEvent.value = evt;
                     showTicketModal.value = true;
                 }
+
 
                 const downloadBackup = () => {
                     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events.value));
@@ -2031,6 +2073,7 @@ const initMap = () => {
                     };
                     reader.readAsText(file);
                 };
+
 
                 const processImport = () => {
                     try {
@@ -2089,6 +2132,7 @@ const initMap = () => {
                     const file = event.target.files[0];
                     if (!file) return;
 
+
                     // 檢查檔案大小，限制在 1MB (1024 * 1024 bytes)
                     if (file.size > 1024 * 1024) {
                         alert('檔案大小超過 1MB 限制，請選擇更小的圖片。');
@@ -2097,6 +2141,7 @@ const initMap = () => {
                         else if (type === 'fandom') fandomForm.value.coverUrl = '';
                         return;
                     }
+
 
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -2138,7 +2183,8 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, generateShareImage, shareTemplate, 
+selectedMapYear, filteredMapEventsCount, totalDistance, 
+
 
                 };
             }
@@ -2146,9 +2192,3 @@ selectedMapYear, filteredMapEventsCount, totalDistance, generateShareImage, shar
     </script>
 </body>
 </html>
-
-
-
-
-
-
