@@ -611,6 +611,13 @@
                     <div v-else class="text-center text-slate-400 text-sm py-4">區間內無資料</div>
                 </div>
             </div>
+  <div v-if="reviewImagePreview" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4" @click="reviewImagePreview = null">
+    <div class="relative max-w-sm w-full" @click.stop>
+        <p class="text-white text-center text-sm mb-4 font-bold">✨ 長按圖片即可儲存分享 ✨</p>
+        <img :src="reviewImagePreview" class="w-full rounded-2xl shadow-2xl border-4 border-white/20" />
+        <button @click="reviewImagePreview = null" class="absolute -top-12 right-0 text-white text-3xl"><i class="ph ph-x-circle"></i></button>
+    </div>
+</div>
 
        </main>
 
@@ -983,14 +990,6 @@
     
                     </ul>
                 </div>
-  <div v-if="reviewImagePreview" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4" @click="reviewImagePreview = null">
-    <div class="relative max-w-sm w-full" @click.stop>
-        <p class="text-white text-center text-sm mb-4 font-bold">✨ 長按圖片即可儲存分享 ✨</p>
-        <img :src="reviewImagePreview" class="w-full rounded-2xl shadow-2xl border-4 border-white/20" />
-        <button @click="reviewImagePreview = null" class="absolute -top-12 right-0 text-white text-3xl"><i class="ph ph-x-circle"></i></button>
-    </div>
-</div>
-
 
                 <textarea v-model="importJson" class="w-full h-40 bg-slate-50 border rounded-xl p-3 text-xs font-mono mb-4 leading-relaxed" placeholder='貼上 JSON 陣列，例如：
 [
@@ -1012,6 +1011,13 @@
         </div>
 
     </div>
+  <div v-if="reviewImagePreview" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4" @click="reviewImagePreview = null">
+    <div class="relative max-w-sm w-full" @click.stop>
+        <p class="text-white text-center text-sm mb-4 font-bold">✨ 長按圖片即可儲存分享 ✨</p>
+        <img :src="reviewImagePreview" class="w-full rounded-2xl shadow-2xl border-4 border-white/20" />
+        <button @click="reviewImagePreview = null" class="absolute -top-12 right-0 text-white text-3xl"><i class="ph ph-x-circle"></i></button>
+    </div>
+</div>
 
     <script>
         
