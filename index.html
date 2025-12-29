@@ -1065,43 +1065,29 @@
             </div>
         </transition>
 
-       <transition name="fade">
-            <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
-                <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
-                    <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
-                        <h2 class="text-2xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
-                        <p class="text-slate-400 mt-1 text-[10px] uppercase tracking-[0.2em] font-bold">
-                            {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Review
-                        </p>
-                    </div>
-                    <div class="px-8 py-4 grid grid-cols-3 gap-2 text-center border-y border-slate-50">
-                        <div><div class="text-[9px] text-slate-400 font-bold uppercase mb-1">心動</div><div class="text-xl font-bold" :style="{ color: themeColor }">{{ statsData.count }}</div></div>
-                        <div><div class="text-[9px] text-slate-400 font-bold uppercase mb-1">足跡</div><div class="text-xl font-bold" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div></div>
-                        <div><div class="text-[9px] text-slate-400 font-bold uppercase mb-1">里程</div><div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }}</div></div>
-                    </div>
-                    <div class="p-6">
-                        <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 leading-relaxed text-xs text-center border border-slate-100">"{{ emotionalSummary }}"</div>
-                    </div>
-                    <div class="px-8 pb-6 flex flex-wrap justify-center gap-4">
-                        <div v-for="badge in unlockedBadges" :key="badge.name" class="flex flex-col items-center gap-1.5">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg" :style="{ backgroundColor: themeColor }"><i :class="'ph ph-bold ' + badge.icon" class="text-lg"></i></div>
-                            <span class="text-[8px] font-bold text-slate-400">{{ badge.name }}</span>
-                        </div>
-                    </div>
-                    <div class="px-8 pb-10 space-y-3">
-                        <div class="text-[9px] font-bold text-slate-300 tracking-[0.3em] uppercase border-b border-slate-50 pb-1">Timeline</div>
-                        <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 items-start border-b border-dotted border-slate-100 pb-2 last:border-0 text-left">
-                            <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}</div>
-                            <div class="flex-1">
-                                <div class="text-xs font-bold text-slate-700 leading-tight">{{ event.title }}</div>
-                                <div class="text-[9px] text-slate-400">{{ event.artist }} @ {{ event.location }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button @click="showPosterModal = false" class="absolute top-6 right-6 text-white/50 hover:text-white"><i class="ph ph-x-circle text-3xl"></i></button>
+<transition name="fade">
+    <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
+        <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
+            <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
+                <h2 class="text-2xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
+                <p class="text-slate-400 mt-1 text-[10px] uppercase tracking-widest font-bold">
+                    {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Review
+                </p>
             </div>
-        </transition>
+            <div class="p-6 text-center">
+                <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 text-xs border border-slate-100">"{{ emotionalSummary }}"</div>
+            </div>
+            <div class="px-8 pb-10 space-y-3">
+                <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 text-left">
+                    <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}</div>
+                    <div class="flex-1 text-xs font-bold text-slate-700">{{ event.title }}</div>
+                </div>
+            </div>
+        </div>
+        <button @click="showPosterModal = false" class="absolute top-6 right-6 text-white/50"><i class="ph ph-x-circle text-3xl"></i></button>
+    </div>
+</transition>
+
 
 
 
@@ -1765,7 +1751,7 @@ watch(activeTab, (newTab) => {
                     };
                 });
 
-// 判定勳章
+// 1. 任務勳章邏輯
 const unlockedBadges = computed(() => {
     const badges = [];
     if (filteredMapEventsCount.value > 1) badges.push({ name: '征戰四方', icon: 'ph-map-pin' });
@@ -1774,7 +1760,7 @@ const unlockedBadges = computed(() => {
     return badges;
 });
 
-// 過濾海報明細 (支援 ALL 與特定年份)
+// 2. 海報明細清單（不含費用）
 const filteredEventsInYear = computed(() => {
     let list = (selectedYear.value === 'ALL') 
         ? [...events.value] 
@@ -1782,10 +1768,11 @@ const filteredEventsInYear = computed(() => {
     return list.sort((a, b) => new Date(a.date) - new Date(b.date));
 });
 
-// 分享函數：開啟彈窗
+// 3. 分享按鈕函數：點了之後把開關設為 true
 const downloadPoster = () => {
     showPosterModal.value = true;
 };
+
 
                 const emotionalSummary = computed(() => {
                     const { count, totalSpent, topArtists } = statsData.value;
