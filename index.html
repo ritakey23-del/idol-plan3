@@ -729,20 +729,20 @@
             </div>
         </div>
 
-        <div v-if="emotionalSummary" class="w-full mb-4 px-6 py-6 bg-black/20 rounded-[2rem] border-l-4 border-white/40 italic text-base text-left leading-relaxed shadow-xl">
+        <div v-if="emotionalSummary" class="w-full mb-4 px-6 py-6 bg-black/20 rounded-[2rem] border-l-4 border-white/40 italic text-base text-left leading-relaxed shadow-xl relative z-10">
             「 {{ emotionalSummary }} 」
         </div>
 
-        <div class="w-full flex-1 flex flex-col justify-start overflow-hidden text-left px-1">
+        <div class="w-full flex-1 flex flex-col justify-start overflow-hidden text-left px-1 relative z-20">
             <div class="text-[10px] text-white/30 uppercase tracking-[0.3em] mb-3 font-black">🌟 年度心動榜單</div>
             <div class="space-y-3 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-white/10 p-4 rounded-[1.2rem] border border-white/10">
+                     class="flex items-center justify-between bg-white/10 p-4 rounded-[1.2rem] border border-white/10 shadow-lg">
                     <div class="flex items-center gap-4 min-w-0 flex-1">
                         <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white/20 text-base shrink-0 font-black">
                              {{ index === 0 ? '🥇' : (index === 1 ? '🥈' : '🥉') }}
                         </div>
-                        <span class="text-base font-bold truncate">{{ artist.name }}</span>
+                        <span class="text-base font-bold truncate leading-tight">{{ artist.name }}</span>
                     </div>
                     <div class="text-right shrink-0 ml-2">
                         <span class="text-sm font-black text-white block">{{ artist.count }} <small class="text-[9px] font-normal opacity-50">次</small></span>
@@ -752,11 +752,12 @@
             </div>
         </div>
 
-        <div class="w-full mt-2 pt-4 border-t border-white/5 opacity-30 text-[9px] tracking-[0.5em] font-medium uppercase">
+        <div class="w-full mt-2 pt-4 border-t border-white/5 opacity-30 text-[9px] tracking-[0.5em] font-medium uppercase text-center">
             {{ customTitle }} • 讓愛意有跡可循
         </div>
     </div>
 </div>
+
 
 
 
@@ -1162,9 +1163,9 @@
                 let map = null;
                 let markers = [];
 
+// 修正後的生成函式：保留您的提示語
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
-
     alert("正在為您授予榮譽稱號並生成回顧卡...");
 
     await nextTick();
@@ -1173,7 +1174,7 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 4, // 提高清晰度以利 Threads 分享
+            scale: 4, // 提高品質以利分享
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
@@ -1185,28 +1186,24 @@ const generateShareCard = async () => {
         });
 
         const imgData = canvas.toDataURL('image/png', 1.0);
-        
-        // Safari 與手機瀏覽器優化：開啟新視窗顯示圖片
         const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
                 <body style="margin:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh;">
                     <img src="${imgData}" style="max-height:92vh; width:auto; border-radius:30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" />
-                    <p style="color:white; margin-top:15px; font-family:sans-serif; opacity:0.6; font-size:14px; letter-spacing:1px;">長按即可儲存分享✨</p>
+                    <p style="color:white; margin-top:15px; font-family:sans-serif; opacity:0.6; font-size:14px; letter-spacing:1px;">長按儲存 Threads 回顧卡</p>
                 </body>
             `);
         } else {
             const link = document.createElement('a');
-            link.download = `${selectedYear.value}_追星榮譽回顧.png`;
+            link.download = `${selectedYear.value}_追星回顧.png`;
             link.href = imgData;
             link.click();
         }
     } catch (err) {
-        console.error("生成失敗:", err);
-        alert("分享卡片生成失敗，請再試一次。");
+        alert("卡片生成失敗，請再試一次。");
     }
 };
-
 
 
 
@@ -1243,18 +1240,16 @@ const filteredMapEventsCount = computed(() => {
 });
 
 
-// 更新：totalDistance 也要隨著年份變動
+// 修正：里程計算連動分頁年度
 const totalDistance = computed(() => {
-    // 同步回顧模式下的年份
-       const targetYear = activeTab.value === 'stats' ? selectedYear.value : selectedMapYear.value;
-    
+    const targetYear = activeTab.value === 'stats' ? selectedYear.value : selectedMapYear.value;
     const baseEvents = targetYear === 'ALL' 
         ? events.value 
-  : events.value.filter(e => e.date && e.date.startsWith(targetYear));
+        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
-.sort((a, b) => new Date(a.date) - new Date(b.date));)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     let dist = 0;
     for (let i = 0; i < validPoints.length - 1; i++) {
