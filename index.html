@@ -553,18 +553,21 @@
                  <div class="flex justify-between items-center mb-2">
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+
+<button @click="generateReviewImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90 mr-2">
+    <i class="ph ph-share-network text-lg"></i> 分享
+</button>
                     <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
                 </div>
                 <div class="space-y-4">
                  
                     <div class="relative">
-    <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-        <option value="ALL">🗓️ 全部年份總回顧</option>
-        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
-    </select>
-    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
-</div>
-
+                        <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="ALL">🗓️ 全部年份總回顧</option>
+                            <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
+                    </div>
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
                         <p class="text-sm font-bold text-slate-700 italic">"{{ emotionalSummary }}"</p>
@@ -608,7 +611,14 @@
                     <div v-else class="text-center text-slate-400 text-sm py-4">區間內無資料</div>
                 </div>
             </div>
-  
+  <div v-if="reviewImagePreview" class="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4" @click="reviewImagePreview = null">
+    <div class="relative max-w-sm w-full" @click.stop>
+        <p class="text-white text-center text-sm mb-4 font-bold">✨ 長按圖片即可儲存分享 ✨</p>
+        <img :src="reviewImagePreview" class="w-full rounded-2xl shadow-2xl border-4 border-white/20" />
+        <button @click="reviewImagePreview = null" class="absolute -top-12 right-0 text-white text-3xl"><i class="ph ph-x-circle"></i></button>
+    </div>
+</div>
+
        </main>
 
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
@@ -962,64 +972,6 @@
             </div>
         </transition>
 
-       <transition name="fade">
-            <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
-                <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
-                    <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
-                        <h2 class="text-2xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
-                        <p class="text-slate-400 mt-1 text-[10px] uppercase tracking-widest font-bold">
-                            {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Stargazer Review
-                        </p>
-                    </div>
-
-                    <div class="px-8 py-4 grid grid-cols-3 gap-2 text-center border-y border-slate-50">
-                        <div>
-                            <div class="text-[9px] text-slate-400 font-bold uppercase mb-1">心動</div>
-                            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ statsData.count }}</div>
-                        </div>
-                        <div>
-                            <div class="text-[9px] text-slate-400 font-bold uppercase mb-1">足跡</div>
-                            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
-                        </div>
-                        <div>
-                            <div class="text-[9px] text-slate-400 font-bold uppercase mb-1">里程</div>
-                            <div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }}</div>
-                        </div>
-                    </div>
-
-                    <div class="p-6">
-                        <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 leading-relaxed text-xs text-center border border-slate-100 shadow-inner">
-                            "{{ emotionalSummary }}"
-                        </div>
-                    </div>
-
-                    <div class="px-8 pb-6 flex flex-wrap justify-center gap-4">
-                        <div v-for="badge in unlockedBadges" :key="badge.name" class="flex flex-col items-center gap-1.5">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg" :style="{ backgroundColor: themeColor }">
-                                <i :class="'ph ph-bold ' + badge.icon" class="text-lg"></i>
-                            </div>
-                            <span class="text-[8px] font-bold text-slate-400">{{ badge.name }}</span>
-                        </div>
-                    </div>
-
-                    <div class="px-8 pb-10 space-y-3">
-                        <div class="text-[9px] font-bold text-slate-300 tracking-[0.3em] uppercase border-b border-slate-50 pb-1">Timeline</div>
-                        <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 items-start border-b border-dotted border-slate-100 pb-2 last:border-0 text-left">
-                            <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}</div>
-                            <div class="flex-1">
-                                <div class="text-xs font-bold text-slate-700 leading-tight">{{ event.title }}</div>
-                                <div class="text-[9px] text-slate-400">{{ event.artist }} @ {{ event.location }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button @click="showPosterModal = false" class="absolute top-6 right-6 text-white/50 hover:text-white">
-                    <i class="ph ph-x-circle text-3xl"></i>
-                </button>
-            </div>
-        </transition>
-
-
         <div v-if="showImportModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showImportModal = false">
             <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md m-4">
       
@@ -1094,6 +1046,7 @@ const totalDistance = computed(() => {
 });
 
                 const events = ref([]);
+                const reviewImagePreview = ref(null); 
                 const activeTab = ref('home');
                 const viewMode = ref('upcoming');
                 const themeColor = ref('#63b3b0'); 
@@ -1112,8 +1065,6 @@ const totalDistance = computed(() => {
                 const showSettingsModal = ref(false); 
                 
                 const showImportModal = ref(false);
-                const showPosterModal = ref(false);
-
                 const showTicketModal = ref(false);
                 const showCalendarModal = ref(false); 
                 const showChangelogModal = ref(false); 
@@ -2009,6 +1960,76 @@ const initMap = () => {
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
+
+const reviewImagePreview = ref(null);
+const generateReviewImage = () => {
+    const data = statsData.value;
+    const yearText = selectedYear.value === 'ALL' ? '歷年總回顧' : `${selectedYear.value} 年度回顧`;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 根據本命數量動態決定高度 (長形比例)
+    const listCount = data.topArtists.length;
+    const canvasHeight = 850 + (listCount * 60); 
+    canvas.width = 600;
+    canvas.height = canvasHeight;
+
+    // 背景美化：漸層
+    const grad = ctx.createLinearGradient(0, 0, 0, canvasHeight);
+    grad.addColorStop(0, themeColor.value);
+    grad.addColorStop(1, '#1e293b');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 600, canvasHeight);
+
+    // 白色邊框裝飾
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 20;
+    ctx.strokeRect(30, 30, 540, canvasHeight - 60);
+
+    // 文字渲染
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 45px "Noto Sans TC"';
+    ctx.fillText(customTitle.value, 300, 110);
+    ctx.font = '28px "Noto Sans TC"';
+    ctx.fillText(yearText, 300, 165);
+
+    // 數據區塊 (不帶花費)
+    const drawBox = (val, label, x, y) => {
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.roundRect(x, y, 160, 110, 15); ctx.fill();
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 36px "Noto Sans TC"'; ctx.fillText(val, x + 80, y + 60);
+        ctx.font = '18px "Noto Sans TC"'; ctx.fillText(label, x + 80, y + 95);
+    };
+    drawBox(data.count, '總場次', 60, 220);
+    drawBox(mappedEventsCount.value, '解鎖地點', 230, 220);
+    drawBox(totalDistance.value, '追星里程', 400, 220);
+
+    // 明細清單
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 30px "Noto Sans TC"';
+    ctx.fillText('📊 本命排行榜', 70, 400);
+    data.topArtists.forEach((a, i) => {
+        const py = 460 + (i * 65);
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.fillRect(70, py - 40, 460, 50);
+        ctx.fillStyle = 'white';
+        ctx.font = '24px "Noto Sans TC"';
+        ctx.fillText(`${i+1}. ${a.name}`, 90, py - 5);
+        ctx.textAlign = 'right';
+        ctx.fillText(`${a.count} 次`, 510, py - 5);
+        ctx.textAlign = 'left';
+    });
+
+    // 底部文字
+    ctx.textAlign = 'center';
+    ctx.font = 'italic 20px "Noto Sans TC"';
+    ctx.fillText(`"${emotionalSummary.value.substring(0, 28)}..."`, 300, canvasHeight - 100);
+
+    reviewImagePreview.value = canvas.toDataURL('image/png');
+};
+
                 return {
                     events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
@@ -2026,7 +2047,8 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-totalDistance, showPosterModal, unlockedBadges, filteredEventsInYear, downloadPoster,  
+totalDistance, reviewImagePreview, generateReviewImage
+
 
                 };
             }
