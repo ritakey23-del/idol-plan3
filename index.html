@@ -693,7 +693,7 @@
             </>
         </nav>
 <div id="share-card-template" class="fixed -left-[9999px] top-0 w-[375px] p-4 font-sans text-slate-800 flex flex-col items-center" 
-     style="background-color: #f8fafc;">
+     style="background-color: #f8fafc; -webkit-font-smoothing: antialiased;">
     
     <div class="bg-white rounded-[3rem] p-8 border-4 shadow-2xl w-full h-auto flex flex-col relative overflow-hidden items-center"
          :style="{ borderColor: themeColor }">
@@ -702,73 +702,74 @@
             <h2 class="text-3xl font-black tracking-tighter mb-4" :style="{ color: themeColor }">
                 {{ selectedYear === 'ALL' ? '追星總足跡' : selectedYear + ' 年度回顧' }}
             </h2>
-            <div v-if="emotionalSummary" class="w-full px-6 py-5 rounded-2xl border-2 italic text-sm text-left bg-slate-50 shadow-inner"
-                 :style="{ borderColor: themeColor + '30', color: '#475569', lineHeight: '1.6' }">
+            <div v-if="emotionalSummary" class="w-full px-6 py-5 rounded-2xl border-2 italic text-sm text-center leading-relaxed bg-slate-50 shadow-inner"
+                 :style="{ borderColor: themeColor + '30', color: '#475569' }">
                 「 {{ emotionalSummary }} 」
             </div>
         </div>
 
         <div class="flex flex-col items-center mb-8 relative">
-            <div class="relative flex items-center justify-center h-32 w-32">
-                <div class="absolute w-32 h-32 rounded-full border-2 border-dashed opacity-20 animate-[spin_30s_linear_infinite]" :style="{ borderColor: themeColor }"></div>
-                <div class="absolute w-24 h-24 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-100 shadow-xl flex items-center justify-center border-4 border-white z-10">
-                    <i class="ph-fill ph-trophy text-white text-5xl"></i>
+            <div class="relative flex items-center justify-center h-28 w-28">
+                <div class="absolute w-28 h-28 rounded-full border-2 border-dashed opacity-20 animate-[spin_20s_linear_infinite]" :style="{ borderColor: themeColor }"></div>
+                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-100 shadow-xl flex items-center justify-center border-4 border-white relative z-10">
+                    <i class="ph-fill ph-trophy text-white text-4xl"></i>
                 </div>
             </div>
-            <div class="mt-4 px-6 py-1.5 rounded-full text-white font-black text-sm shadow-lg" :style="{ backgroundColor: themeColor }">
-                成就：{{ statsData.count >= 15 ? '核心鐵粉' : '應援模範' }}
+            <div class="mt-4 px-6 py-1.5 rounded-full text-white font-black text-xs shadow-md tracking-widest" :style="{ backgroundColor: themeColor }">
+                任務達成：{{ statsData.count >= 15 ? '核心鐵粉' : '應援模範' }}
             </div>
         </div>
 
-        <div class="w-full space-y-4 mb-10">
+        <div class="w-full space-y-4 mb-8">
             <div v-for="item in [
                 { title: '熱血指數', val: statsData.count, unit: '場', tag: statsData.count >= 20 ? '愛意爆表' : '瘋狂在路上', color: '#ef4444', bg: '#fef2f2', icon: 'ph-fire' },
-                { title: '場館獵人', val: filteredMapEventsCount, unit: '館', tag: filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地圖解鎖', color: '#3b82f6', bg: '#eff6ff', icon: 'ph-map-pin' },
+                { title: '場館獵人', val: filteredMapEventsCount, unit: '館', tag: filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地標解鎖', color: '#3b82f6', bg: '#eff6ff', icon: 'ph-map-pin' },
                 { title: '跨越銀河', val: Math.floor(totalDistance), unit: 'KM', tag: totalDistance >= 1000 ? '奔波無阻' : '只想見到你', color: '#8b5cf6', bg: '#f5f3ff', icon: 'ph-rocket-launch' }
             ]" :key="item.title" 
-            class="rounded-3xl border-2 bg-white shadow-sm flex items-center h-24 overflow-hidden" :style="{ borderColor: item.color + '20' }">
+            class="rounded-3xl border-2 bg-white shadow-sm flex overflow-hidden h-24" :style="{ borderColor: item.color + '20' }">
                 
-                <div class="w-20 h-full flex items-center justify-center" :style="{ backgroundColor: item.bg }">
+                <div class="w-20 shrink-0 flex items-center justify-center" :style="{ backgroundColor: item.bg }">
                     <i class="ph-fill text-3xl" :class="item.icon" :style="{ color: item.color }"></i>
                 </div>
                 
-                <div class="flex-1 px-4 flex flex-col justify-center h-full pb-1"> 
-                    <div class="text-[10px] text-slate-400 font-bold uppercase mb-0.5 tracking-tight">{{ item.title }}</div>
-                    <div class="text-3xl font-black leading-[1]" :style="{ color: item.color }">
-                        {{ item.val }}<span class="text-xs ml-1 opacity-40 font-bold">{{ item.unit }}</span>
+                <div class="flex-1 px-4 flex flex-col justify-center">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mb-0.5">{{ item.title }}</div>
+                    <div class="text-3xl font-black leading-none" :style="{ color: item.color }">
+                        {{ item.val }}<span class="text-[10px] ml-0.5 opacity-40 font-bold uppercase">{{ item.unit }}</span>
                     </div>
                 </div>
                 
-                <div class="pr-5 h-full flex items-center">
-                    <span class="px-3 py-1 text-white text-[10px] font-black rounded-lg shadow-sm" :style="{ backgroundColor: item.color }">{{ item.tag }}</span>
+                <div class="pr-5 flex items-center justify-center">
+                    <span class="px-2.5 py-1 text-white text-[9px] font-black rounded-lg shadow-sm" :style="{ backgroundColor: item.color }">
+                        {{ item.tag }}
+                    </span>
                 </div>
             </div>
         </div>
 
-        <div class="w-full px-2 mb-4">
-            <div class="text-[11px] text-slate-300 font-black mb-5 flex items-center gap-2 tracking-[0.3em] uppercase">
-                <i class="ph-fill ph-heart text-red-400"></i> TOP ARTISTS 榜單
+        <div class="w-full px-1 mb-4">
+            <div class="text-[10px] text-slate-300 font-black mb-4 flex items-center gap-2 tracking-[0.2em] uppercase">
+                <i class="ph-fill ph-crown text-yellow-500"></i> Heart Ranking
             </div>
-            <div class="space-y-3 w-full">
+            <div class="space-y-3">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-slate-50/50 p-4 rounded-3xl border border-slate-100 shadow-sm h-16">
-                    <div class="flex items-center gap-4 flex-1 h-full pb-0.5">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border border-slate-100 shrink-0">
+                     class="flex items-center justify-between bg-slate-50/50 p-4 rounded-3xl border border-slate-100 h-16">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-xs font-black shadow-sm border border-slate-100">
                              <span :style="{ color: themeColor }">{{ index + 1 }}</span>
                         </div>
                         <span class="text-sm font-bold text-slate-700 truncate tracking-wide">{{ artist.name }}</span>
                     </div>
-                    <span class="text-xs font-black text-slate-400 shrink-0 ml-2">{{ artist.count }} 次</span>
+                    <span class="text-[10px] font-black text-slate-400">{{ artist.count }} 次見面</span>
                 </div>
             </div>
         </div>
 
         <div class="w-full mt-auto pt-6 border-t border-slate-50 opacity-20 text-[9px] tracking-[0.5em] text-center">
-            {{ customTitle }} • 珍藏每一份熱愛
+            {{ customTitle }} • 讓愛意有跡可循
         </div>
     </div>
 </div>
-
 
 
 
@@ -1177,7 +1178,8 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    alert("正在授予榮譽勳章並精準校對文字位置...");
+    // 授予稱號提示
+    alert("正在同步勳章成就，並精準校對文字位置...");
 
     await nextTick();
     window.scrollTo(0, 0); 
@@ -1187,10 +1189,12 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: '#f8fafc',
-            scale: 4, // 4倍高清
+            scale: 4, 
             useCORS: true,
             logging: false,
-            // 關鍵修復：強制克隆階段重設所有垂直對齊參數
+            // 解決亂碼與渲染偏移的關鍵參數
+            allowTaint: false,
+            textDrawingMode: 'path', // 強制以路徑繪製文字，避免編碼亂碼
             onclone: (clonedDoc) => {
                 const clonedEl = clonedDoc.getElementById('share-card-template');
                 clonedEl.style.left = '0';
@@ -1198,18 +1202,11 @@ const generateShareCard = async () => {
                 clonedEl.style.display = 'block';
                 clonedEl.style.height = 'auto';
                 
-                // 強制修正：讓所有 flex-col 容器在渲染時真正垂直置中
-                const vCenters = clonedEl.querySelectorAll('.flex-col.justify-center');
-                vCenters.forEach(c => {
+                // 強制克隆後的文字容器維持置中
+                clonedEl.querySelectorAll('.flex-col').forEach(c => {
                     c.style.display = 'flex';
                     c.style.flexDirection = 'column';
                     c.style.justifyContent = 'center';
-                    c.style.height = '100%';
-                });
-
-                // 修正圖示行高
-                clonedEl.querySelectorAll('.ph-fill').forEach(icon => {
-                    icon.style.lineHeight = '1';
                 });
             }
         });
@@ -1220,17 +1217,17 @@ const generateShareCard = async () => {
             newTab.document.write(`
                 <body style="margin:0; background:#f8fafc; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding: 20px; font-family:sans-serif;">
                     <img src="${imgData}" style="max-width:92vw; height:auto; border-radius:30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);" />
-                    <p style="color:#94a3b8; margin-top:20px; font-size:14px; font-weight:bold;">✨ 長按圖片儲存精準對齊長圖 ✨</p>
+                    <p style="color:#94a3b8; margin-top:20px; font-size:14px; font-weight:bold;">✨ 長按圖片儲存高清回顧長圖 ✨</p>
                 </body>
-            [cite_start]`); [cite: 294-295]
+            `);
         } else {
-            [cite_start]const link = document.createElement('a'); [cite: 296-297]
-            [cite_start]link.download = `${selectedYear.value}_追星榮譽回顧.png`; [cite: 296-297]
-            [cite_start]link.href = imgData; [cite: 296-297]
-            [cite_start]link.click(); [cite: 296-297]
+            const link = document.createElement('a');
+            link.download = `${selectedYear.value}_追星榮譽回顧.png`;
+            link.href = imgData;
+            link.click();
         }
     } catch (err) {
-        [cite_start]alert("生成失敗，請再試一次。"); [cite: 297-298]
+        alert("卡片生成失敗，請檢查網路連線或稍後再試。");
     }
 };
 
@@ -2216,7 +2213,6 @@ selectedMapYear, filteredMapEventsCount, totalDistance, generateShareCard,
     </script>
 </body>
 </html>
-
 
 
 
