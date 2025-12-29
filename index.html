@@ -1162,7 +1162,7 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    [span_9](start_span)// 自訂稱號授予提示[span_9](end_span)
+ // 自訂稱號授予提示
     alert("正在為您授予榮譽稱號並生成回顧卡...");
 
     await nextTick();
@@ -1171,7 +1171,7 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            [span_10](start_span)scale: 4, // 極致清晰度[span_10](end_span)
+            scale: 4, // 極致清晰度
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
@@ -1184,8 +1184,7 @@ const generateShareCard = async () => {
 
         const imgData = canvas.toDataURL('image/png', 1.0);
         
-        [span_11](start_span)// Safari 與手機瀏覽器優化：開啟新視窗顯示圖片[span_11](end_span)
-        const newTab = window.open();
+       // Safari 與手機瀏覽器優化：開啟新視窗顯示圖片        const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
                 <body style="margin:0; background:#050505; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh;">
