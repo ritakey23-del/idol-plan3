@@ -1231,23 +1231,22 @@ const generateShareCard = async () => {
             }
         });
 
-        [cite_start]const imgData = canvas.toDataURL('image/png', 1.0);[span_0](end_span)
-        [span_1](start_span)const newTab = window.open();[span_1](end_span)
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
                 <body style="margin:0; background:#f8fafc; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding: 20px; font-family:sans-serif;">
                     <img src="${imgData}" style="max-width:92vw; height:auto; border-radius:30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);" />
                     <p style="color:#94a3b8; margin-top:20px; font-size:14px; font-weight:bold;">✨ 長按圖片儲存精準對齊長圖 ✨</p>
                 </body>
-            [cite_start]`); [cite: 294-295]
-        } else {
-            [cite_start]const link = document.createElement('a'); [cite: 296-297]
-            [cite_start]link.download = `${selectedYear.value}_追星榮譽回顧.png`; [cite: 296-297]
-            [cite_start]link.href = imgData; [cite: 296-297]
-            [cite_start]link.click(); [cite: 296-297]
+            `); 
+       } else {
+            const link = document.createElement('a');            link.download = `${selectedYear.value}_追星榮譽回顧.png`; 
+            link.href = imgData; 
+           link.click();]
         }
     } catch (err) {
-        [cite_start]alert("生成失敗，請再試一次。"); [cite: 297-298]
+        alert("生成失敗，請再試一次。"); ]
     }
 };
 
