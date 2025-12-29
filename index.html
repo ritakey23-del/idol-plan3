@@ -1070,15 +1070,15 @@
     <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
         <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
             <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
-                [span_0](start_span)<h2 class="text-2xl font-bold text-slate-800">{{ customTitle }}[span_0](end_span)</h2>
+                )<h2 class="text-2xl font-bold text-slate-800">{{ customTitle }}</h2>
                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                    {{ selectedYear === 'ALL' ? [span_1](start_span)'Lifetime' : selectedYear }} Review[span_1](end_span)
+                    {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Review)
                 </p>
             </div>
 
             <div class="px-6 pb-6">
                 <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 leading-relaxed text-xs text-center border border-slate-100">
-                    [span_2](start_span)[span_3](start_span)"{{ emotionalSummary }}"[span_2](end_span)[span_3](end_span)
+            "{{ emotionalSummary }}"
                 </div>
             </div>
 
@@ -1087,17 +1087,18 @@
                     <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg" :style="{ backgroundColor: themeColor }">
                         <i :class="'ph ph-bold ' + badge.icon" class="text-lg"></i>
                     </div>
-                    [span_4](start_span)[span_5](start_span)<span class="text-[8px] font-bold text-slate-400">{{ badge.name }}[span_4](end_span)[span_5](end_span)</span>
+                    <span class="text-[8px] font-bold text-slate-400">{{ badge.name }}</span>
                 </div>
             </div>
 
             <div class="px-8 pb-10 space-y-3">
                 <div class="text-[9px] font-bold text-slate-300 tracking-[0.3em] uppercase border-b pb-1">TIMELINE</div>
                 <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 items-start border-b border-dotted border-slate-50 pb-2 last:border-0">
-                    [span_6](start_span)[span_7](start_span)<div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}[span_6](end_span)[span_7](end_span)</div>
+                    <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(5) }}
+</div>
                     <div class="flex-1">
-                        [span_8](start_span)<div class="text-xs font-bold text-slate-700 leading-tight">{{ event.title }}[span_8](end_span)</div>
-                        [span_9](start_span)<div class="text-[9px] text-slate-400">{{ event.artist }}[span_9](end_span)</div>
+                        <div class="text-xs font-bold text-slate-700 leading-tight">{{ event.title }}</div>
+                      <div class="text-[9px] text-slate-400">{{ event.artist }}</div>
                     </div>
                 </div>
             </div>
