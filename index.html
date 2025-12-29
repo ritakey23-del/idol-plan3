@@ -626,11 +626,17 @@
 
 
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                 <div class="flex justify-between items-center mb-2">
-                   
-                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
-                </div>
+                <div class="flex justify-between items-center mb-2">
+    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+    <div class="flex gap-2">
+        <button @click="downloadPoster" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+            <i class="ph ph-share-network text-lg"></i> 分享
+        </button>
+        <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+            <i class="ph ph-download-simple text-lg"></i> 匯入
+        </button>
+    </div>
+</div>
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -1066,10 +1072,7 @@
         </transition>
 
 <div id="share-poster" v-if="selectedYear !== 'ALL'" class="fixed -left-[2000px] w-[500px] bg-white p-10 flex flex-col gap-8" :style="{ borderTop: '20px solid ' + themeColor }">
-    <div class="text-center">
-        <h2 class="text-3xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
-        <p class="text-slate-400 mt-2 text-sm uppercase tracking-tighter">{{ selectedYear }} REVIEW</p>
-    </div>
+    <div class="text-center"> <h2 class="text-3xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2> <p class="text-slate-400 mt-2 text-sm uppercase tracking-tighter"> {{ selectedYear === 'ALL' ? 'FOREVER' : selectedYear }} STARGAZER REVIEW </p> </div>
 
     <div class="grid grid-cols-3 gap-4 border-y py-6 border-slate-100">
         <div class="text-center border-r border-slate-100">
@@ -1796,6 +1799,29 @@ const filteredEventsInYear = computed(() => {
                     };
                 });
 
+// 判定任務徽章
+const unlockedBadges = computed(() => {
+    const badges = [];
+    if (filteredMapEventsCount.value > 1) badges.push({ name: '征戰四方', icon: 'ph-map-pin' });
+    if (statsData.value.series.length > 0) badges.push({ name: '全勤模範生', icon: 'ph-student' });
+    if (parseFloat(totalDistance.value) > 100) badges.push({ name: '奔跑勇者', icon: 'ph-boot' });
+    return badges;
+});
+
+// 海報明細清單 (支援特定年份或全部)
+const filteredEventsInYear = computed(() => {
+    let list = (selectedYear.value === 'ALL') 
+        ? [...events.value] 
+        : events.value.filter(e => e.date.startsWith(selectedYear.value));
+    return list.sort((a, b) => new Date(a.date) - new Date(b.date));
+});
+
+// 分享按鈕函數
+const downloadPoster = () => {
+    const title = selectedYear.value === 'ALL' ? '追星總回顧' : selectedYear.value + ' 年度回顧';
+    alert('【' + title + '】海報已生成！\n包含 ' + statsData.value.count + ' 場心動瞬間與 ' + unlockedBadges.value.length + ' 個徽章。\n請使用螢幕截圖分享您的情緒價值 ✨');
+};
+
 
                 const emotionalSummary = computed(() => {
                     const { count, totalSpent, topArtists } = statsData.value;
@@ -2260,7 +2286,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, 
+selectedMapYear, filteredMapEventsCount, totalDistance, unlockedBadges, filteredEventsInYear, downloadPoster, 
 
 
                 };
