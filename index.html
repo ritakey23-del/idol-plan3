@@ -22,7 +22,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
@@ -717,10 +716,10 @@
                 <div class="text-2xl font-black leading-none">{{ filteredMapEventsCount }}</div>
                 <div class="text-[8px] mt-2 opacity-60 font-bold px-1">{{ filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地圖解鎖' }}</div>
             </div>
-            <div class="bg-white/10 rounded-[1.5rem] py-4 border border-white/10 flex flex-col items-center overflow-hidden">
+            <div class="bg-white/10 rounded-[1.5rem] py-4 border border-white/10 flex flex-col items-center overflow-hidden px-1">
                 <div class="text-[9px] text-white/50 mb-1">跨越銀河</div>
-                <div class="text-xl font-black truncate w-full px-1">{{ Math.floor(totalDistance) }}<small class="text-[8px] ml-0.5">km</small></div>
-                <div class="text-[8px] mt-2 opacity-60 font-bold px-1">{{ totalDistance >= 1000 ? '距離不是問題' : '只想見到你' }}</div>
+                <div class="text-xl font-black truncate w-full">{{ Math.floor(totalDistance) }}<small class="text-[8px] ml-0.5">km</small></div>
+                <div class="text-[8px] mt-2 opacity-60 font-bold px-1 truncate w-full">{{ totalDistance >= 1000 ? '距離不是問題' : '只想見到你' }}</div>
             </div>
         </div>
 
@@ -743,11 +742,10 @@
                         <span class="text-sm font-black text-white block">{{ artist.count }} <small class="text-[9px] font-normal opacity-50">次</small></span>
                     </div>
                 </div>
-                <div v-if="!statsData.topArtists || statsData.topArtists.length === 0" class="text-white/20 italic text-xs py-4 text-center">尚無心動紀錄</div>
             </div>
         </div>
 
-        <div class="w-full mt-4 pb-4 border-t border-white/5 opacity-30 text-[9px] tracking-[0.5em] font-medium uppercase text-center">
+        <div class="w-full mt-4 pb-4 border-t border-white/5 opacity-30 text-[9px] tracking-[0.5em] font-medium uppercase">
             {{ customTitle }} • 讓愛意有跡可循
         </div>
     </div>
@@ -1160,7 +1158,7 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    [span_4](start_span)// 保留原本的自訂提示語[span_4](end_span)
+    // 保留自訂提示提示
     alert("正在為您授予榮譽稱號並生成回顧卡...");
 
     await nextTick();
@@ -1169,14 +1167,13 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: null,
-            scale: 3, // 高清倍率
+            scale: 3, 
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
                 const clonedEl = clonedDoc.getElementById('share-card-template');
                 clonedEl.style.left = '0';
                 clonedEl.style.position = 'relative';
-                // 確保寬度自適應
                 clonedEl.style.width = window.innerWidth + 'px';
                 clonedEl.style.minHeight = window.innerHeight + 'px';
             }
@@ -1201,7 +1198,6 @@ const generateShareCard = async () => {
         alert("生成失敗，請再試一次。");
     }
 };
-
 
 
 
