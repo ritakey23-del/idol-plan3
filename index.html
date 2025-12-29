@@ -692,57 +692,58 @@
                 <span class="text-[10px] font-medium">回顧</span>
             </>
         </nav>
-<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[375px] font-sans flex flex-col items-center" 
-     :style="{ backgroundColor: '#f8fafc', height: 'auto' }">
+<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[375px] p-4 font-sans text-slate-800 overflow-hidden text-center flex flex-col items-center" 
+     :style="{ backgroundColor: '#f1f5f9' }">
     
-    <div class="bg-white rounded-[2rem] p-8 border-4 shadow-2xl w-[350px] my-4 flex flex-col items-center shrink-0"
+    <div class="bg-white rounded-[2.5rem] p-8 border-4 shadow-2xl w-full h-auto flex flex-col relative overflow-hidden items-center"
          :style="{ borderColor: themeColor }">
         
-        <div v-if="emotionalSummary" class="w-full mb-6 px-5 py-4 rounded-2xl border-2 italic text-sm text-left leading-relaxed shadow-sm bg-slate-50"
-             :style="{ borderColor: themeColor + '40', color: '#475569' }">
-            「 {{ emotionalSummary }} 」
-        </div>
+        <div class="w-full flex flex-col items-center mb-6">
+            <h2 class="text-3xl font-black tracking-tight mb-4" :style="{ color: themeColor }">
+                {{ selectedYear === 'ALL' ? '追星總足跡' : selectedYear + ' 年度回顧' }}
+            </h2>
+            
+            <div v-if="emotionalSummary" class="w-full mb-6 px-5 py-4 rounded-2xl border-2 italic text-sm text-left leading-relaxed bg-slate-50 shadow-inner"
+                 :style="{ borderColor: themeColor + '30', color: '#475569' }">
+                「 {{ emotionalSummary }} 」
+            </div>
 
-        <div class="w-full mb-8 flex flex-col items-center">
-            <div class="mb-4 flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-400 flex items-center justify-center text-4xl shadow-lg border-4 border-white mb-2">
+            <div class="flex flex-col items-center gap-2 mb-2">
+                <div class="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center text-4xl shadow-md border-4 border-white">
                     {{ statsData.count >= 15 ? '👑' : (totalDistance >= 5000 ? '✈️' : '🌟') }}
                 </div>
-                <div class="px-6 py-1.5 rounded-full text-white font-black text-sm shadow-md"
+                <div class="px-6 py-1.5 rounded-full text-white font-black text-sm shadow-sm"
                      :style="{ backgroundColor: themeColor }">
-                    任務達成：{{ statsData.count >= 15 ? '核心鐵粉' : (totalDistance >= 5000 ? '跨海追隨者' : '閃耀應援者') }}
+                    解鎖成就：{{ statsData.count >= 15 ? '核心鐵粉' : (totalDistance >= 5000 ? '跨海追隨者' : '閃耀應援者') }}
                 </div>
             </div>
-            <h2 class="text-3xl font-black tracking-tight" :style="{ color: themeColor }">
-                {{ selectedYear === 'ALL' ? '追星足跡' : selectedYear + ' 年度回顧' }}
-            </h2>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 w-full mb-8">
-            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '30' }">
+        <div class="grid grid-cols-3 gap-3 w-full mb-10">
+            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '20' }">
                 <div class="text-[10px] text-slate-400 mb-1">熱血指數</div>
                 <div class="text-2xl font-black" :style="{ color: themeColor }">{{ statsData.count }}</div>
-                <div class="text-[8px] mt-2 font-bold px-2 py-0.5 bg-slate-100 rounded text-slate-500">瘋狂在路上</div>
+                <div class="text-[8px] mt-2 px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold">瘋狂在路上</div>
             </div>
-            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '30' }">
+            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm" :style="{ borderColor: themeColor + '20' }">
                 <div class="text-[10px] text-slate-400 mb-1">場館獵人</div>
                 <div class="text-2xl font-black" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
-                <div class="text-[8px] mt-2 font-bold px-2 py-0.5 bg-slate-100 rounded text-slate-500">地圖收藏</div>
+                <div class="text-[8px] mt-2 px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold">地圖收藏家</div>
             </div>
-            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm px-1" :style="{ borderColor: themeColor + '30' }">
+            <div class="rounded-2xl py-5 border flex flex-col items-center justify-center bg-white shadow-sm overflow-hidden" :style="{ borderColor: themeColor + '20' }">
                 <div class="text-[10px] text-slate-400 mb-1 leading-none">跨越銀河</div>
-                <div class="text-xl font-black tracking-tighter" :style="{ color: themeColor }">{{ Math.floor(totalDistance) }}<small class="text-[8px] font-normal">km</small></div>
-                <div class="text-[8px] mt-2 font-bold px-1 py-0.5 bg-slate-100 rounded text-slate-500 truncate w-full text-center">只想見到你</div>
+                <div class="text-xl font-black truncate w-full tracking-tighter my-1" :style="{ color: themeColor }">{{ Math.floor(totalDistance) }}km</div>
+                <div class="text-[8px] mt-1 px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold truncate w-full">只想見到你</div>
             </div>
         </div>
 
-        <div class="w-full text-left">
-            <div class="text-xs text-slate-400 uppercase tracking-[0.2em] mb-4 font-black flex items-center gap-2">
+        <div class="w-full text-left px-1 mb-6">
+            <div class="text-xs text-slate-400 uppercase tracking-widest mb-4 font-black flex items-center gap-2">
                 <i class="ph ph-medal-fill" :style="{ color: themeColor }"></i> 年度心動榜單
             </div>
-            <div class="space-y-3 w-full">
+            <div class="space-y-4 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border" :style="{ borderColor: themeColor + '20' }">
+                     class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border" :style="{ borderColor: themeColor + '10' }">
                     <div class="flex items-center gap-4 min-w-0 flex-1">
                         <div class="w-8 h-8 flex items-center justify-center rounded-full text-sm shrink-0 font-black text-white" :style="{ backgroundColor: themeColor }">
                              {{ index + 1 }}
@@ -750,17 +751,18 @@
                         <span class="text-base font-bold truncate text-slate-700">{{ artist.name }}</span>
                     </div>
                     <div class="text-right shrink-0 ml-2">
-                        <span class="text-sm font-black text-slate-600">{{ artist.count }} 次</span>
+                        <span class="text-sm font-black block text-slate-600">{{ artist.count }} 次見面</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="w-full mt-8 pt-6 border-t opacity-30 text-[10px] tracking-[0.4em] text-center" :style="{ borderColor: themeColor + '20' }">
-            {{ customTitle }} • 讓愛意有跡可循
+        <div class="w-full mt-auto pt-8 border-t opacity-30 text-[10px] tracking-[0.4em] text-center" :style="{ borderColor: themeColor + '20' }">
+            {{ customTitle }} • 珍藏熱愛
         </div>
     </div>
 </div>
+
 
 
 
@@ -1170,15 +1172,19 @@
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
-    alert("正在為您授予榮譽稱號並生成回顧卡...");
+    // 提示
+    alert("正在為您授予榮譽稱號並生成回顧長圖...");
 
     await nextTick();
+    // 確保頁面回到最頂端，防止 html2canvas 偏移
+    window.scrollTo(0, 0);
+    
     const element = document.getElementById('share-card-template');
     
     try {
         const canvas = await html2canvas(element, {
-            backgroundColor: '#f8fafc',
-            scale: 3, 
+            backgroundColor: '#f1f5f9',
+            scale: 4, // 提高到4倍，保證文字邊緣極度銳利
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
@@ -1186,9 +1192,7 @@ const generateShareCard = async () => {
                 clonedEl.style.left = '0';
                 clonedEl.style.position = 'relative';
                 clonedEl.style.display = 'block';
-                // 核心修復：強制自動高度，禁止截斷
-                clonedEl.style.height = 'auto'; 
-                clonedEl.style.width = '375px';
+                clonedEl.style.height = 'auto'; // 重要：讓高度隨內容撐開
             }
         });
 
@@ -1196,14 +1200,14 @@ const generateShareCard = async () => {
         const newTab = window.open();
         if (newTab) {
             newTab.document.write(`
-                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; padding:20px;">
-                    <img src="${imgData}" style="max-width:95vw; height:auto; border-radius:15px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);" />
-                    <p style="color:#64748b; margin-top:20px; font-family:sans-serif; font-size:14px; font-weight:bold;">✨ 長按儲存回顧長圖 ✨</p>
+                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; padding:20px; font-family:sans-serif;">
+                    <img src="${imgData}" style="max-width:95vw; height:auto; border-radius:20px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);" />
+                    <p style="color:#64748b; margin-top:20px; font-size:16px; font-weight:bold;">✨ 長按圖片儲存高清長圖 ✨</p>
                 </body>
             `);
         } else {
             const link = document.createElement('a');
-            link.download = `年度回顧.png`;
+            link.download = `${selectedYear.value}_追星榮譽回顧.png`;
             link.href = imgData;
             link.click();
         }
