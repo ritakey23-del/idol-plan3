@@ -2158,11 +2158,14 @@ selectedMapYear, filteredMapEventsCount, totalDistance, shareImageUrl, shareTemp
     </div>
 </div>
 
-<div v-if="shareImageUrl" class="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-6">
+<div v-if="shareImageUrl && shareImageUrl !== null" class="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-6">
     <img :src="shareImageUrl" class="max-w-full max-h-[70vh] rounded-lg shadow-2xl mb-6">
     <p class="text-white text-sm mb-4">長按圖片即可儲存或分享</p>
-    <button @click="shareImageUrl = null" class="bg-white px-8 py-3 rounded-full font-bold">關閉預覽</button>
+    <button @click="shareImageUrl = null" class="bg-white px-8 py-3 rounded-full font-bold text-slate-800">
+        關閉預覽
+    </button>
 </div>
+
 
 </body>
 </html>
