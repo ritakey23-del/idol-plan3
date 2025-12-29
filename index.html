@@ -628,15 +628,25 @@
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
                 <div class="flex justify-between items-center mb-2">
     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-<div class="relative">
-    <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-        <option value="ALL">🗓️ 全部年份總回顧</option>
-        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
-    </select>
-    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
+    <div class="flex gap-2">
+        <button @click="downloadPoster" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+            <i class="ph ph-share-network text-lg"></i> 分享回顧
+        </button>
+        <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+            <i class="ph ph-download-simple text-lg"></i> 匯入
+        </button>
+    </div>
 </div>
 
-
+<div class="space-y-4">
+    <div class="relative">
+        <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <option value="ALL">🗓️ 全部年份總回顧</option>
+            <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
+    </div>
+    </div>
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
                         <p class="text-sm font-bold text-slate-700 italic">"{{ emotionalSummary }}"</p>
@@ -1058,57 +1068,14 @@
 
 <transition name="fade">
     <div v-if="showPosterModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" @click.self="showPosterModal = false">
-        <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative" id="share-poster">
+        <div class="bg-white w-full max-w-[380px] max-h-[85vh] rounded-3xl overflow-y-auto no-scrollbar shadow-2xl relative">
             <div class="p-8 pb-4 text-center" :style="{ borderTop: '15px solid ' + themeColor }">
-                <h2 class="text-2xl font-bold tracking-widest text-slate-800">{{ customTitle }}</h2>
-                <p class="text-slate-400 mt-1 text-[10px] uppercase tracking-[0.2em] font-bold">
-                    {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Stargazer Review
+                <h2 class="text-2xl font-bold text-slate-800">{{ customTitle }}</h2>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                    {{ selectedYear === 'ALL' ? 'Lifetime' : selectedYear }} Review
                 </p>
             </div>
-
-            <div class="px-8 py-4 grid grid-cols-3 gap-2 text-center border-y border-slate-50">
-                <div>
-                    <div class="text-[9px] text-slate-400 font-bold mb-1">心動瞬間</div>
-                    <div class="text-xl font-bold" :style="{ color: themeColor }">{{ statsData.count }}</div>
-                </div>
-                <div>
-                    <div class="text-[9px] text-slate-400 font-bold mb-1">征戰場館</div>
-                    <div class="text-xl font-bold" :style="{ color: themeColor }">{{ filteredMapEventsCount }}</div>
-                </div>
-                <div>
-                    <div class="text-[9px] text-slate-400 font-bold mb-1">里程(km)</div>
-                    <div class="text-xl font-bold" :style="{ color: themeColor }">{{ totalDistance }}</div>
-                </div>
             </div>
-
-            <div class="p-6">
-                <div class="bg-slate-50 p-5 rounded-2xl italic text-slate-600 leading-relaxed text-xs text-center shadow-inner border border-slate-100">
-                    "{{ emotionalSummary }}"
-                </div>
-            </div>
-
-            <div class="px-8 pb-6 flex flex-wrap justify-center gap-4">
-                <div v-for="badge in unlockedBadges" :key="badge.name" class="flex flex-col items-center gap-1.5">
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg" :style="{ backgroundColor: themeColor }">
-                        <i :class="'ph ph-bold ' + badge.icon" class="text-lg"></i>
-                    </div>
-                    <span class="text-[8px] font-bold text-slate-400">{{ badge.name }}</span>
-                </div>
-            </div>
-
-            <div class="px-8 pb-10 space-y-3">
-                <div class="text-[9px] font-bold text-slate-300 tracking-[0.3em] uppercase border-b border-slate-50 pb-1">Timeline</div>
-                <div v-for="event in filteredEventsInYear" :key="event.id" class="flex gap-3 items-start border-b border-dotted border-slate-100 pb-2 last:border-0">
-                    <div class="text-[9px] font-mono text-slate-300 pt-0.5">{{ event.date.slice(2).replace(/-/g,'/') }}</div>
-                    <div class="flex-1">
-                        <div class="text-xs font-bold text-slate-700 leading-tight">{{ event.title }}</div>
-                        <div class="text-[9px] text-slate-400">{{ event.artist }}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center pb-6 opacity-20 text-[8px] tracking-[0.4em]">IDOL TRACKER MEMORIES</div>
-        </div>
         <button @click="showPosterModal = false" class="absolute top-6 right-6 text-white/50 hover:text-white"><i class="ph ph-x-circle text-3xl"></i></button>
     </div>
 </transition>
@@ -1163,8 +1130,6 @@
             setup() {
 
 
-                const showPosterModal = ref(false);
-
                 const events = ref([]);
                 const selectedMapYear = ref('ALL');
                 const activeTab = ref('home');
@@ -1183,8 +1148,9 @@
                 
                 const showModal = ref(false);
                 const showSettingsModal = ref(false); 
-                
                 const showImportModal = ref(false);
+                const showPosterModal = ref(false);
+
                 const showTicketModal = ref(false);
                 const showCalendarModal = ref(false); 
                 const showChangelogModal = ref(false); 
@@ -1798,7 +1764,7 @@ const filteredEventsInYear = computed(() => {
                     };
                 });
 
-// 判定任務徽章
+// 判定勳章
 const unlockedBadges = computed(() => {
     const badges = [];
     if (filteredMapEventsCount.value > 1) badges.push({ name: '征戰四方', icon: 'ph-map-pin' });
@@ -1807,7 +1773,7 @@ const unlockedBadges = computed(() => {
     return badges;
 });
 
-// 海報明細清單 (支援特定年份或全部)
+// 過濾海報明細 (支援 ALL 與特定年份)
 const filteredEventsInYear = computed(() => {
     let list = (selectedYear.value === 'ALL') 
         ? [...events.value] 
@@ -1815,11 +1781,10 @@ const filteredEventsInYear = computed(() => {
     return list.sort((a, b) => new Date(a.date) - new Date(b.date));
 });
 
-// 分享按鈕函數
+// 分享函數：開啟彈窗
 const downloadPoster = () => {
-    const title = selectedYear.value = true ;
+    showPosterModal.value = true;
 };
-
 
 
                 const emotionalSummary = computed(() => {
