@@ -19,7 +19,18 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://html2canvas.hertzenberg.com/dist/html2canvas.min.js"></script>
+<style>
+    /* 隱藏生成圖專用的容器，平時不顯示 */
+    #share-canvas-wrapper {
+        position: fixed;
+        left: -9999px;
+        top: 0;
+        width: 375px; /* 標準手機寬度 */
+        background: #f8fafc;
+    }
+</style>
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
@@ -131,6 +142,7 @@
             cursor: pointer;
         }
     </style>
+
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
 
@@ -596,8 +608,47 @@
                  <div class="flex justify-between items-center mb-2">
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+<div class="flex gap-2">
+    <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+        <i class="ph ph-share-network text-lg"></i> 分享
+    </button>
+    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+        <i class="ph ph-download-simple text-lg"></i> 匯入
+    </button>
+</div>
+
+<div id="share-canvas-wrapper" ref="shareTemplate">
+    <div class="p-8 text-center" :style="{ borderTop: '8px solid ' + themeColor }">
+        <h2 class="text-2xl font-bold mb-1">{{ customTitle }}</h2>
+        <p class="text-slate-400 text-xs mb-6">{{ selectedYear === 'ALL' ? '歷年總回顧' : selectedYear + ' 年度回顧' }}</p>
+        
+        <div class="bg-white rounded-3xl p-6 shadow-sm mb-6 text-left border border-slate-100">
+            <p class="text-sm font-bold text-slate-600 italic mb-4">"{{ emotionalSummary }}"</p>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-[10px] text-slate-400">累計場次</p>
+                    <p class="text-xl font-bold">{{ statsData.count }} 場</p>
                 </div>
+                <div>
+                    <p class="text-[10px] text-slate-400">累計投資</p>
+                    <p class="text-xl font-bold">${{ formatMoney(statsData.totalSpent) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="statsData.topArtists.length > 0" class="text-left mb-6">
+            <h3 class="font-bold text-sm mb-3">本命排行榜 Top 3</h3>
+            <div v-for="(artist, i) in statsData.topArtists" :key="i" class="flex items-center gap-3 mb-2">
+                <span class="text-lg font-black italic opacity-20">0{{i+1}}</span>
+                <span class="font-bold flex-1">{{ artist.name }}</span>
+                <span class="text-xs bg-slate-100 px-2 py-1 rounded-lg">{{ artist.count }} 次</span>
+            </div>
+        </div>
+        
+        <div class="text-[10px] text-slate-300 mt-8 font-barcode text-2xl">IDOL TRACKER MEMORIES</div>
+    </div>
+</div>
+
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -1075,6 +1126,7 @@
                 const showCalendarModal = ref(false); 
                 const showChangelogModal = ref(false); 
                 const showFandomModal = ref(false); 
+                const shareTemplate = ref(null); // 對應 HTML 的 ref
                 const calendarEvent = ref(null);     
   
                 const ticketEvent = ref({});
@@ -1084,6 +1136,50 @@
                 const importJson = ref('');
                 let map = null;
                 let markers = [];
+
+const generateShareImage = async () => {
+    // 1. 生成圖前的提示
+    alert('正在準備您的追星回顧卡片，請稍候... ✨');
+
+    try {
+        // 確保 DOM 已渲染
+        await nextTick();
+        
+        // 2. 使用 html2canvas 轉換圖片
+        const canvas = await html2canvas(shareTemplate.value, {
+            useCORS: true, // 支援跨域圖片
+            scale: 2,      // 提高清晰度
+            backgroundColor: '#f8fafc'
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        // 3. Safari 與行動裝置相容性處理：直接在新視窗開啟圖片或下載
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = `追星回顧_${selectedYear.value}.png`;
+        
+        // 在行動裝置（特別是 Safari）建議開啟新分頁讓用戶長按儲存
+        if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android)/i)) {
+            const newWindow = window.open();
+            newWindow.document.write(`<img src="${imgData}" style="width:100%;" />`);
+            newWindow.document.title = "長按圖片儲存回顧";
+        } else {
+            link.click();
+        }
+    } catch (err) {
+        console.error('生成分享圖失敗:', err);
+        alert('抱歉，生成圖片時發生錯誤。');
+    }
+};
+
+// 別忘了在 return 增加 generateShareImage 和 shareTemplate
+return {
+    // ... 原有內容
+    generateShareImage,
+    shareTemplate
+}
+
 
 // 計算兩點間的球面距離 (Haversine 公式)
 const calculateKm = (lat1, lon1, lat2, lon2) => {
@@ -2056,7 +2152,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, 
+selectedMapYear, filteredMapEventsCount, totalDistance, generateShareImage, shareTemplate, 
 
                 };
             }
@@ -2064,6 +2160,8 @@ selectedMapYear, filteredMapEventsCount, totalDistance,
     </script>
 </body>
 </html>
+
+
 
 
 
