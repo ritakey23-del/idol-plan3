@@ -711,11 +711,11 @@
             <div class="flex flex-col items-center mb-2">
                 <div class="relative flex items-center justify-center">
                     <div class="w-20 h-20 rounded-full border-4 border-dashed animate-[spin_10s_linear_infinite]" :style="{ borderColor: themeColor + '40' }"></div>
-                    <div class="absolute w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center text-2xl border-2" :style="{ borderColor: themeColor }">
-                        🏆
+                    <div class="absolute w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center border-2" :style="{ borderColor: themeColor }">
+                        <i class="ph ph-trophy-fill text-3xl" :style="{ color: themeColor }"></i>
                     </div>
                 </div>
-                <div class="mt-3 px-6 py-1.5 rounded-full text-white font-black text-xs shadow-md" :style="{ backgroundColor: themeColor }">
+                <div class="mt-4 px-6 py-1.5 rounded-full text-white font-black text-xs shadow-md" :style="{ backgroundColor: themeColor }">
                     年度成就：{{ statsData.count >= 15 ? '核心鐵粉' : '應援模範' }}
                 </div>
             </div>
@@ -723,37 +723,46 @@
 
         <div class="grid grid-cols-1 gap-5 w-full mb-10">
             
-            <div class="rounded-[2rem] p-5 border-2 flex items-center bg-white shadow-sm transition-all" :style="{ borderColor: '#fee2e2' }">
-                <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-2xl mr-4 shrink-0">🔥</div>
-                <div class="flex-1 flex flex-col justify-center">
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">熱血指數</div>
-                    <div class="text-3xl font-black leading-none text-red-500">{{ statsData.count }}<small class="text-xs ml-1 opacity-40">場</small></div>
+            <div class="rounded-[2rem] p-5 border-2 flex items-center bg-white shadow-sm h-28" :style="{ borderColor: '#fee2e2' }">
+                <div class="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mr-4 shrink-0">
+                    <i class="ph ph-fire-fill text-3xl text-red-500"></i>
                 </div>
-                <div class="bg-red-500 text-white px-3 py-1 rounded-lg font-black text-[10px] shadow-sm shrink-0">
+                <div class="flex-1 flex flex-col justify-center h-full">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">熱血指數</div>
+                    <div class="text-3xl font-black leading-none text-red-500">{{ statsData.count }}<small class="text-xs ml-1 opacity-40 font-normal">場</small></div>
+                </div>
+                <div class="bg-red-500 text-white px-3 py-1.5 rounded-xl font-black text-[10px] shadow-sm shrink-0 flex items-center gap-1">
+                    <i class="ph ph-sketch-logo"></i>
                     {{ statsData.count >= 20 ? '愛意爆表' : '瘋狂在路上' }}
                 </div>
             </div>
 
-            <div class="rounded-[2rem] p-5 border-2 flex items-center bg-white shadow-sm transition-all" :style="{ borderColor: '#e0f2fe' }">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl mr-4 shrink-0">📍</div>
-                <div class="flex-1 flex flex-col justify-center">
-                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">場館獵人</div>
-                    <div class="text-3xl font-black leading-none text-blue-500">{{ filteredMapEventsCount }}<small class="text-xs ml-1 opacity-40">館</small></div>
+            <div class="rounded-[2rem] p-5 border-2 flex items-center bg-white shadow-sm h-28" :style="{ borderColor: '#e0f2fe' }">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mr-4 shrink-0">
+                    <i class="ph ph-map-pin-line-fill text-3xl text-blue-500"></i>
                 </div>
-                <div class="bg-blue-500 text-white px-3 py-1 rounded-lg font-black text-[10px] shadow-sm shrink-0">
+                <div class="flex-1 flex flex-col justify-center h-full">
+                    <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">場館獵人</div>
+                    <div class="text-3xl font-black leading-none text-blue-500">{{ filteredMapEventsCount }}<small class="text-xs ml-1 opacity-40 font-normal">館</small></div>
+                </div>
+                <div class="bg-blue-500 text-white px-3 py-1.5 rounded-xl font-black text-[10px] shadow-sm shrink-0 flex items-center gap-1">
+                    <i class="ph ph-compass"></i>
                     {{ filteredMapEventsCount >= 10 ? '地圖收藏家' : '新地標解鎖' }}
                 </div>
             </div>
 
-            <div class="rounded-[2rem] p-5 border-2 flex items-center bg-white shadow-sm transition-all" :style="{ borderColor: '#f3e8ff' }">
-                <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-2xl mr-4 shrink-0">🚀</div>
-                <div class="flex-1 flex flex-col justify-center">
+            <div class="rounded-[2rem] p-5 border-2 flex items-center bg-white shadow-sm h-28" :style="{ borderColor: '#f3e8ff' }">
+                <div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center mr-4 shrink-0">
+                    <i class="ph ph-rocket-launch-fill text-3xl text-purple-600"></i>
+                </div>
+                <div class="flex-1 flex flex-col justify-center h-full">
                     <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">跨越銀河</div>
                     <div class="text-2xl font-black leading-none text-purple-600 truncate max-w-[100px]">
                         {{ Math.floor(totalDistance) }}<small class="text-[10px] ml-0.5 opacity-40 font-normal">km</small>
                     </div>
                 </div>
-                <div class="bg-purple-600 text-white px-3 py-1 rounded-lg font-black text-[10px] shadow-sm shrink-0">
+                <div class="bg-purple-600 text-white px-3 py-1.5 rounded-xl font-black text-[10px] shadow-sm shrink-0 flex items-center gap-1">
+                    <i class="ph ph-planet"></i>
                     {{ totalDistance >= 1000 ? '奔波無阻' : '只想見到你' }}
                 </div>
             </div>
@@ -761,13 +770,13 @@
         </div>
 
         <div class="w-full text-left px-1 mb-6">
-            <div class="text-[10px] text-slate-400 tracking-[0.3em] mb-4 font-black flex items-center gap-2 uppercase">
+            <div class="text-[11px] text-slate-400 tracking-[0.3em] mb-4 font-black flex items-center gap-2 uppercase">
                 👑 Top Heart Ranking
             </div>
             <div class="space-y-4 w-full">
                 <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
                      class="flex items-center justify-between bg-slate-50 p-4 rounded-3xl border border-slate-100 shadow-sm">
-                    <div class="flex items-center gap-4 flex-1 min-w-0">
+                    <div class="flex items-center gap-4 min-w-0 flex-1">
                         <div class="w-9 h-9 flex items-center justify-center rounded-full bg-white text-sm font-black shadow-inner border border-slate-100">
                              {{ index === 0 ? '🥇' : (index === 1 ? '🥈' : '🥉') }}
                         </div>
@@ -783,6 +792,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -1190,7 +1200,6 @@
                 let map = null;
                 let markers = [];
 
-// 修正後的生成函式：保留您的提示語
 const generateShareCard = async () => {
     if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
     
@@ -1198,7 +1207,6 @@ const generateShareCard = async () => {
     alert("正在同步成就勳章並生成高清回顧長圖...");
 
     await nextTick();
-    // 確保回到頁面頂部以利截圖
     window.scrollTo(0, 0);
     
     const element = document.getElementById('share-card-template');
@@ -1206,7 +1214,7 @@ const generateShareCard = async () => {
     try {
         const canvas = await html2canvas(element, {
             backgroundColor: '#f1f5f9',
-            scale: 4, // 4倍高清倍率
+            scale: 4, 
             useCORS: true,
             logging: false,
             onclone: (clonedDoc) => {
@@ -1214,7 +1222,7 @@ const generateShareCard = async () => {
                 clonedEl.style.left = '0';
                 clonedEl.style.position = 'relative';
                 clonedEl.style.display = 'block';
-                // 核心修復：強制高度隨內容長度伸縮，解決裁切問題
+                // 核心修復：強制高度隨內容伸縮
                 clonedEl.style.height = 'auto'; 
             }
         });
@@ -1238,7 +1246,6 @@ const generateShareCard = async () => {
         alert("生成失敗，請再試一次。");
     }
 };
-
 
 
 // 計算兩點間的球面距離 (Haversine 公式)
