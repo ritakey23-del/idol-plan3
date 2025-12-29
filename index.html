@@ -21,16 +21,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://html2canvas.hertzenberg.com/dist/html2canvas.min.js"></script>
-<style>
-    /* 隱藏生成圖專用的容器，平時不顯示 */
-    #share-canvas-wrapper {
-        position: fixed;
-        left: -9999px;
-        top: 0;
-        width: 375px; /* 標準手機寬度 */
-        background: #f8fafc;
-    }
-</style>
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
@@ -66,6 +56,16 @@
             width: 100vw;
             overflow: hidden;
         }
+
+    /* 隱藏生成圖專用的容器，平時不顯示 */
+    #share-canvas-wrapper {
+        position: fixed;
+        left: -9999px;
+        top: 0;
+        width: 375px; /* 標準手機寬度 */
+        background: #f8fafc;
+    }
+
 /* 彈窗專用的滾動容器 */
 .custom-popup-scroll {
     max-height: 150px;
