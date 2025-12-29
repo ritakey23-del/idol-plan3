@@ -20,8 +20,7 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+<script src="https://html2canvas.hertzenberg.com/dist/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Quicksand:wght@500;700&family=Libre+Barcode+39+Text&display=swap" rel="stylesheet">
 
     <script>
@@ -131,6 +130,22 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;
             cursor: pointer;
         }
+/* 產圖容器樣式 (9:16) */
+.share-canvas {
+    width: 360px; height: 640px; position: fixed; left: -9999px; top: 0;
+    padding: 30px; display: flex; flex-direction: column;
+}
+.event-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; opacity: 0.8; }
+.artist-tag { font-weight: bold; margin-right: 10px; font-size: 18px; }
+
+/* 風格 A：奶油極簡 */
+.style-creamy { background: #FFFDF5; color: #444; }
+/* 風格 B：應援光芒 */
+.style-glitter { background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%); }
+/* 風格 C：復古票券 */
+.style-vintage { background: #f8fafc; border: 10px solid var(--primary-color); }
+
+
     </style>
 </head>
 <body class="text-slate-700 antialiased selection:bg-primary selection:text-white flex flex-col">
@@ -594,17 +609,53 @@
 </div>
 
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                 <div class="flex justify-between items-center mb-2">
+                   
+                   <div class="flex justify-between items-center mb-2">
     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
     <div class="flex gap-2">
-        <button @click="generateShareCard" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+        <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
             <i class="ph ph-share-network text-lg"></i> 分享
         </button>
         <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-            <i class="ph ph-download-simple text-lg"></i> 匯入
+            <i class="ph ph-download-simple text-lg"></i> 匯入 
         </button>
     </div>
 </div>
+
+<div id="share-template" v-if="isGenerating" :class="'share-canvas ' + currentStyleClass" :style="cssVars">
+    <div class="share-content">
+        <h1 class="text-2xl font-bold mb-2">{{ selectedYear === 'ALL' ? '追星總回顧' : selectedYear + ' 年度回顧' }}</h1>
+        <p class="summary-text">"{{ emotionalSummary }}" [cite: 160]</p>
+        
+        <div class="artist-cloud my-6">
+            <span v-for="a in statsData.topArtists" :key="a.name" class="artist-tag" :style="{ color: themeColor }">
+                #{{ a.name }} [cite: 166]
+            </span>
+        </div>
+
+        <div class="event-list-container">
+            <h3 class="text-xs font-bold opacity-50 mb-2">年度行程明細</h3>
+            <div v-for="item in statsData.series" :key="item.title" class="event-row">
+                <span class="date">{{ item.date || '' }}</span>
+                <span class="title">{{ item.title }}</span> 
+            </div>
+        </div>
+
+        <div class="footer-stats mt-auto pt-6 border-t border-dashed">
+            <div class="flex justify-between">
+                <span>累計場次: {{ statsData.count }} [cite: 162]</span>
+                <span>追星里程: {{ totalDistance }} km [cite: 156]</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div v-if="shareImagePreview" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/90 p-4" @click="shareImagePreview = null">
+    <p class="text-white mb-4 font-bold">✨ 長按圖片儲存，分享至 Threads ✨</p>
+    <img :src="shareImagePreview" class="max-w-full rounded-xl shadow-2xl border border-white/20">
+</div>
+
+
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -657,10 +708,7 @@
                     <div v-else class="text-center text-slate-400 text-sm py-4">區間內無資料</div>
                 </div>
             </div>
-
-
-
-
+  
        </main>
 
         <button @click="openModal()" :style="{ backgroundColor: themeColor }"
@@ -690,71 +738,8 @@
                 :class="activeTab === 'stats' ? '' : 'text-slate-400'" :style="{ color: activeTab === 'stats' ? themeColor : '' }">
                 <i class="ph text-2xl ph-chart-bar" :class="{ 'ph-fill': activeTab === 'stats', 'ph-bold': activeTab !== 'stats' }"></i>
                 <span class="text-[10px] font-medium">回顧</span>
-            </>
+            </button>
         </nav>
-<div id="share-card-template" class="fixed -left-[9999px] top-0 w-[414px] p-6 font-sans text-slate-800 flex flex-col items-center" 
-     :style="{ backgroundColor: themeColor + '10' }">
-    
-    <div class="bg-white rounded-[2.5rem] p-8 border-4 shadow-2xl w-full h-auto flex flex-col relative overflow-hidden items-center"
-         :style="{ borderColor: themeColor }">
-        
-        <div class="w-full text-center mb-8">
-            <h2 class="text-3xl font-black tracking-tight mb-4" :style="{ color: themeColor }">
-                {{ selectedYear === 'ALL' ? '追星總足跡' : selectedYear + ' 年度回顧' }}
-            </h2>
-            
-            <div v-if="emotionalSummary" class="w-full mb-6 px-6 py-5 rounded-2xl border-2 italic text-sm text-left leading-relaxed bg-slate-50"
-                 :style="{ borderColor: themeColor + '30', color: '#475569' }">
-                「 {{ emotionalSummary }} 」
-            </div>
-
-            <div class="px-6 py-1.5 rounded-full text-white font-black text-sm shadow-md"
-                 :style="{ backgroundColor: themeColor }">
-                任務成就：{{ statsData.count >= 15 ? '核心鐵粉' : '閃耀應援者' }}
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 w-full mb-8">
-            <div v-for="item in [
-                { label: '熱血指數', val: statsData.count, unit: '場' },
-                { label: '場館獵人', val: filteredMapEventsCount, unit: '館' },
-                { label: '累積里程', val: Math.floor(totalDistance), unit: 'km' }
-            ]" class="rounded-3xl p-5 border-2 flex items-center justify-between bg-white h-24"
-            :style="{ borderColor: themeColor + '20' }">
-                <div class="flex flex-col justify-center h-full">
-                    <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase">{{ item.label }}</div>
-                    <div class="text-3xl font-black leading-none" :style="{ color: themeColor }">
-                        {{ item.val }}<small class="text-xs ml-1 opacity-50">{{ item.unit }}</small>
-                    </div>
-                </div>
-                <div class="bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold text-slate-500">已達成</div>
-            </div>
-        </div>
-
-        <div class="w-full text-left px-1">
-            <div class="text-xs text-slate-300 font-black mb-4 tracking-widest uppercase">TOP RANKING</div>
-            <div class="space-y-3">
-                <div v-for="(artist, index) in statsData.topArtists" :key="artist.name" 
-                     class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100 h-16">
-                    <div class="flex items-center gap-4 flex-1 h-full">
-                        <div class="w-8 h-8 flex items-center justify-center rounded-full bg-white text-xs font-black shadow-sm" :style="{ color: themeColor }">
-                             {{ index + 1 }}
-                        </div>
-                        <span class="text-base font-bold text-slate-700 truncate">{{ artist.name }}</span>
-                    </div>
-                    <span class="text-sm font-black text-slate-400 shrink-0 ml-2">{{ artist.count }} 次見面</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="w-full mt-10 pt-6 border-t opacity-20 text-[10px] tracking-[0.4em] text-center" :style="{ borderColor: themeColor }">
-            {{ customTitle }} • 讓愛意有跡可循
-        </div>
-    </div>
-</div>
-
-
-
 
         <transition name="fade">
             
@@ -1158,49 +1143,37 @@
                 let map = null;
                 let markers = [];
 
-const generateShareCard = async () => {
-    if (statsData.value.count === 0) return alert("暫無數據可以分享喔！🚀");
-    
-    // 生成提示
-    alert("正在生成回顧長圖...");
+const shareStyles = ['creamy', 'glitter', 'vintage'];
+const currentShareStyle = ref('creamy');
 
-    await nextTick();
-    window.scrollTo(0, 0); 
-    
-    const element = document.getElementById('share-card-template');
-    
-    try {
-        const canvas = await html2canvas(element, {
-            backgroundColor: null,
-            scale: 3, 
-            useCORS: true,
-            onclone: (clonedDoc) => {
-                const clonedEl = clonedDoc.getElementById('share-card-template');
-                clonedEl.style.left = '0';
-                clonedEl.style.position = 'relative';
-                clonedEl.style.display = 'block';
-                clonedEl.style.height = 'auto'; // 解決長度裁切核心
-            }
-        });
-
-        const imgData = canvas.toDataURL('image/png', 1.0);
-        const newTab = window.open();
-        if (newTab) {
-            newTab.document.write(`
-                <body style="margin:0; background:#f8fafc; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh;">
-                    <img src="${imgData}" style="max-width:92vw; height:auto; border-radius:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);" />
-                    <p style="color:#64748b; margin-top:15px; font-family:sans-serif; font-size:14px;">長按儲存高清長圖</p>
-                </body>
-            `);
-        }
-    } catch (err) {
-        alert("生成失敗，請再試一次。");
-    }
+const generateRandomStyle = () => {
+    const randomIndex = Math.floor(Math.random() * shareStyles.length);
+    currentShareStyle.value = shareStyles[randomIndex];
 };
 
+const isGenerating = ref(false);
+const shareImagePreview = ref(null);
+const currentStyleClass = ref('style-creamy');
 
-
-
+const generateShareImage = async () => {
+    // 隨機切換風格
+    const styles = ['style-creamy', 'style-glitter', 'style-vintage'];
+    currentStyleClass.value = styles[Math.floor(Math.random() * styles.length)];
+    
+    isGenerating.value = true; // 顯示模板以利抓取
+    
+    await nextTick(); // 等待 DOM 渲染 [cite: 332]
+    
+    const element = document.getElementById('share-template');
+    html2canvas(element, {
+        useCORS: true,
+        scale: 3, // 提高解析度
+        backgroundColor: null
+    }).then(canvas => {
+        shareImagePreview.value = canvas.toDataURL("image/png");
+        isGenerating.value = false; // 抓完後再次隱藏模板
+    });
+};
 
 
 
@@ -1237,12 +1210,11 @@ const filteredMapEventsCount = computed(() => {
 });
 
 
-// 修正：里程計算連動分頁年度
+// 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    const targetYear = activeTab.value === 'stats' ? selectedYear.value : selectedMapYear.value;
-    const baseEvents = targetYear === 'ALL' 
+    const baseEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
+        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
@@ -1250,12 +1222,13 @@ const totalDistance = computed(() => {
 
     let dist = 0;
     for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+        dist += calculateKm(
+            validPoints[i].lat, validPoints[i].lng,
+            validPoints[i+1].lat, validPoints[i+1].lng
+        );
     }
     return dist.toFixed(1);
 });
-
-
 
 
                 const defaultForm = {
@@ -2175,7 +2148,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, generateShareCard, 
+selectedMapYear, filteredMapEventsCount, totalDistance, isGenerating, shareImagePreview, currentStyleClass, generateShareImage, 
 
                 };
             }
@@ -2183,6 +2156,7 @@ selectedMapYear, filteredMapEventsCount, totalDistance, generateShareCard,
     </script>
 </body>
 </html>
+
 
 
 
