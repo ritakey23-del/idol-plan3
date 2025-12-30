@@ -1644,7 +1644,7 @@ const statsData = computed(() => {
 
     // 計算最愛看的系列演出
     const titleMap = {};
-    const excludeWords = ['사전녹화', '事前錄製', '簽售', '錄製'];
+    const excludeWords = [‘생방송’,'사전녹화', '事前錄製', '簽售', '錄製'];
     targetEvents.forEach(e => {
         if (e.title && !excludeWords.some(k => e.title.includes(k))) {
             titleMap[e.title] = (titleMap[e.title] || 0) + 1;
