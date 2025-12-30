@@ -604,16 +604,15 @@
                 </div>
                 <div class="space-y-4">
                  
-                    <div class="relative">
-                        <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-10 rounded-xl font-bold shadow-sm focus:outline-none focus: ring-2 focus:ring-primary/50 cursor-pointer relativez-10">
-                            <option value="ALL">🗓️ 全部年份總回顧</option>
+                    <div class="relative inline-block w-full">
+    <select v-model="selectedYear" 
+            class="appearance-none w-full bg-slate-100 border-none text-slate-700 py-3 px-4 pr-10 rounded-xl font-bold focus:ring-2 focus:ring-primary/50 cursor-pointer text-sm">
+         <option value="ALL">🗓️ 全部年份總回顧</option>
                             <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
                         </select>
-<div class="pointer-events-none absolute right-4 z-20 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="text-slate-400" viewBox="0 0 256 256">
-            <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80a8,8,0,0,1,11.32-11.32L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-        </svg>
-    </div>
+    
+    <i class="ph ph-caret-down absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+</div>
 </div>
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
