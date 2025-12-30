@@ -11,7 +11,7 @@
     <meta property="og:description" content="追星族必備！紀錄所有偶像活動、演唱會門票支出、地圖足跡，不再錯過任何一個重要瞬間。">
     <meta property="og:type" content="website">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" />
@@ -576,7 +576,8 @@
                 
 <div class="truncate text-[10px] text-slate-500">
     已征戰 {{ filteredMapEventsCount }} 個場館
-                    <span v-if="missingCoordsCount > 0" class="text-orange-500">
+                    <span v-if="mi
+ssingCoordsCount > 0" class="text-orange-500">
                         ({{ missingCoordsCount }} 待定位)
                     </span>
                 </div>
@@ -593,11 +594,54 @@
 </div>
 
    </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
-                 <div class="flex justify-between items-center mb-2">
-                   
-                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+    <div class="flex justify-between items-center mb-2">
+        <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+        <div class="flex gap-2">
+            <button @click="downloadShareCard" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform">
+                <i class="ph ph-download-simple text-lg"></i> 下載回顧
+            </button>
+            <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform">
+                <i class="ph ph-download-simple text-lg"></i> 匯入
+            </button>
+        </div>
+    </div>
+
+    <div id="share-card-container" v-if="isGeneratingImage" class="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-6">
+        <div id="share-card" class="w-full max-w-[360px] p-8 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl" 
+             :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #1e293b 100%)' }">
+            <div class="relative z-10 space-y-6">
+                <div class="border-b border-white/20 pb-4 text-center">
+                    <h2 class="text-3xl font-black italic tracking-tighter">{{ selectedYear === 'ALL' ? 'HISTORY' : selectedYear }}</h2>
+                    <p class="text-[10px] opacity-80 uppercase tracking-[0.2em]">Fan Life Annual Recap</p>
                 </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] opacity-70 uppercase mb-1">年度場次</p>
+                        <p class="text-4xl font-bold">{{ statsData.count }}<span class="text-sm font-normal opacity-60 ml-1">場</span></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] opacity-70 uppercase mb-1">最常去場館</p>
+                        <p class="text-lg font-bold truncate">{{ statsData.topLocation }}</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-[10px] opacity-70 border-t border-white/10 pt-4 mb-2">🏆 本命排行榜</p>
+                    <div v-for="(artist, index) in statsData.topArtists" :key="index" class="flex justify-between items-center bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
+                        <span class="font-bold">#{{index+1}} {{ artist.name }}</span>
+                        <span class="text-xs opacity-80">{{ artist.count }} 次見面</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-[10px] opacity-70 border-t border-white/10 pt-4 mb-1">🔥 最愛看的演出</p>
+                    <p class="text-sm font-bold italic">{{ statsData.topSeries }}</p>
+                </div>
+                <div class="bg-black/20 p-4 rounded-2xl text-center">
+                    <p class="text-sm italic font-medium">"{{ emotionalSummary }}"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
                 <div class="space-y-4">
                  
                     <div class="relative">
@@ -1075,6 +1119,7 @@
                 const showCalendarModal = ref(false); 
                 const showChangelogModal = ref(false); 
                 const showFandomModal = ref(false); 
+                const isGeneratingImage = ref(false);
                 const calendarEvent = ref(null);     
   
                 const ticketEvent = ref({});
@@ -1577,41 +1622,61 @@ watch(activeTab, (newTab) => {
                     }).filter(y => y !== null));
                     return Array.from(years).sort((a, b) => b - a);
                 });
-                const statsData = computed(() => {
-                    let targetEvents = events.value;
-      
-                    if (selectedYear.value !== 'ALL') {
-                        targetEvents = events.value.filter(e => e.date.match(new RegExp(`^${selectedYear.value}`)));
-                    }
-                    const count = targetEvents.length;
-          
-                    const totalSpent = targetEvents.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0);
-                    
-                    const artistMap = {};
-                
-                    targetEvents.forEach(e => {
-                        const name = e.artist || '其他';
-                        const color = getEventColor(e); 
-                        if (!artistMap[name]) artistMap[name] = { count: 0, color: color };
-    
-                        artistMap[name].count++;
-                    });
-                    const sortedArtists = Object.keys(artistMap).map(key => ({ name: key, ...artistMap[key] })).sort((a, b) => b.count - a.count).slice(0, 3);
-                    const maxArtistCount = sortedArtists.length > 0 ? sortedArtists[0].count : 1;
-                    const locationMap = {};
-                    targetEvents.forEach(e => {
-                        const name = e.location || '未知地點';
-                        if (!locationMap[name]) locationMap[name] = { count: 0 };
-                        locationMap[name].count++;
-                    });
-                    const sortedLocations = Object.keys(locationMap).map(key => ({ name: key, ...locationMap[key] })).sort((a, b) => b.count - a.count).slice(0, 3);
-                    const titleMap = {};
-                    const excludeKeywords = ['사전녹화', '事前錄製', '簽售會', '簽名會', '錄製'];
-                    targetEvents.forEach(e => {
-                        const t = e.title.trim();
-                        if (!excludeKeywords.some(k => t.includes(k))) titleMap[t] = (titleMap[t] || 0) + 1;
-                    });
-                    const series = Object.keys(titleMap).map(key => ({ title: key, count: titleMap[key] })).filter(item => item.count > 1).sort((a, b) => b.count - a.count);
+const statsData = computed(() => {
+            const allEvents = events.value || [];
+            const targetEvents = (selectedYear.value === 'ALL') 
+                ? allEvents 
+                : allEvents.filter(e => e.date && e.date.startsWith(selectedYear.value));
+
+            const count = targetEvents.length;
+            const totalSpent = targetEvents.reduce((acc, curr) => acc + (calculateTotal(curr.expenses) || 0), 0);
+            
+            const locationMap = {};
+            targetEvents.forEach(e => {
+                const loc = e.location || '未知地點';
+                locationMap[loc] = (locationMap[loc] || 0) + 1;
+            });
+            const sortedLocs = Object.entries(locationMap).sort((a, b) => b[1] - a[1]);
+            const topLocation = sortedLocs.length > 0 ? sortedLocs[0][0] : '尚未紀錄';
+
+            const artistMap = {};
+            targetEvents.forEach(e => {
+                const name = e.artist || '其他藝人';
+                artistMap[name] = (artistMap[name] || 0) + 1;
+            });
+            const sortedArt = Object.keys(artistMap).map(k => ({ name: k, count: artistMap[k] })).sort((a, b) => b.count - a.count).slice(0, 3);
+
+            const titleMap = {};
+            const filters = ['사전녹화', '事前錄製', '簽售', '錄製'];
+            targetEvents.forEach(e => {
+                if (e.title && !filters.some(f => e.title.includes(f))) {
+                    titleMap[e.title] = (titleMap[e.title] || 0) + 1;
+                }
+            });
+            const sortedTitles = Object.entries(titleMap).sort((a, b) => b[1] - a[1]);
+            const topSeries = sortedTitles.length > 0 ? sortedTitles[0][0] : '尚無重複演出';
+
+            return { 
+                count, totalSpent, topArtists: sortedArt, topLocation, topSeries,
+                maxArtistCount: sortedArt.length > 0 ? sortedArt[0].count : 1 
+            };
+        });
+
+        const downloadShareCard = () => {
+            isGeneratingImage.value = true;
+            setTimeout(() => {
+                const card = document.querySelector("#share-card");
+                if (!card) { isGeneratingImage.value = false; return; }
+                html2canvas(card, { useCORS: true, scale: 3, borderRadius: 40 }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = `追星回顧_${selectedYear.value}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    isGeneratingImage.value = false;
+                }).catch(() => { isGeneratingImage.value = false; });
+            }, 600);
+        };
+
                     return { 
                         count, 
                         totalSpent, 
@@ -2056,7 +2121,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, 
+selectedMapYear, filteredMapEventsCount, totalDistance, isGeneratingImage, downloadShareCard, 
 
                 };
             }
@@ -2064,6 +2129,8 @@ selectedMapYear, filteredMapEventsCount, totalDistance,
     </script>
 </body>
 </html>
+
+
 
 
 
