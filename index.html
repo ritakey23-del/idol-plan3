@@ -1711,8 +1711,7 @@ watch(activeTab, (newTab) => {
                         series,
                         topLocations: sortedLocations, 
                     };
-                });
-
+      
                 const emotionalSummary = computed(() => {
                     const { count, totalSpent, topArtists } = statsData.value;
                     if (count === 0) return "準備好開啟新的追星旅程了嗎？🌟";
