@@ -164,25 +164,28 @@
                 </div>
                 <div :class="isThemeColorLight ?
                     'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group">
-                    <div :class="isThemeColorLight ?
-                        'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費</div>
-<div class="text-lg font-bold">
-    {{ isYearlyPrivacy ? '****' : '$' + formatMoney(currentYearExpense) }}
-</div>
-<div v-if="yearlyBudget > 0 && budgetStatus" class="mt-2 px-1">
-    <div class="h-1 w-full bg-black/10 rounded-full overflow-hidden">
-        <div class="h-full transition-all duration-500" 
-             :class="budgetStatus.barColor"
-             :style="{ width: Math.min(budgetStatus.percent, 100) + '%' }"></div>
+                   <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group">
+    <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費</div>
+    <div class="text-lg font-bold">
+         {{ isYearlyPrivacy ? '****' : '$' + formatMoney(currentYearExpense) }} 
     </div>
-    <p class="text-[8px] mt-1 truncate opacity-80">{{ budgetStatus.message }}</p>
+    
+    <div v-if="yearlyBudget > 0 && budgetStatus" class="mt-2 px-1">
+        <div class="h-1 w-full bg-black/10 rounded-full overflow-hidden">
+            <div class="h-full transition-all duration-500" 
+                 :class="budgetStatus.barColor"
+                 :style="{ width: Math.min(budgetStatus.percent, 100) + '%' }"></div>
+        </div>
+        <p class="text-[8px] mt-1 truncate opacity-80" :class="isThemeColorLight ? 'text-slate-500' : 'text-white/70'">
+            {{ budgetStatus.message }}
+        </p>
+    </div>
+
+    <button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1.5 right-1.5">
+        <i class="ph" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
+    </button>
 </div>
-<button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1.5 right-1.5">
-    <i class="ph" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
-</button>
 
-
-                </div>
             </div>
         </header>
 
@@ -813,28 +816,28 @@
             </div>
         </transition>
 
-  <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
+<div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
     <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 max-h-[85vh] flex flex-col overflow-hidden">
-        <h3 class="font-bold text-lg mb-4 text-slate-700 text-center shrink-0">資料與主題設定 ⚙️</h3>
+        <h3 class="font-bold text-lg mb-4 text-slate-700 text-center shrink-0">資料與主題設定 ⚙️ </h3>
         
         <div class="overflow-y-auto no-scrollbar space-y-6 pr-1 flex-1">
             <div class="border-b border-slate-100 pb-4">
-                <p class="text-xs font-medium text-slate-500 mb-2 text-center">App 標題</p>
-                <input type="text" v-model="customTitle" @change="updateAppTitle" class="w-full bg-slate-100 border-none rounded-lg p-2 text-sm text-center">
+                <p class="text-xs font-medium text-slate-500 mb-2">App 標題 </p>
+                <input type="text" v-model="customTitle" @change="updateAppTitle" class="w-full bg-slate-100 border rounded-lg p-2 text-sm text-center"> 
             </div>
 
             <div class="border-b border-slate-100 pb-4">
-                <p class="text-xs font-medium text-slate-500 mb-2 text-center">年度預算設定 ($)</p>
-                <input type="number" v-model.number="yearlyBudget" @change="updateYearlyBudget" placeholder="輸入預算金額"
-                    class="w-full bg-slate-100 border-none rounded-lg p-2 text-sm text-center">
-                <p class="text-[10px] text-slate-400 mt-1 text-center">設定後將開啟預算進度提示</p>
-            </div>
-            
+                <p class="text-xs font-medium text-slate-500 mb-2">年度預算設定 ($)</p>
+                <input type="number" v-model.number="yearlyBudget" @change="localStorage.setItem('idolYearlyBudget', yearlyBudget)" 
+                       class="w-full bg-slate-100 border rounded-lg p-2 text-sm text-center" placeholder="輸入年度總預算">
             </div>
 
-        <button @click="showSettingsModal = false" class="mt-4 shrink-0 text-sm text-slate-400 hover:text-slate-600 text-center w-full">完成</button>
+            </div>
+
+        <button @click="showSettingsModal = false" class="mt-4 shrink-0 text-sm text-slate-400 w-full">完成 </button>
     </div>
 </div>
+
               
                 <div class="mb-6">
                     <p class="text-xs text-slate-400 mb-2">全域主題色</p>
@@ -2211,7 +2214,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, updateYearlyBudget, 
+selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, updateYearlyBudget, budgetStatus, 
 
                 };
             }
