@@ -57,29 +57,27 @@
         }
 /* 彈窗專用的滾動容器 */
 .custom-popup-scroll {
-    max-height: 150px;
     overflow-y: auto !important;
-    padding-right: 8px;
+    scrollbar-width: thin; /* Firefox 縮小捲軸 */
+    scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
-/* 強制顯示精緻的捲軸 */
+/* Chrome/Safari 縮小捲軸 */
 .custom-popup-scroll::-webkit-scrollbar {
-    width: 6px;
-    display: block !important; /* 確保不被全域隱藏設定覆蓋 */
+    width: 4px; /* 從 6px 縮小到 4px */
+    display: block !important;
 }
 
-/* 捲軸軌道 */
 .custom-popup-scroll::-webkit-scrollbar-track {
     background: #f1f5f9;
     border-radius: 10px;
 }
 
-/* 捲軸拉條 */
 .custom-popup-scroll::-webkit-scrollbar-thumb {
-    background: #cbd5e1; /* 淺灰色，提示效果明顯 */
+    background: #cbd5e1;
     border-radius: 10px;
-    border: 1px solid #f1f5f9;
 }
+
 
 
         .expand-enter-active, .expand-leave-active { transition: all 0.3s ease-in-out; max-height: 800px; opacity: 1; }
@@ -812,63 +810,70 @@
         </transition>
 
 <div v-if="showSettingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" @click.self="showSettingsModal = false">
-    <div class="bg-white p-6 rounded-2xl shadow-2xl w-80 flex flex-col max-h-[85vh]">
-        <div class="flex justify-between items-center px-6 pt-6 mb-4 shrink-0">
-            <h3 class="font-bold text-lg text-slate-700">資料與主題設定 ⚙️</h3>
-            <button @click="showSettingsModal = false" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200">
+    <div class="bg-white rounded-2xl shadow-2xl w-80 flex flex-col max-h-[85vh] overflow-hidden">
+        
+        <div class="flex justify-between items-center p-6 pb-4 shrink-0">
+            <h3 class="font-bold text-lg text-slate-700">系統設定 ⚙️</h3>
+            <button @click="showSettingsModal = false" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">
                 <i class="ph ph-x"></i>
             </button>
         </div>
-        <div class="overflow-y-auto no-scrollbar flex-1 text-center">
 
+        <div class="flex-1 overflow-y-auto px-6 pr-6 pb-6 custom-popup-scroll">
+            <div class="space-y-6 text-center">
+                <div class="border-b border-slate-100 pb-4">
+                    <p class="text-xs font-medium text-slate-500 mb-2">App 標題</p>
+                    <input type="text" v-model="customTitle" @change="updateAppTitle" placeholder="追星日記 ✨"
+                         class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
+                </div>
 
-                
-<div class="mb-6 border-b border-slate-100 pb-4">
-    <p class="text-xs font-medium text-slate-500 mb-2">App 標題</p>
-    <input type="text" v-model="customTitle" @change="updateAppTitle" placeholder="追星日記 ✨"
-         class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50 focus:border-primary/50">
-</div>
+                <div class="border-b border-slate-100 pb-4">
+                    <p class="text-xs font-medium text-slate-500 mb-2">年度追星預算 (TWD)</p>
+                    <input type="number" v-model.number="yearlyBudget" placeholder="例如: 50000"
+                           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
+                    <p class="text-[10px] text-slate-400 mt-2 italic">※ 設定後，首頁會提醒你是否花太多錢囉！</p>
+                </div>
 
-<div class="mb-6 border-b border-slate-100 pb-4">
-    <p class="text-xs font-medium text-slate-500 mb-2">年度追星預算 (TWD)</p>
-    <input type="number" v-model.number="yearlyBudget" placeholder="例如: 50000"
-           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
-    <p class="text-[10px] text-slate-400 mt-2 italic">※ 設定後，首頁會提醒你是否花太多錢囉！</p>
-</div>
-              
-                <div class="mb-6">
+                <div>
                     <p class="text-xs text-slate-400 mb-2">全域主題色</p>
                     <div class="grid grid-cols-4 gap-3 mb-3">
-                       
-                        <button v-for="color in presetColors" :key="color" @click="setTheme(color)" class="w-12 h-12 rounded-full shadow-sm transition-transform hover:scale-110 border-2" 
-                            :class="themeColor === color ? 'border-slate-800' : 'border-transparent'" :style="{ backgroundColor: color }"></button>
+                        <button v-for="color in presetColors" :key="color" @click="setTheme(color)" 
+                                class="w-full aspect-square rounded-full shadow-sm transition-transform hover:scale-110 border-2" 
+                                :class="themeColor === color ? 'border-slate-800' : 'border-transparent'" 
+                                :style="{ backgroundColor: color }"></button>
                     </div>
-                    <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-xl"><span class="text-sm text-slate-500">自訂:</span><input type="color" v-model="themeColor" @input="setTheme(themeColor)" class="w-full h-8 cursor-pointer rounded bg-transparent"></div>
+                    <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-xl">
+                        <p class="text-sm text-slate-500 shrink-0">自訂:</p>
+                        <input type="color" v-model="themeColor" @input="setTheme(themeColor)" class="w-full h-8 cursor-pointer rounded bg-transparent">
+                    </div>
                 </div>
-                <hr class="border-slate-100 my-4">
-   
-                <div class="mb-4">
+
+                <hr class="border-slate-100">
+
+                <div>
                     <p class="text-xs text-slate-400 mb-2">資料備份與轉移</p>
                     <div class="flex flex-col gap-2">
-                        <button @click="downloadBackup" class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200"><i class="ph ph-download-simple text-lg"></i> 備份資料 (下載檔案)</button>
-                        <label class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200 cursor-pointer"><i class="ph ph-upload-simple text-lg"></i> 還原資料 (上傳檔案)<input type="file" accept=".json" @change="restoreBackup" class="hidden"></label>
+                        <button @click="downloadBackup" class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200">
+                            <i class="ph ph-download-simple text-lg"></i> 備份資料
+                        </button>
+                        <label class="w-full py-2.5 bg-slate-100 text-slate-600 rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-200 cursor-pointer">
+                            <i class="ph ph-upload-simple text-lg"></i> 還原資料
+                            <input type="file" accept=".json" @change="restoreBackup" class="hidden">
+                        </label>
                     </div>
                 </div>
-             
-  
-               <hr class="border-slate-100 my-4">
 
-                <div class="mt-4 border-t border-slate-100 pt-4 text-xs text-slate-400 text-center">
-                    <p class="inline-block mr-4">當前版本: <span class="font-mono text-slate-800">{{ appVersion }}</span></p>
-                    <button @click="showChangelog" 
-                        class="text-primary hover:underline font-medium text-xs cursor-pointer"
-                        :style="{ color: themeColor }">
-                        📄 查看更新日誌
-                    </button>
+                <hr class="border-slate-100">
+
+                <div class="pt-2 text-[10px] text-slate-400">
+                    <p class="mb-2">當前版本: {{ appVersion }}</p>
+                    <button @click="showChangelog" class="font-medium underline" :style="{ color: themeColor }">📄 查看更新日誌</button>
                 </div>
-
+            </div>
+        </div>
     </div>
 </div>
+
         
         <transition name="slide-up">
             <div v-if="showFandomModal" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
