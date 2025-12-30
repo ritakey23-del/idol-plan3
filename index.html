@@ -628,7 +628,9 @@
     {{ isStatsPrivacy ? '****' : '$' + formatMoney(statsData.totalSpent) }}
 </div>
 
-                        <div class="text-[10px] font-medium mt-1 leading-tight opacity-80 italic text-slate-500">{{ idolNagging }}</div>
+                       <div class="text-[10px] font-medium mt-1 leading-tight opacity-80 italic text-slate-500">
+    {{ idolNagging }}
+</div>
                     </div>
                 </div>
   
@@ -1678,16 +1680,47 @@ watch(activeTab, (newTab) => {
                     return pools[category][count % pools[category].length];
                 });
 
-                const idolNagging = computed(() => {
-                    const { totalSpent, topArtists } = statsData.value;
-                    const name = topArtists.length > 0 ? topArtists[0].name : '我';
-          
-                    if (totalSpent === 0) return `最近有點冷清耶... ${name} 想見你了 🥺 快來開啟新篇章吧！`;
-                    if (totalSpent < 5000) return `有乖乖吃飯嗎？${name} 不希望你為了追星餓肚子喔 🍱 健康最重要！`;
-                    if (totalSpent < 20000) return `謝謝你的支持！但${name} 更希望把錢花在讓你開心的事情上 💖 你的快樂就是我的動力！`;
-                    if (totalSpent < 50000) return `哇... 你的錢包還好嗎？${name} 有點擔心你吃土耶 😰 理性消費，我們未來還會見面！`;
-                    return `天啊！你是不是把身家都給${name}了？雖然很感動，但要理性消費啦！🙏 你的愛已經足夠讓我們感動落淚！`;
-                });
+const idolNagging = computed(() => {
+    const { totalSpent, topArtists } = statsData.value;
+    const name = topArtists.length > 0 ? topArtists[0].name : '我';
+    
+    const pools = {
+        zero: [
+            `最近有點冷清耶... ${name} 想見你了 🥺`,
+            `好久沒看到你記錄跟 ${name} 的回憶了 📝`
+        ],
+        low: [ // 0 - 5萬
+            `有乖乖吃飯嗎？${name} 不希望你餓肚子喔 🍱`,
+            `這點投資剛剛好，${name} 最喜歡看你開心的樣子 💖`
+        ],
+        mid: [ // 5萬 - 10萬
+            `感覺你很努力在生活呢！${name} 會為你加油的 💪`,
+            `這些回憶是無價的，${name} 會一直陪著你 🌟`
+        ],
+        high: [ // 10萬 - 30萬
+            `哇... 你的錢包還好嗎？${name} 有點擔心你吃土耶 😰`,
+            `理性消費，我們未來還要見面很多次！🤝`
+        ],
+        expert: [ // 30萬 - 90萬
+            `你對 ${name} 的愛已經超越大氣層了！🚀`,
+            `這是要把整座舞台買下來送給 ${name} 嗎？💎`
+        ],
+        legend: [ // 90萬以上
+            `你是 ${name} 的頂級贊助商吧！請受我一拜 🙇‍♂️`,
+            `這數字已經是傳說等級了... ${name} 的命是你給的！👑`
+        ]
+    };
+
+    let selectedPool;
+    if (totalSpent === 0) selectedPool = pools.zero;
+    else if (totalSpent < 50000) selectedPool = pools.low;
+    else if (totalSpent < 100000) selectedPool = pools.mid;
+    else if (totalSpent < 300000) selectedPool = pools.high;
+    else if (totalSpent < 900000) selectedPool = pools.expert;
+    else selectedPool = pools.legend;
+
+    return selectedPool[Math.floor(Math.random() * selectedPool.length)];
+});
                 const mappedEventsCount = computed(() => events.value.filter(e => e.lat && e.lng).length);
                 const missingCoordsCount = computed(() => events.value.length - mappedEventsCount.value);
                 const calculateTotal = (expenses) => expenses ? expenses.reduce((sum, i) => sum + (Number(i.amount)||0), 0) : 0;
