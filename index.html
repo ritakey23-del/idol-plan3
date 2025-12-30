@@ -617,53 +617,61 @@
         <p class="text-[10px] text-slate-500 mt-1 tracking-widest uppercase">追星足跡由 {{ customTitle }} 為您珍藏 ✨</p>
     </div>
 
-    <div class="p-5 rounded-2xl shadow-lg mb-6 text-center" :style="{ backgroundColor: themeColor }">
-        <div class="text-white font-bold italic text-sm leading-relaxed mb-2">
+    <div class="p-6 rounded-2xl shadow-md mb-6 text-left" :style="{ backgroundColor: themeColor }">
+        <div class="text-white font-bold italic text-sm leading-relaxed">
             "{{ emotionalSummary }}"
-        </div>
-        <div class="text-white/80 text-[10px] border-t border-white/20 pt-2 italic">
-            💡 {{ idolNagging }}
         </div>
     </div>
 
-    <div class="space-y-5">
-        <div class="bg-white/90 p-5 rounded-2xl shadow-sm border border-white">
+    <div class="space-y-6">
+        <div class="bg-white/90 p-5 rounded-2xl shadow-sm border border-white text-left">
             <h3 class="text-[10px] font-bold text-slate-400 mb-4 uppercase tracking-tighter border-b pb-2 flex items-center gap-1">
                 <i class="ph ph-trophy"></i> 年度成就
             </h3>
             
             <div class="space-y-4">
-                <div class="text-sm text-slate-600 leading-normal">
+                <div class="text-sm text-slate-600 leading-loose">
                     ✨ 這一年，你參與了 <b class="text-2xl" :style="{ color: themeColor }">{{ statsData.count }}</b> 場熱血演出！<br>
-                    🌏 累積里程跨越了 <b class="text-2xl" :style="{ color: themeColor }">{{ Math.round(totalDistance) }}</b> 公里。
+                    🌏 累積里程跨越了 <b class="text-2xl" :style="{ color: themeColor }">{{ totalDistance }}</b> 公里。
                 </div>
                 
-                <div v-if="statsData.topArtists.length > 0" class="text-sm text-slate-600 leading-normal pt-3 border-t border-dashed border-slate-100">
-                    💖 與 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</b> 創造了 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</b> 次靈魂共鳴。
-                    <div v-if="fandoms.length > 0" class="mt-2 text-[10px] text-slate-400">
-                        愛意入坑第 {{ calculateFandomDays(fandoms[0].date) }} 天，初心依舊。
-                    </div>
+                <div v-if="statsData.topArtists.length > 0" class="text-sm text-slate-600 leading-loose pt-3 border-t border-dashed border-slate-100">
+                    💖 與 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</b> 創造了 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</b> 次靈魂共鳴。<br>
+                    <small class="text-slate-400 italic">愛意入坑第 {{ calculateFandomDays(fandoms[0].date) }} 天，初心依舊。</small>
                 </div>
 
-                <div v-if="statsData.series.length > 0" class="text-sm text-slate-600 leading-normal pt-3 border-t border-dashed border-slate-100">
-                    🔥 你最愛看的活動是 <b class="text-base" :style="{ color: themeColor }">「{{ statsData.series[0].title }}」</b>，足足看了 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.series[0].count }}</b> 場！
+                <div v-if="statsData.series.length > 0" class="text-sm text-slate-600 leading-loose pt-3 border-t border-dashed border-slate-100">
+                    🔥 最愛看的是 <b class="text-base" :style="{ color: themeColor }">「{{ statsData.series[0].title }}」</b>，足足看了 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.series[0].count }}</b> 場！
                 </div>
             </div>
         </div>
 
-        <div v-if="statsData.series.length > 0" class="bg-white/40 p-4 rounded-2xl border border-dashed border-slate-300">
-            <h3 class="text-[10px] font-bold text-slate-400 mb-3 uppercase text-center tracking-widest flex items-center justify-center gap-1">
+        <div class="bg-white/60 p-4 rounded-xl border border-white/50 text-left">
+            <div class="text-slate-500 font-medium text-[11px] flex items-center gap-2">
+                <i class="ph ph-lightbulb-filament text-yellow-500 text-sm"></i>
+                {{ idolNagging }}
+            </div>
+        </div>
+
+        <div v-if="statsData.series.length > 0" class="bg-white/40 p-5 rounded-2xl border border-dashed border-slate-300 text-left">
+            <h3 class="text-[10px] font-bold text-slate-400 mb-4 uppercase tracking-widest flex items-center gap-1">
                 <i class="ph ph-film-reel"></i> 好看一直看
             </h3>
-            <div class="space-y-2">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="text-[11px] text-slate-500 flex justify-between items-center px-2">
-                    <span class="truncate pr-4 flex-1">#{{ idx + 1 }} {{ item.title }}</span>
-                    <span class="font-bold shrink-0" :style="{ color: themeColor }">{{ item.count }} 場</span>
+            <div class="space-y-3">
+                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="text-[12px] text-slate-600 flex justify-between items-center bg-white/30 p-2 rounded-lg">
+                    <div class="flex items-center gap-2 truncate pr-2">
+                        <span v-if="idx === 0" class="text-lg">🥇</span>
+                        <span v-else-if="idx === 1" class="text-lg">🥈</span>
+                        <span v-else-if="idx === 2" class="text-lg">🥉</span>
+                        <span class="truncate font-medium">{{ item.title }}</span>
+                    </div>
+                    <span class="font-bold shrink-0 ml-auto" :style="{ color: themeColor }">{{ item.count }} 場</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
                 </div>
                 <div class="space-y-4">
@@ -1235,9 +1243,11 @@ const filteredMapEventsCount = computed(() => {
 
 // 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    const baseEvents = selectedMapYear.value === 'ALL' 
+    // 根據統計頁面選擇的年份過濾
+    const targetYear = selectedYear.value;
+    const baseEvents = targetYear === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date.startsWith(selectedMapYear.value));
+        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
@@ -1250,7 +1260,7 @@ const totalDistance = computed(() => {
             validPoints[i+1].lat, validPoints[i+1].lng
         );
     }
-    return dist.toFixed(1);
+    return Math.round(dist); // 依照您的要求取整數位
 });
 
 
