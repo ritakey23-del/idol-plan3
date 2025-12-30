@@ -11,6 +11,7 @@
     <meta property="og:description" content="追星族必備！紀錄所有偶像活動、演唱會門票支出、地圖足跡，不再錯過任何一個重要瞬間。">
     <meta property="og:type" content="website">
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -168,7 +169,7 @@
     </div>
 
     <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2 flex-1 text-center h-13 flex flex-col justify-start pt-1.5">
-        <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-1">預算進度</div>
+        <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-1">預算已使用..</div>
         <div class="px-1">
             <div class="w-full h-1 bg-black/10 rounded-full overflow-hidden mb-1">
                 <div class="h-full bg-white transition-all duration-500" 
@@ -596,12 +597,16 @@
     </div>
 </div>
 
-   </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+   </div> <div v-if="activeTab === 'stats'" id="share-content" class="space-y-6 p-5 pb-32 bg-slate-50">
                  <div class="flex justify-between items-center mb-2">
                    
                     <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-                    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
-                </div>
+<div class="flex gap-2">
+    <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
+        <i class="ph ph-share-network text-lg"></i> 分享卡片
+    </button>
+    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+</div>
                 <div class="space-y-4">
                     <div class="relative">
                                <select v-model="selectedYear" 
@@ -2204,6 +2209,35 @@ const initMap = () => {
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
+
+const generateShareImage = () => {
+    const element = document.getElementById('share-content');
+    if (!element) return;
+
+    // 暫時移除「匯入/分享」按鈕所在的標題列，避免截圖出現按鈕（可選）
+    const header = element.querySelector('.flex.justify-between.items-center.mb-2');
+    
+    html2canvas(element, {
+        [span_2](start_span)useCORS: true, // 支援跨域圖片[span_2](end_span)
+        scale: 2,      // 提升清晰度
+        backgroundColor: '#f8fafc', // 背景顏色
+        onclone: (clonedDoc) => {
+            // 在複製的 DOM 中隱藏按鈕列，讓截圖更乾淨
+            const btnRow = clonedDoc.querySelector('.flex.justify-between.items-center.mb-2');
+            if (btnRow) btnRow.style.display = 'none';
+        }
+    }).then(canvas => {
+        const link = document.createElement('a');
+        [span_3](start_span)[span_4](start_span)link.download = `${selectedYear.value}_追星回顧_${customTitle.value}.png`;[span_3](end_span)[span_4](end_span)
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        alert('卡片已生成並開始下載！✨');
+    }).catch(err => {
+        console.error('截圖失敗:', err);
+        alert('產生圖片時發生錯誤，請稍後再試。');
+    });
+};
+
                 return {
                     events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
@@ -2212,6 +2246,7 @@ const initMap = () => {
                     cssVars, greetingMessage, filteredEvents, upcomingCount, currentYearExpense, statsData, presetColors, 
               
                     openModal, editEvent, closeModal, saveEvent, deleteEvent, toggleSettingsModal, setTheme, updateCustomTheme, processImport, showChangelog,
+generateShareImage, 
                     toggleExpand, formatMoney, getDay, getMonth, getDaysDiff, getMapLink, 
                     calculateTotal, 
                     addExpenseItem, removeExpenseItem, addChecklistItem, removeChecklistItem, addDefaultChecklist, saveFandoms, addFandom, removeFandom, editFandom, closeFandomModal, openFandomModal, fandoms,
