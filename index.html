@@ -155,35 +155,30 @@
                 </div>
             </div>
             
-            <div class="flex gap-3 mt-1" v-if="activeTab === 'home'">
-                <div :class="isThemeColorLight ?
-                    'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center">
-                    <div :class="isThemeColorLight ?
-                        'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">倒數中</div>
-                    <div class="text-lg font-bold">{{ upcomingCount }} <span class="text-xs font-normal">場</span></div>
-                </div>
-<div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group flex flex-col justify-between">
-    <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費 / 預算</div>
-    
-    <div>
-        <div class="text-lg font-bold leading-tight">
-            {{ isYearlyPrivacy ? '****' : '$' + formatMoney(currentYearExpense) }}
-        </div>
-        
-        <div class="w-full h-1 bg-black/10 rounded-full mt-1 mb-1 overflow-hidden">
+<div class="flex gap-2 mt-1" v-if="activeTab === 'home'">
+    <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2 flex-1 text-center">
+        <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">倒數中</div>
+        <div class="text-base font-bold">{{ upcomingCount }} 抽</div>
+    </div>
+
+    <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2 flex-1 text-center relative">
+        <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年支出</div>
+        <div class="text-base font-bold">{{ isYearlyPrivacy ? '****' : formatMoney(currentYearExpense) }}</div>
+        <button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1 right-1 opacity-50">
+            <i class="ph text-[10px]" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
+        </button>
+    </div>
+
+    <div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2 flex-1 text-center flex flex-col justify-center">
+        <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-1">預算進度</div>
+        <div class="w-full h-1.5 bg-black/10 rounded-full overflow-hidden mb-1">
             <div class="h-full bg-white transition-all duration-500" 
                  :style="{ width: Math.min((currentYearExpense / yearlyBudget) * 100, 100) + '%' }"></div>
         </div>
-        
-        <div class="text-[9px] font-medium opacity-90 truncate px-1" :style="{ color: isThemeColorLight ? '#475569' : '#f1f5f9' }">
+        <div class="text-[8px] font-medium leading-none truncate" :style="{ color: isThemeColorLight ? '#475569' : '#f1f5f9' }">
             {{ budgetNagging }}
         </div>
     </div>
-
-    <button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1 right-1 p-1">
-        <i class="ph text-xs" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
-    </button>
-</div>
             </div>
         </header>
 
