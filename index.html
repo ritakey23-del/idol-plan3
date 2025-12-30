@@ -613,12 +613,12 @@
 <div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; padding: 30px; border-radius: 30px; z-index: -1;" :style="{ background: 'linear-gradient(135deg, white 0%, ' + themeColor + '20 100%)' }">
     
     <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-slate-800">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
-        <p class="text-[10px] text-slate-500 mt-1 tracking-widest uppercase">追星足跡由 {{ customTitle }} 為您珍藏 ✨</p>
+        <h1 class="text-2xl font-bold text-slate-800" style="margin-bottom: 8px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
+        <p class="text-[10px] text-slate-500 tracking-widest uppercase">追星足跡由 {{ customTitle }} 為您珍藏 ✨</p>
     </div>
 
     <div class="p-6 rounded-2xl shadow-md mb-6 text-left" :style="{ backgroundColor: themeColor }">
-        <div class="text-white font-bold italic text-sm leading-relaxed">
+        <div class="text-white font-bold italic text-sm" style="line-height: 1.8;">
             "{{ emotionalSummary }}"
         </div>
     </div>
@@ -629,27 +629,33 @@
                 <i class="ph ph-trophy"></i> 年度成就
             </h3>
             
-            <div class="space-y-4">
-                <div class="text-sm text-slate-600 leading-loose">
-                    ✨ 這一年，你參與了 <b class="text-2xl" :style="{ color: themeColor }">{{ statsData.count }}</b> 場熱血演出！<br>
-                    🌏 累積里程跨越了 <b class="text-2xl" :style="{ color: themeColor }">{{ totalDistance }}</b> 公里。
-                </div>
-                
-                <div v-if="statsData.topArtists.length > 0" class="text-sm text-slate-600 leading-loose pt-3 border-t border-dashed border-slate-100">
-                    💖 與 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</b> 創造了 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</b> 次靈魂共鳴。<br>
-                    <small class="text-slate-400 italic">愛意入坑第 {{ calculateFandomDays(fandoms[0].date) }} 天，初心依舊。</small>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <div class="text-xs text-slate-500 mb-1">今年參與場次</div>
+                <div class="text-3xl font-black" :style="{ color: themeColor }">{{ statsData.count }} <small class="text-xs font-normal text-slate-400">場</small></div>
+            </div>
 
-                <div v-if="statsData.series.length > 0" class="text-sm text-slate-600 leading-loose pt-3 border-t border-dashed border-slate-100">
-                    🔥 最愛看的是 <b class="text-base" :style="{ color: themeColor }">「{{ statsData.series[0].title }}」</b>，足足看了 <b class="text-xl" :style="{ color: themeColor }">{{ statsData.series[0].count }}</b> 場！
-                </div>
+            <div style="margin-bottom: 20px;">
+                <div class="text-xs text-slate-500 mb-1">累積跨越里程</div>
+                <div class="text-3xl font-black" :style="{ color: themeColor }">{{ totalDistance }} <small class="text-xs font-normal text-slate-400">公里</small></div>
+            </div>
+            
+            <div v-if="statsData.topArtists.length > 0" style="border-top: 1px dashed #eee; padding-top: 15px; margin-bottom: 20px;">
+                <div class="text-xs text-slate-500 mb-1">年度最愛藝人</div>
+                <div class="text-2xl font-bold" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</div>
+                <div class="text-sm text-slate-600">共創造了 {{ statsData.topArtists[0].count }} 次靈魂共鳴</div>
+                <div v-if="fandoms.length > 0" class="mt-2 text-[10px] text-slate-400 italic">愛意入坑第 {{ calculateFandomDays(fandoms[0].date) }} 天</div>
+            </div>
+
+            <div v-if="statsData.series.length > 0" style="border-top: 1px dashed #eee; padding-top: 15px;">
+                <div class="text-xs text-slate-500 mb-1">最愛看的演出</div>
+                <div class="text-lg font-bold" :style="{ color: themeColor }">「{{ statsData.series[0].title }}」</div>
+                <div class="text-sm text-slate-600">足足看了 {{ statsData.series[0].count }} 場！</div>
             </div>
         </div>
 
-        <div class="bg-white/60 p-4 rounded-xl border border-white/50 text-left">
-            <div class="text-slate-500 font-medium text-[11px] flex items-center gap-2">
-                <i class="ph ph-lightbulb-filament text-yellow-500 text-sm"></i>
-                {{ idolNagging }}
+        <div class="bg-white/60 p-4 rounded-xl border border-white/50 text-left shadow-inner">
+            <div class="text-slate-500 font-medium text-[11px]" style="line-height: 1.6;">
+                <span class="mr-2">💡</span>{{ idolNagging }}
             </div>
         </div>
 
@@ -658,14 +664,14 @@
                 <i class="ph ph-film-reel"></i> 好看一直看
             </h3>
             <div class="space-y-3">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="text-[12px] text-slate-600 flex justify-between items-center bg-white/30 p-2 rounded-lg">
-                    <div class="flex items-center gap-2 truncate pr-2">
-                        <span v-if="idx === 0" class="text-lg">🥇</span>
-                        <span v-else-if="idx === 1" class="text-lg">🥈</span>
-                        <span v-else-if="idx === 2" class="text-lg">🥉</span>
-                        <span class="truncate font-medium">{{ item.title }}</span>
+                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-white/50 p-3 rounded-lg flex justify-between items-center">
+                    <div class="flex items-center gap-3 truncate">
+                        <span v-if="idx === 0" class="text-xl">🥇</span>
+                        <span v-else-if="idx === 1" class="text-xl">🥈</span>
+                        <span v-else-if="idx === 2" class="text-xl">🥉</span>
+                        <div class="truncate font-bold text-slate-700 text-xs">{{ item.title }}</div>
                     </div>
-                    <span class="font-bold shrink-0 ml-auto" :style="{ color: themeColor }">{{ item.count }} 場</span>
+                    <div class="font-black text-xs shrink-0 ml-2" :style="{ color: themeColor }">{{ item.count }}場</div>
                 </div>
             </div>
         </div>
