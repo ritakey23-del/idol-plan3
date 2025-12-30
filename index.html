@@ -2237,6 +2237,8 @@ const generateShareImage = () => {
     }).catch(err => {
         console.error("截圖錯誤:", err);
         alert("產生圖片失敗，請檢查權限或重試。");
+    });
+};
 
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
