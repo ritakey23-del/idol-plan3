@@ -609,12 +609,12 @@ ssingCoordsCount > 0" class="text-orange-500">
     <div id="share-card-container" v-if="isGeneratingImage" class="fixed inset-0 z-[9999] bg-black/80 flex items-center justify-center p-6">
         <div id="share-card" class="w-full max-w-[360px] p-8 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl" 
              :style="{ background: 'linear-gradient(135deg, ' + themeColor + ' 0%, #1e293b 100%)' }">
-            <div class="relative z-10 space-y-6">
-                <div class="border-b border-white/20 pb-4 text-center">
+            <div class="relative z-10 space-y-6 text-center">
+                <div class="border-b border-white/20 pb-4">
                     <h2 class="text-3xl font-black italic tracking-tighter">{{ selectedYear === 'ALL' ? 'HISTORY' : selectedYear }}</h2>
                     <p class="text-[10px] opacity-80 uppercase tracking-[0.2em]">Fan Life Annual Recap</p>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-2 gap-4 text-left">
                     <div>
                         <p class="text-[10px] opacity-70 uppercase mb-1">年度場次</p>
                         <p class="text-4xl font-bold">{{ statsData.count }}<span class="text-sm font-normal opacity-60 ml-1">場</span></p>
@@ -624,23 +624,24 @@ ssingCoordsCount > 0" class="text-orange-500">
                         <p class="text-lg font-bold truncate">{{ statsData.topLocation }}</p>
                     </div>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-3 text-left">
                     <p class="text-[10px] opacity-70 border-t border-white/10 pt-4 mb-2">🏆 本命排行榜</p>
                     <div v-for="(artist, index) in statsData.topArtists" :key="index" class="flex justify-between items-center bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm">
                         <span class="font-bold">#{{index+1}} {{ artist.name }}</span>
                         <span class="text-xs opacity-80">{{ artist.count }} 次見面</span>
                     </div>
                 </div>
-                <div>
+                <div class="text-left">
                     <p class="text-[10px] opacity-70 border-t border-white/10 pt-4 mb-1">🔥 最愛看的演出</p>
-                    <p class="text-sm font-bold italic">{{ statsData.topSeries }}</p>
+                    <p class="text-sm font-bold italic leading-tight">{{ statsData.topSeries }}</p>
                 </div>
-                <div class="bg-black/20 p-4 rounded-2xl text-center">
+                <div class="bg-black/20 p-4 rounded-2xl">
                     <p class="text-sm italic font-medium">"{{ emotionalSummary }}"</p>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
                 <div class="space-y-4">
                  
