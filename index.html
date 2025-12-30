@@ -1346,9 +1346,6 @@ const totalDistance = computed(() => {
                 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
                 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
                 
-watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
-watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
-watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
 
 // 新增此段落：監聽地圖年份篩選
 watch(selectedMapYear, () => {
