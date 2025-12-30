@@ -2218,7 +2218,7 @@ const generateShareImage = () => {
     const header = element.querySelector('.flex.justify-between.items-center.mb-2');
     
     html2canvas(element, {
-        [span_2](start_span)useCORS: true, // 支援跨域圖片[span_2](end_span)
+useCORS: true, // 支援跨域圖片
         scale: 2,      // 提升清晰度
         backgroundColor: '#f8fafc', // 背景顏色
         onclone: (clonedDoc) => {
@@ -2228,7 +2228,7 @@ const generateShareImage = () => {
         }
     }).then(canvas => {
         const link = document.createElement('a');
-        [span_3](start_span)[span_4](start_span)link.download = `${selectedYear.value}_追星回顧_${customTitle.value}.png`;[span_3](end_span)[span_4](end_span)
+link.download = `${selectedYear.value}_追星回顧_${customTitle.value}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
         alert('卡片已生成並開始下載！✨');
