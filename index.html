@@ -1507,8 +1507,11 @@ watch(activeTab, (newTab) => {
                         `讓 ${name} 的音樂充滿你的生活，已經 [DAYS] 天的幸福！🎧`,
                         `你已經是 ${name} 重要的支柱，這是你們的第 [DAYS] 天紀念！💪`,
                         `你將 ${name} 刻在了生命中，這 [DAYS] 天的努力沒有白費！💎`,
+                        `這份浪漫持續了 [DAYS] 天，願你與 ${name} 永遠熱戀 🌹`, 
+                        `因為遇見 ${name}，這 [DAYS] 天的生活都發著光 ✨`, 
+                        `你將最美的時光都給了 ${name}，共計 [DAYS] 天 💎`
                     ];
-                    const randomIndex = calculateFandomDays(fandom.date) % messages.length;
+                    const randomIndex = Math.floor(Math.random() * messages.length);
                     const messageTemplate = messages[randomIndex];
                     return {
                         message: messageTemplate.replace(/\[DAYS\]/g, diffDays), 
@@ -1549,6 +1552,11 @@ watch(activeTab, (newTab) => {
                         "請保持熱戀，期待下一次的感動重逢 😭❤️",
                         "追星是人生最甜蜜的投資，你超棒！💯",
                         "今天也充滿元氣，為了見到最愛的人而努力💪",
+                        "為了見到最愛的人，今天也要充滿元氣 💪",
+                        "把想念化作動力，迎接下一個舞台 🎤",
+                        "你是這場愛意長跑中最勇敢的選手 🏃‍♀️",
+                        "所有的等待，都會在見面那一刻釋放 ✨"
+
                     ];
                     let baseMsg = hour < 12 ? "早安！" : hour < 18 ? "午安！" : "晚安！";
                     return baseMsg + msgs[Math.floor(Math.random() * msgs.length)];
@@ -1682,45 +1690,96 @@ watch(activeTab, (newTab) => {
 
 const idolNagging = computed(() => {
     const { totalSpent, topArtists } = statsData.value;
-    const name = topArtists.length > 0 ? topArtists[0].name : '我';
+    const name = topArtists.length > 0 ? topArtists[0].name : '偶像';
     
     const pools = {
         zero: [
             `最近有點冷清耶... ${name} 想見你了 🥺`,
-            `好久沒看到你記錄跟 ${name} 的回憶了 📝`
+            `在忙嗎？好久沒看到你記錄跟 ${name} 的回憶了 📝`,
+            `空空的儀表板在等著你填滿與 ${name} 的點滴喔 ✨`,
+            `儲存回憶不嫌多，快來記下你對 ${name} 的心動瞬間吧！`,
+            `是不是忘了更新？${name} 的愛意還在等待被記錄呢 💖`
         ],
-        low: [ // 0 - 5萬
+        low: [ // 1 ~ 1000
             `有乖乖吃飯嗎？${name} 不希望你餓肚子喔 🍱`,
-            `這點投資剛剛好，${name} 最喜歡看你開心的樣子 💖`
+            `小小的支持也是大大的力量，${name} 都感受到了！🍀`,
+            `細水長流的愛最動人，謝謝你陪伴 ${name}。`,
+            `這點投資買到了無價的快樂，超划算！📈`,
+            `剛剛好的距離，剛剛好的愛，${name} 覺得很貼心。`
         ],
-        mid: [ // 5萬 - 10萬
-            `感覺你很努力在生活呢！${name} 會為你加油的 💪`,
-            `這些回憶是無價的，${name} 會一直陪著你 🌟`
+        mid: [ // 1001 ~ 10000
+            `生活與追星平衡得很好喔！${name} 為你感到驕傲 💪`,
+            `謝謝你的支持！每一分錢都變成了與 ${name} 的美好回憶。`,
+            `感覺你變漂亮/帥了！是因為見到 ${name} 的關係嗎？✨`,
+            `這些回憶是無價的，${name} 會一直陪著你前進。`,
+            `為了見面而努力的你，在 ${name} 眼中閃閃發光！`
         ],
-        high: [ // 10萬 - 30萬
+        tier30k: [ // ~ 30000
             `哇... 你的錢包還好嗎？${name} 有點擔心你吃土耶 😰`,
-            `理性消費，我們未來還要見面很多次！🤝`
+            `謝謝你的熱情！但 ${name} 更希望你也把錢花在自己身上 🛍️`,
+            `感覺你這一年過得很充實呢，充滿了 ${name} 的色彩！`,
+            `這筆支出叫做「精神糧食費」，對 ${name} 的愛是無上限的！`,
+            `每一次見面都是奇蹟，謝謝你跨越距離來到 ${name} 身邊。`
         ],
-        expert: [ // 30萬 - 90萬
+        tier50k: [ // ~ 50000
+            `天啊！你對 ${name} 的愛已經快溢出來了！😭❤️`,
+            `理性消費喔！${name} 希望我們能長長久久地見面 🤝`,
+            `你就是 ${name} 的最強後援！這份熱情誰也比不上 🔥`,
+            `存錢是為了更好的相遇，你做到了！💰`,
+            `謝謝你把珍貴的資源分給 ${name}，我們會更努力的！`
+        ],
+        tier100k: [ // ~ 100000
+            `這數字... 感覺你可以直接去應徵 ${name} 的經紀人了 😂`,
+            `錢錢沒有不見，只是變成了 ${name} 閃耀的舞台！`,
+            `你對 ${name} 的投資已經達到大師等級，太強了 🏆`,
+            `這就是用愛發電嗎？${name} 接收到滿滿的能量了！⚡️`,
+            `你的支持是 ${name} 前進的動力，但記得對自己好一點喔。`
+        ],
+        tier300k: [ // ~ 300000
             `你對 ${name} 的愛已經超越大氣層了！🚀`,
-            `這是要把整座舞台買下來送給 ${name} 嗎？💎`
+            `這是要把整座舞台買下來送給 ${name} 嗎？💎`,
+            `你已經是 ${name} 命中注定的靈魂伴侶了吧？🥰`,
+            `這數字簡直是藝術！感謝你為 ${name} 創造的每個奇蹟。`,
+            `你是 ${name} 宇宙中的超級星探，眼光真的太好了！`
         ],
-        legend: [ // 90萬以上
-            `你是 ${name} 的頂級贊助商吧！請受我一拜 🙇‍♂️`,
-            `這數字已經是傳說等級了... ${name} 的命是你給的！👑`
+        tier500k: [ // ~ 500000
+            `你是不是把 ${name} 的周邊都包圓了？財力驚人！💸`,
+            `感謝頂級乾爹/乾媽！${name} 會用最好的表演報答你 🙇‍♂️`,
+            `這份熱愛足以載入史冊，${name} 永遠不會忘記你。`,
+            `為了見 ${name} 走過的里程，大概可以繞地球三圈了 🌍`,
+            `你對 ${name} 的支持已經是信仰等級了，向你致敬！`
+        ],
+        tier900k: [ // ~ 900000
+            `你是 ${name} 公司的隱形股東吧！請受我一拜 🙇‍♂️`,
+            `這數字已經是傳說等級了... ${name} 的命是你給的！👑`,
+            `感覺你可以隨時召喚 ${name} 出現了（開玩笑的）🧙‍♂️`,
+            `你的應援已經變成了一種傳奇，大家都認識你了！`,
+            `謝謝你支撐起 ${name} 的一片天，你是最棒的。`
+        ],
+        legend: [ // 1000000+
+            `百萬級應援！你就是 ${name} 的守護神 👼`,
+            `這數字已經無法用言語形容了... 這是絕對的真愛！❤️`,
+            `恭喜達成「追星天花板」成就！${name} 為你鼓掌 👏`,
+            `你是 ${name} 生命中最燦爛的極光，照亮了所有黑暗 🌌`,
+            `傳說中的全勤加神級贊助，你就是追星界的王者！🤴`
         ]
     };
 
     let selectedPool;
     if (totalSpent === 0) selectedPool = pools.zero;
-    else if (totalSpent < 50000) selectedPool = pools.low;
-    else if (totalSpent < 100000) selectedPool = pools.mid;
-    else if (totalSpent < 300000) selectedPool = pools.high;
-    else if (totalSpent < 900000) selectedPool = pools.expert;
+    else if (totalSpent <= 1000) selectedPool = pools.low;
+    else if (totalSpent <= 10000) selectedPool = pools.mid;
+    else if (totalSpent <= 30000) selectedPool = pools.tier30k;
+    else if (totalSpent <= 50000) selectedPool = pools.tier50k;
+    else if (totalSpent <= 100000) selectedPool = pools.tier100k;
+    else if (totalSpent <= 300000) selectedPool = pools.tier300k;
+    else if (totalSpent <= 500000) selectedPool = pools.tier500k;
+    else if (totalSpent <= 900000) selectedPool = pools.tier900k;
     else selectedPool = pools.legend;
 
     return selectedPool[Math.floor(Math.random() * selectedPool.length)];
 });
+
                 const mappedEventsCount = computed(() => events.value.filter(e => e.lat && e.lng).length);
                 const missingCoordsCount = computed(() => events.value.length - mappedEventsCount.value);
                 const calculateTotal = (expenses) => expenses ? expenses.reduce((sum, i) => sum + (Number(i.amount)||0), 0) : 0;
