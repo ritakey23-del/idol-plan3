@@ -1642,9 +1642,9 @@ watch(activeTab, (newTab) => {
 
 const emotionalSummary = computed(() => {
     const { count, totalSpent, topArtists } = statsData.value;
-    if (count === 0) return "準備好開啟新的追星旅程了嗎？🌟"; [cite: 419]
+    if (count === 0) return "準備好開啟新的追星旅程了嗎？🌟";
 
-    let mainArtist = topArtists.length > 0 ? topArtists[0].name : "他們"; [cite: 419]
+    let mainArtist = topArtists.length > 0 ? topArtists[0].name : "他們"; 
     let category = 'balanced';
 
     if (count >= 15 || totalSpent >= 100000) category = 'legend';     
