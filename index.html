@@ -604,13 +604,16 @@
                 </div>
                 <div class="space-y-4">
                  
-                    <div class="relative">
-                        <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                            <option value="ALL">🗓️ 全部年份總回顧</option>
-                            <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
-                    </div>
+<div class="relative">
+    <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-10 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
+        <option value="ALL">🗓️ 全部年份總回顧</option>
+    </select>
+    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+        <i class="ph ph-caret-down-bold"></i>
+    </div>
+</div>
+
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
                         <p class="text-sm font-bold text-slate-700 italic">"{{ emotionalSummary }}"</p>
@@ -813,7 +816,7 @@
     <div class="bg-white rounded-2xl shadow-2xl w-80 flex flex-col max-h-[85vh] overflow-hidden">
         
         <div class="flex justify-between items-center p-6 pb-4 shrink-0">
-            <h3 class="font-bold text-lg text-slate-700">系統設定 ⚙️</h3>
+            <h3 class="font-bold text-lg text-slate-700">系統與主題設定 ⚙️</h3>
             <button @click="showSettingsModal = false" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200 transition-colors">
                 <i class="ph ph-x"></i>
             </button>
