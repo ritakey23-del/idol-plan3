@@ -1612,39 +1612,55 @@ watch(activeTab, (newTab) => {
                     }).filter(y => y !== null));
                     return Array.from(years).sort((a, b) => b - a);
                 });
-                const statsData = computed(() => {
-    let targetEvents = events.value;
+const statsData = computed(() => {
+    let targetEvents = events.value || []; // 確保 events 存在 [cite: 310]
     if (selectedYear.value !== 'ALL') {
-        targetEvents = events.value.filter(e => e.date.startsWith(selectedYear.value));
+        targetEvents = targetEvents.filter(e => e.date && e.date.startsWith(selectedYear.value));
     }
-    const count = targetEvents.length;
-    const totalSpent = targetEvents.reduce((acc, curr) => acc + calculateTotal(curr.expenses), 0);
+    const count = targetEvents.length || 0;
+    const totalSpent = targetEvents.reduce((acc, curr) => acc + (calculateTotal(curr.expenses) || 0), 0); [cite: 421]
     
-    // 計算場館排行 (最常去的地方)
+    // 場館排行
     const locationMap = {};
     targetEvents.forEach(e => {
-        const loc = e.location || '未知地點';
+        const loc = e.location || '未知地點'; [cite: 398]
         locationMap[loc] = (locationMap[loc] || 0) + 1;
     });
     const sortedLocations = Object.entries(locationMap).sort((a,b) => b[1] - a[1]);
-    const topLocation = sortedLocations[0]?.[0] || '尚未解鎖場館';
+    const topLocation = sortedLocations.length > 0 ? sortedLocations[0][0] : '尚無紀錄';
 
-    // 計算本命排行
+    // 本命排行
     const artistMap = {};
     targetEvents.forEach(e => {
-        const name = e.artist || '其他藝人';
+        const name = e.artist || '其他藝人'; [cite: 394]
         artistMap[name] = (artistMap[name] || 0) + 1;
     });
-    const sortedArtists = Object.keys(artistMap).map(key => ({ name: key, count: artistMap[key] })).sort((a, b) => b.count - a.count).slice(0, 3);
+    const sortedArtists = Object.keys(artistMap).map(key => ({ 
+        name: key, 
+        count: artistMap[key] 
+    })).sort((a, b) => b.count - a.count).slice(0, 3); [cite: 396]
 
-    // 計算最愛看的系列演出
+    // 系列演出排行
     const titleMap = {};
-    const excludeWords = ['사전녹化', '事前錄製', '簽售', '錄製'];
+    const excludeWords = ['사전녹화', '事前錄製', '簽售', '錄製']; [cite: 400]
     targetEvents.forEach(e => {
-        if (!excludeWords.some(k => e.title.includes(k))) {
+        if (e.title && !excludeWords.some(k => e.title.includes(k))) {
             titleMap[e.title] = (titleMap[e.title] || 0) + 1;
         }
     });
+    const sortedSeries = Object.entries(titleMap).sort((a,b) => b[1] - a[1]);
+    const topSeries = sortedSeries.length > 0 ? sortedSeries[0][0] : '尚無重複演出';
+
+    return { 
+        count, 
+        totalSpent, 
+        topArtists: sortedArtists, 
+        topLocation,
+        topSeries,
+        maxArtistCount: sortedArtists.length > 0 ? sortedArtists[0].count : 1 [cite: 397]
+    };
+});
+
     const topSeries = Object.entries(titleMap).sort((a,b) => b[1] - a[1])[0]?.[0] || '尚無重複觀看的演出';
 
     return { 
@@ -1658,12 +1674,13 @@ watch(activeTab, (newTab) => {
 });
 
 
-                const emotionalSummary = computed(() => {
-                    const { count, totalSpent, topArtists } = statsData.value;
-                    if (count === 0) return "準備好開啟新的追星旅程了嗎？🌟";
-        
-                    let mainArtist = topArtists.length > 0 ? topArtists[0].name : "他們";
-                    
+const emotionalSummary = computed(() => {
+    const { count, totalSpent, topArtists } = statsData.value;
+    if (!count || count === 0) return "準備好開啟新的追星旅程了嗎？🌟"; [cite: 405]
+
+    // 增加防錯：確保 topArtists 有資料才抓取名稱
+    let mainArtist = (topArtists && topArtists.length > 0) ? topArtists[0].name : "偶像"; [cite: 405]
+   
                     let category = 'balanced';
                 
                     if (count >= 15) category = 'high_freq';
