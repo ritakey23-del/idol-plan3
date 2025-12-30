@@ -1090,22 +1090,20 @@
                 const expandedEventId = ref(null);
                 const isYearlyPrivacy = ref(true); 
                 const isEventPrivacy = ref(true); 
-const isStatsPrivacy = ref(true); 
-// 從本地儲存讀取預算，預設值為 50000
+const isStatsPrivacy = ref(true);
+// 讀取預算，預設 50000
 const yearlyBudget = ref(Number(localStorage.getItem('idolYearlyBudget')) || 50000); 
 
-// 監聽預算變化並即時儲存
+// 監聽並存入 localStorage
 watch(yearlyBudget, (newVal) => localStorage.setItem('idolYearlyBudget', newVal));
 
-// 定義預算碎碎念的三個級距邏輯
+// 預算碎碎念邏輯（三個級距）
 const budgetNagging = computed(() => {
     const percent = (currentYearExpense.value / yearlyBudget.value) * 100;
-    if (percent >= 100) return "⚠️ 預算炸裂！請開始吃土"; // 級距 3: 100% 以上
-    if (percent >= 80) return "🚨 亮紅燈！再買要喝風了";   // 級距 2: 80-100%
-    if (percent >= 50) return "💡 預算過半，請謹慎評估";   // 級距 1: 50-80%
-    return "✨ 預算充裕，記得存錢唷！";                   // 50% 以下
-});
-
+    if (percent >= 100) return "⚠️ 預算炸裂！請開始吃土模式";
+    if (percent >= 80) return "🚨 亮紅燈！再買要喝西北風了";
+    if (percent >= 50) return "💡 預算過半，請謹慎評估行程";
+    return "✨ 預算充裕，記得存錢唷！";
 
                 const isSearching = ref(false);
                 const searchError = ref('');
