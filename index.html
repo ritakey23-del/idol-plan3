@@ -2066,6 +2066,24 @@ const initMap = () => {
                         return;
                     }
 
+const downloadShareCard = () => {
+    const card = document.querySelector("#share-card");
+    if (!card) return alert("找不到分享卡片元素"); // 增加防錯機制
+    
+    html2canvas(card, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: 2
+    }).then(canvas => {
+        const link = document.createElement('a');
+        const yearLabel = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
+        link.download = `IdolDiary_Recap_${yearLabel}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+};
+
+
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const base64String = e.target.result;
@@ -2076,24 +2094,6 @@ const initMap = () => {
                         }
                     };
 
-const downloadShareCard = () => {
-    // 取得要截圖的元素
-    const card = document.querySelector("#share-card");
-    
-    // 使用 html2canvas 轉成畫布
-    html2canvas(card, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: 2 // 提高清晰度
-    }).then(canvas => {
-        // 轉為圖片下載
-        const link = document.createElement('a');
-        const yearLabel = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
-        link.download = `IdolDiary_Recap_${yearLabel}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-};
 
                     reader.onerror = (error) => {
                         console.error("FileReader 錯誤:", error);
@@ -2110,7 +2110,7 @@ const downloadShareCard = () => {
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
                 return {
-                    downloadShareCard, events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
+                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
                   
@@ -2126,7 +2126,7 @@ const downloadShareCard = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, 
+selectedMapYear, filteredMapEventsCount, totalDistance, downloadShareCard, 
 
                 };
             }
