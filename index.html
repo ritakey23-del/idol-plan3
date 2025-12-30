@@ -1623,60 +1623,85 @@ watch(activeTab, (newTab) => {
                     }).filter(y => y !== null));
                     return Array.from(years).sort((a, b) => b - a);
                 });
-const statsData = computed(() => {
-            const allEvents = events.value || [];
+// 1. 計算年度統計數據
+        const statsData = computed(() => {
+            const allEvents = events.value || []; 
             const targetEvents = (selectedYear.value === 'ALL') 
                 ? allEvents 
-                : allEvents.filter(e => e.date && e.date.startsWith(selectedYear.value));
+                : allEvents.filter(e => e.date && e.date.startsWith(selectedYear.value)); 
 
-            const count = targetEvents.length;
-            const totalSpent = targetEvents.reduce((acc, curr) => acc + (calculateTotal(curr.expenses) || 0), 0);
+            const count = targetEvents.length; 
+            const totalSpent = targetEvents.reduce((acc, curr) => acc + (calculateTotal(curr.expenses) || 0), 0); 
             
+            // 計算場館排行
             const locationMap = {};
             targetEvents.forEach(e => {
-                const loc = e.location || '未知地點';
+                const loc = e.location || '未知地點'; 
                 locationMap[loc] = (locationMap[loc] || 0) + 1;
             });
-            const sortedLocs = Object.entries(locationMap).sort((a, b) => b[1] - a[1]);
-            const topLocation = sortedLocs.length > 0 ? sortedLocs[0][0] : '尚未紀錄';
+            const sortedLocs = Object.entries(locationMap).sort((a, b) => b[1] - a[1]); 
+            const topLocation = sortedLocs.length > 0 ? sortedLocs[0][0] : '尚未紀錄場地';
 
+            // 計算藝人排行
             const artistMap = {};
             targetEvents.forEach(e => {
-                const name = e.artist || '其他藝人';
+                const name = e.artist || '其他藝人'; 
                 artistMap[name] = (artistMap[name] || 0) + 1;
             });
-            const sortedArt = Object.keys(artistMap).map(k => ({ name: k, count: artistMap[k] })).sort((a, b) => b.count - a.count).slice(0, 3);
+            const sortedArt = Object.keys(artistMap).map(k => ({ 
+                name: k, 
+                count: artistMap[k] 
+            })).sort((a, b) => b.count - a.count).slice(0, 3); 
 
-            const titleMap = {};
-            const filters = ['사전녹화', '事前錄製', '簽售', '錄製'];
+            // 計算演出排行
+            const titleMap = {}; 
+            const filters = ['사전녹화', '事前錄製', '簽售', '錄製']; 
             targetEvents.forEach(e => {
                 if (e.title && !filters.some(f => e.title.includes(f))) {
                     titleMap[e.title] = (titleMap[e.title] || 0) + 1;
                 }
             });
-            const sortedTitles = Object.entries(titleMap).sort((a, b) => b[1] - a[1]);
-            const topSeries = sortedTitles.length > 0 ? sortedTitles[0][0] : '尚無重複演出';
+            const sortedTitles = Object.entries(titleMap).sort((a, b) => b[1] - a[1]); 
+            const topSeries = sortedTitles.length > 0 ? sortedTitles[0][0] : '尚無重複觀看的演出';
 
             return { 
-                count, totalSpent, topArtists: sortedArt, topLocation, topSeries,
-                maxArtistCount: sortedArt.length > 0 ? sortedArt[0].count : 1 
+                count, 
+                totalSpent, 
+                topArtists: sortedArt, 
+                topLocation, 
+                topSeries,
+                maxArtistCount: sortedArt.length > 0 ? sortedArt[0].count : 1, 
+                series: sortedTitles.map(([title, count]) => ({ title, count })).filter(i => i.count > 1)
             };
         });
 
+        // 2. 下載分享卡片函數
         const downloadShareCard = () => {
-            isGeneratingImage.value = true;
+            isGeneratingImage.value = true; 
             setTimeout(() => {
                 const card = document.querySelector("#share-card");
-                if (!card) { isGeneratingImage.value = false; return; }
-                html2canvas(card, { useCORS: true, scale: 3, borderRadius: 40 }).then(canvas => {
+                if (!card) {
+                    isGeneratingImage.value = false;
+                    return alert("產生失敗，請確認是否在回顧分頁");
+                }
+                html2canvas(card, {
+                    useCORS: true,
+                    scale: 3, 
+                    borderRadius: 40
+                }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = `追星回顧_${selectedYear.value}.png`;
+                    const yearLabel = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
+                    link.download = `追星回顧_${yearLabel}.png`; 
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                     isGeneratingImage.value = false;
-                }).catch(() => { isGeneratingImage.value = false; });
-            }, 600);
+                }).catch(err => {
+                    console.error("下載出錯:", err);
+                    isGeneratingImage.value = false;
+                });
+            }, 600); 
         };
+
 
                     return { 
                         count, 
