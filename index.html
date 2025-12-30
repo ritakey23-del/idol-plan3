@@ -372,7 +372,7 @@
                                         <span class="font-mono font-bold">
     {{ isEventPrivacy ? '****' : '$' + formatMoney(calculateTotal(event.expenses)) }}
 </span>
-<button @click.stop="isEventPrivacy = !isEventPrivacy" class="text-slate-400 hover:text-primary ml-1 p-1">
+<button @click.stop="isEventPrivacy = !isEventPrivacy" class="text-slate-400 hover:text-slate-500 ml-1 p-1 transition-colors">
     <i class="ph" :class="isEventPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
 </button>
 
