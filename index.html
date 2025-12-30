@@ -1708,7 +1708,6 @@ watch(activeTab, (newTab) => {
                 const removeChecklistItem = (i) => form.value.checklist.splice(i, 1);
                 const addDefaultChecklist = () => ['門票/證件', '手燈+電池', '行動電源', '望遠鏡', '水/喉糖'].forEach(t => form.value.checklist.push({ text: t, checked: false }));
                 const toggleExpand = (id) => expandedEventId.value = (expandedEventId.value === id) ? null : id;
-                const togglePrivacy = () => isPrivacyMode.value = !isPrivacyMode.value;
                 const setTheme = (c) => {
                     themeColor.value = c;
                     localStorage.setItem('idolTheme', c);
@@ -2048,7 +2047,7 @@ const initMap = () => {
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
                 return {
-                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
+                    events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, customTitle,
                     showModal, showSettingsModal, showImportModal, showTicketModal, showCalendarModal, showChangelogModal, showFandomModal, fandomForm, isFandomEditing, editFandomIndex,
                     calendarEvent, ticketEvent, isEditing, form, importJson, searchQuery,
                   
