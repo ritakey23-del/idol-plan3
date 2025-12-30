@@ -1678,12 +1678,6 @@ watch(activeTab, (newTab) => {
                     return pools[category][count % pools[category].length];
                 });
 
-// 1. 拆分隱私狀態 
-const isYearlyPrivacy = ref(true); 
-const isEventPrivacy = ref(true);  
-const isStatsPrivacy = ref(true);
-
-// 2. 擴充後的隨機碎碎念邏輯 
 const idolNagging = computed(() => {
     const { totalSpent, topArtists } = statsData.value;
     const name = topArtists.length > 0 ? topArtists[0].name : '我';
