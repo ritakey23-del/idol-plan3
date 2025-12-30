@@ -597,16 +597,22 @@
     </div>
 </div>
 
-   </div> <div v-if="activeTab === 'stats'" id="share-content" class="space-y-6 p-5 pb-32 bg-slate-50">
-                 <div class="flex justify-between items-center mb-2">
-                   
-                    <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
-<div class="flex gap-2">
-    <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90">
-        <i class="ph ph-share-network text-lg"></i> 分享卡片
-    </button>
-    <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform hover:opacity-90"><i class="ph ph-download-simple text-lg"></i> 匯入</button>
+   </div> <div v-if="activeTab === 'stats'" class="space-y-6 p-5 pb-32">
+    <div id="share-content" class="space-y-6 bg-slate-50 p-4 rounded-3xl"> 
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xl font-bold text-slate-800">追星儀表板 📊</h2>
+            <div class="flex gap-2">
+                <button @click="generateShareImage" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform">
+                    <i class="ph ph-share-network text-lg"></i> 分享卡片
+                </button>
+                <button @click="showImportModal = true" :style="{ backgroundColor: themeColor }" class="text-xs text-white px-4 py-2 rounded-full flex items-center gap-1 shadow-sm active:scale-95 transition-transform">
+                    <i class="ph ph-download-simple text-lg"></i> 匯入
+                </button>
+            </div>
+        </div>
+        </div>
 </div>
+
                 <div class="space-y-4">
                     <div class="relative">
                                <select v-model="selectedYear" 
@@ -2214,27 +2220,31 @@ const generateShareImage = () => {
     const element = document.getElementById('share-content');
     if (!element) return;
 
-    // 暫時移除「匯入/分享」按鈕所在的標題列，避免截圖出現按鈕（可選）
-    const header = element.querySelector('.flex.justify-between.items-center.mb-2');
-    
+    // 提示開始生成
+    const originalText = "分享卡片";
+    alert('正在產生分享圖片，請稍候... ✨');
+
+    // 確保圖片與資源加載完畢 
     html2canvas(element, {
-useCORS: true, // 支援跨域圖片
-        scale: 2,      // 提升清晰度
-        backgroundColor: '#f8fafc', // 背景顏色
-        onclone: (clonedDoc) => {
-            // 在複製的 DOM 中隱藏按鈕列，讓截圖更乾淨
-            const btnRow = clonedDoc.querySelector('.flex.justify-between.items-center.mb-2');
-            if (btnRow) btnRow.style.display = 'none';
-        }
+        useCORS: true, 
+        scale: 2,      
+        backgroundColor: '#f8fafc', // 強制設定背景色，避免白圖 
+        logging: true,  // 開啟日誌方便除錯
+        width: element.offsetWidth,
+        height: element.offsetHeight
     }).then(canvas => {
-        const link = document.createElement('a');
-link.download = `${selectedYear.value}_追星回顧_${customTitle.value}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        alert('卡片已生成並開始下載！✨');
+        try {
+            const link = document.createElement('a');
+            link.download = `${selectedYear.value}_追星回顧.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error("下載失敗:", err);
+            alert("產生圖片失敗，請檢查瀏覽器權限");
+        }
     }).catch(err => {
-        console.error('截圖失敗:', err);
-        alert('產生圖片時發生錯誤，請稍後再試。');
+        console.error("html2canvas 錯誤:", err);
+        alert("產生圖片時發生錯誤。");
     });
 };
 
