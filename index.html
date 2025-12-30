@@ -623,7 +623,7 @@
 
     <div class="space-y-4">
         <div class="bg-white/90 p-5 rounded-2xl shadow-sm border border-white text-center">
-            <h3 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-tighter border-b pb-2 inline-block mx-auto">🏆 年度成就</h3>
+            <h2 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-tighter border-b pb-2 inline-block mx-auto">🏆 年度成就</h2>
             
             <div class="space-y-2 text-slate-600">
                 <div class="leading-tight text-sm">
@@ -652,17 +652,17 @@
                     足足看了<br>
                     <div class="text-3xl font-black my-1" :style="{ color: themeColor }">{{ statsData.series[0].count }}</div>
                     場
+                    <div class="text-[10px] text-slate-400 mt-1 italic">有沒有發現不同的地方？</div>
                 </div>
-                <div class="text-[11px] font-bold text-slate-400 pt-1">有沒有發現不同的地方？</div>
             </div>
         </div>
 
-        <div class="mx-auto w-1/2 p-3 rounded-xl text-center shadow-inner border border-dashed" :style="{ borderColor: themeColor, backgroundColor: themeColor + '10' }">
+        <div class="mx-auto w-1/2 p-3 rounded-xl text-center shadow-inner" :style="{ border: '1px solid ' + themeColor, backgroundColor: themeColor + '10' }">
             <div class="font-bold text-[9px]" :style="{ color: adjustColor(themeColor, -50) }" style="line-height: 1.4;">💡 {{ idolNagging }}</div>
         </div>
 
         <div v-if="statsData.series.length > 0" class="bg-white/40 p-4 rounded-2xl border border-dashed border-slate-300 text-center">
-            <h3 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
+            <h2 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h2>
             <div class="space-y-2">
                 <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-white/80 p-2 rounded-xl flex flex-col items-center justify-center min-h-[60px]">
                     <div class="flex items-center gap-2">
@@ -677,6 +677,7 @@
         </div>
     </div>
 </div>
+
 
 
                 </div>
