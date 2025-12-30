@@ -1082,7 +1082,7 @@
         createApp({
             setup() {
 
-
+                const isGeneratingImage = ref(false);
                 const events = ref([]);
                 const selectedMapYear = ref('ALL');
                 const activeTab = ref('home');
@@ -1107,7 +1107,6 @@
                 const showCalendarModal = ref(false); 
                 const showChangelogModal = ref(false); 
                 const showFandomModal = ref(false); 
-                const isGeneratingImage = ref(false);
                 const calendarEvent = ref(null);     
   
                 const ticketEvent = ref({});
@@ -1686,9 +1685,6 @@ const downloadShareCard = () => {
         });
     }, 600); 
 };
-
-
-    const topSeries = Object.entries(titleMap).sort((a,b) => b[1] - a[1])[0]?.[0] || '尚無重複觀看的演出';
 
 
 
