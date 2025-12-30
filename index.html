@@ -166,12 +166,19 @@
                     'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group">
                     <div :class="isThemeColorLight ?
                         'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費</div>
-                   <div class="text-lg font-bold">
+<div class="text-lg font-bold">
     {{ isYearlyPrivacy ? '****' : '$' + formatMoney(currentYearExpense) }}
+</div>
+<div v-if="yearlyBudget > 0" class="mt-2 px-1">
+    <div class="h-1 w-full bg-black/10 rounded-full overflow-hidden">
+        <div class="h-full transition-all duration-500" :class="budgetStatus.barColor" :style="{ width: Math.min(budgetStatus.percent, 100) + '%' }"></div>
+    </div>
+    <p class="text-[8px] mt-1 truncate opacity-80">{{ budgetStatus.message }}</p>
 </div>
 <button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1.5 right-1.5">
     <i class="ph" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
 </button>
+
 
                 </div>
             </div>
@@ -813,7 +820,12 @@
                     <input type="text" v-model="customTitle" @change="updateAppTitle" placeholder="追星日記 ✨"
                            class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50 focus:border-primary/50">
                 </div>
-                
+                <div class="mb-6 border-b border-slate-100 pb-4">
+    <p class="text-xs font-medium text-slate-500 mb-2">年度預算設定 ($)</p>
+    <input type="number" v-model.number="yearlyBudget" @change="updateYearlyBudget" 
+           placeholder="輸入年度預算" class="w-full bg-slate-100 border rounded-lg p-2 text-sm text-center">
+    <p class="text-[10px] text-slate-400 mt-1">設定預算後將顯示追星消費進度。</p>
+</div>
    
               
                 <div class="mb-6">
@@ -1058,6 +1070,8 @@
             setup() {
 
 
+
+                const yearlyBudget = ref(Number(localStorage.getItem('idolYearlyBudget')) || 0);
                 const events = ref([]);
                 const selectedMapYear = ref('ALL');
                 const activeTab = ref('home');
@@ -1159,7 +1173,18 @@ const totalDistance = computed(() => {
                 const presetColors = ['#63b3b0', '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#1dd1a1'];
                 const customTitle = ref(localStorage.getItem('appTitle') || '追星日記 ✨');
                 const appVersion = ref('v1.0.5'); // 更新版本號
-                
+                const yearlyBudget = ref(Number(localStorage.getItem('idolYearlyBudget')) || 0);                                 
+                const updateYearlyBudget = () => localStorage.setItem('idolYearlyBudget', yearlyBudget.value);
+                const budgetStatus = computed(() => {
+    if (!yearlyBudget.value || yearlyBudget.value <= 0) return { percent: 0, message: '尚未設定預算', color: 'text-slate-400', barColor: 'bg-slate-300' };
+    const percent = (currentYearExpense.value / yearlyBudget.value) * 100;
+    if (percent < 50) return { percent, message: "✅ 預算充足，盡情追星！", barColor: "bg-green-500" };
+    if (percent < 90) return { percent, message: "⚠️ 花費已過半！請謹慎購買。", barColor: "bg-orange-500" };
+    return { percent, message: "🚨 預算告急！準備吃土中...", barColor: "bg-red-500" };
+});
+
+
+
                 // --- FANDOM STATES ---
                 const fandoms = ref(JSON.parse(localStorage.getItem('fandomFandoms') || '[]'));
                 const currentFandomIndex = ref(0);
@@ -2176,7 +2201,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, 
+selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, updateYearlyBudget, 
 
                 };
             }
