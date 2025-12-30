@@ -1620,6 +1620,7 @@ const statsData = computed(() => {
     const count = targetEvents.length;
     const totalSpent = targetEvents.reduce((acc, curr) => acc + (calculateTotal(curr.expenses) || 0), 0);
     
+    // 1. 計算場館排行
     const locationMap = {};
     targetEvents.forEach(e => {
         const loc = e.location || '未知地點';
@@ -1628,14 +1629,19 @@ const statsData = computed(() => {
     const sortedLocs = Object.entries(locationMap).sort((a, b) => b[1] - a[1]);
     const topLocation = sortedLocs.length > 0 ? sortedLocs[0][0] : '尚未紀錄';
 
+    // 2. 計算本命排行
     const artistMap = {};
     targetEvents.forEach(e => {
         const name = e.artist || '其他藝人';
         artistMap[name] = (artistMap[name] || 0) + 1;
     });
-    const sortedArt = Object.keys(artistMap).map(k => ({ name: k, count: artistMap[k] })).sort((a, b) => b.count - a.count).slice(0, 3);
+    const sortedArt = Object.keys(artistMap).map(k => ({ 
+        name: k, 
+        count: artistMap[k] 
+    })).sort((a, b) => b.count - a.count).slice(0, 3);
 
-    const titleMap = {};
+    // 3. 計算系列演出排行 (正確宣告 titleMap)
+    const titleMap = {}; 
     const filters = ['생방송','사전녹화', '事前錄製', '簽售', '錄製'];
     targetEvents.forEach(e => {
         if (e.title && !filters.some(f => e.title.includes(f))) {
@@ -1651,7 +1657,8 @@ const statsData = computed(() => {
         topArtists: sortedArt, 
         topLocation: topLocation,
         topSeries: topSeries,
-        maxArtistCount: sortedArt.length > 0 ? sortedArt[0].count : 1 
+        maxArtistCount: sortedArt.length > 0 ? sortedArt[0].count : 1,
+        series: sortedTitles.map(([title, count]) => ({ title, count })).filter(i => i.count > 1)
     };
 });
 
