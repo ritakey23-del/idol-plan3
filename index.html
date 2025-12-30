@@ -2071,24 +2071,7 @@ const initMap = () => {
                     reader.readAsDataURL(file);
                 };
 
-const downloadShareCard = () => {
-    const card = document.querySelector("#share-card");
-    if (!card) return alert("找不到分享卡片元素"); // 增加防錯機制
-    
-    html2canvas(card, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: 2
-    }).then(canvas => {
-        const link = document.createElement('a');
-        const yearLabel = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
-        link.download = `IdolDiary_Recap_${yearLabel}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-};
-
-                
+               
                 const formatMoney = (v) => v ? v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
                 const getDay = (d) => new Date(d).getDate();
                 const getMonth = (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()];
