@@ -605,14 +605,14 @@
                 <div class="space-y-4">
                  
                     <div class="relative">
-                        <select v-model="selectedYear" class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-12 rounded-xl font-bold shadow-sm focus:outline-none focus: ring-2 focus:ring-primary/50 cursor-pointer">
-                            <option value="ALL">🗓️ 全部年份總回顧</option>
-                            <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500"><i class="ph ph-caret-down-bold"></i></div>
-   <div class="pointer-events-none inset-y-0 right-0 flex items-center px-4 text-slate-600 z-20">
-        <i class="ph ph-caret-down-bold"></i>
-                    </div>
+    <select v-model="selectedYear" 
+            class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-2.5 px-4 pr-8 rounded-xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
+        <option value="ALL">🗓️ 全部年份總回顧</option>
+        <option v-for="year in availableYears" :key="year" :value="year">{{ year }} 年度回顧</option>
+    </select>
+    
+    <i class="ph ph-caret-down absolute right-3 top-1/2 transform -translate-y-1/2 text-xs pointer-events-none opacity-50"></i>
+</div>
            </div>
          
                     <div v-if="emotionalSummary" class="bg-white p-4 rounded-xl shadow-sm border-l-4" :style="{ borderColor: themeColor }">
