@@ -185,7 +185,6 @@
     </button>
 </div>
 
-
                 </div>
             </div>
         </header>
@@ -822,17 +821,18 @@
         <h3 class="font-bold text-lg mb-4 text-slate-700">資料與主題設定 ⚙️</h3>
 
                 
-                <div class="mb-6 border-b border-slate-100 pb-4">
-                    <p class="text-xs font-medium text-slate-500 mb-2">App 標題</p>
-                    <input type="text" v-model="customTitle" @change="updateAppTitle" placeholder="追星日記 ✨"
-                           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50 focus:border-primary/50">
-                </div>
 <div class="mb-6 border-b border-slate-100 pb-4">
-    <p class="text-xs font-medium text-slate-500 mb-2">年度預算 (TWD)</p>
-    <input type="number" v-model.number="yearlyBudget" placeholder="輸入年度預算"
-           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
-    <p class="text-[10px] text-slate-400 mt-2">設定後，首頁將根據花費進度給予提醒。</p>
+    <p class="text-xs font-medium text-slate-500 mb-2">App 標題</p>
+    <input type="text" v-model="customTitle" @change="updateAppTitle" placeholder="追星日記 ✨" class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
 </div>
+
+<div class="mb-6 border-b border-slate-100 pb-4">
+    <p class="text-xs font-medium text-slate-500 mb-2">年度追星預算 (TWD)</p>
+    <input type="number" v-model.number="yearlyBudget" placeholder="例如: 50000"
+           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
+    <p class="text-[10px] text-slate-400 mt-2 italic">設定後，首頁將顯示花費提醒。</p>
+</div>
+
                 
    
               
@@ -1091,16 +1091,20 @@
                 const isYearlyPrivacy = ref(true); 
                 const isEventPrivacy = ref(true); 
 const isStatsPrivacy = ref(true); 
+// 從本地儲存讀取預算，預設值為 50000
 const yearlyBudget = ref(Number(localStorage.getItem('idolYearlyBudget')) || 50000); 
+
+// 監聽預算變化並即時儲存
 watch(yearlyBudget, (newVal) => localStorage.setItem('idolYearlyBudget', newVal));
+
+// 定義預算碎碎念的三個級距邏輯
 const budgetNagging = computed(() => {
     const percent = (currentYearExpense.value / yearlyBudget.value) * 100;
-    if (percent >= 100) return "⚠️ 預算炸裂！請開始吃土模式"; // 級距 3：100% 以上
-    if (percent >= 80) return "🚨 亮紅燈！再買要喝西北風了"; // 級距 2：80% - 100%
-    if (percent >= 50) return "💡 預算過半，請謹慎評估行程"; // 級距 1：50% - 80%
-    return "✨ 預算充裕，記得存錢唷！"; // 50% 以下
+    if (percent >= 100) return "⚠️ 預算炸裂！請開始吃土"; // 級距 3: 100% 以上
+    if (percent >= 80) return "🚨 亮紅燈！再買要喝風了";   // 級距 2: 80-100%
+    if (percent >= 50) return "💡 預算過半，請謹慎評估";   // 級距 1: 50-80%
+    return "✨ 預算充裕，記得存錢唷！";                   // 50% 以下
 });
-
 
 
                 const isSearching = ref(false);
@@ -1350,10 +1354,8 @@ const totalDistance = computed(() => {
                     const savedTheme = localStorage.getItem('idolTheme');
                     if (savedTheme) themeColor.value = savedTheme;
                 });
-
-watch(yearlyBudget, (newVal) => localStorage.setItem('idolYearlyBudget', newVal));
                 
-               watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
+                watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
                 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
                 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
                 
@@ -2214,8 +2216,7 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, budgetNagging, 
-
+selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget , budgetNagging, 
 
                 };
             }
@@ -2223,6 +2224,12 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
+
+
+
+
+
+
 
 
 
