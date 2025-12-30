@@ -2071,24 +2071,21 @@ const initMap = () => {
                     reader.readAsDataURL(file);
                 };
 
-const downloadShareCard = () => {
-    const card = document.querySelector("#share-card");
-    if (!card) return alert("找不到分享卡片元素"); // 增加防錯機制
-    
-    html2canvas(card, {
-        backgroundColor: null,
-        useCORS: true,
-        scale: 2
-    }).then(canvas => {
-        const link = document.createElement('a');
-        const yearLabel = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
-        link.download = `IdolDiary_Recap_${yearLabel}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    });
-};
+                const downloadShareCard = () => {
+                    isGeneratingImage.value = true;
+                    setTimeout(() => {
+                        const card = document.querySelector("#share-card");
+                        if (!card) { isGeneratingImage.value = false; return alert("產生失敗"); }
+                        html2canvas(card, { useCORS: true, scale: 3, borderRadius: 40 }).then(canvas => {
+                            const link = document.createElement('a');
+                            link.download = `追星回顧.png`;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                            isGeneratingImage.value = false;
+                        }).catch(err => { isGeneratingImage.value = false; });
+                    }, 500);
+                };
 
-                
                 const formatMoney = (v) => v ? v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
                 const getDay = (d) => new Date(d).getDate();
                 const getMonth = (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()];
@@ -2107,7 +2104,7 @@ const downloadShareCard = () => {
                     toggleExpand, togglePrivacy, formatMoney, getDay, getMonth, getDaysDiff, getMapLink, 
                     calculateTotal, 
                     addExpenseItem, removeExpenseItem, addChecklistItem, removeChecklistItem, addDefaultChecklist, saveFandoms, addFandom, removeFandom, editFandom, closeFandomModal, openFandomModal, fandoms,
-                    getEventColor, emotionalSummary, availableYears, searchCoordinates, isSearching, searchError, mappedEventsCount, missingCoordsCount,
+                    getEventColor, emotionalSummary, availableYears, searchCoordinates, isSearching, searchError, mappedEventsCount, missingCoordsCount, initMap, 
     
                     downloadBackup, restoreBackup, idolNagging, showCalendarOptions, addToiCal, addToGoogleCalendar, showTicket, getTicketPrice, updateAppTitle,
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
