@@ -162,16 +162,29 @@
                         'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">倒數中</div>
                     <div class="text-lg font-bold">{{ upcomingCount }} <span class="text-xs font-normal">場</span></div>
                 </div>
-                <div :class="isThemeColorLight ?
-                    'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group">
-                    <div :class="isThemeColorLight ?
-                        'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費</div>
-                   <div class="text-lg font-bold">
-    {{ isYearlyPrivacy ? '****' : '$' + formatMoney(currentYearExpense) }}
+<div :class="isThemeColorLight ? 'bg-black/10' : 'bg-white/20'" class="backdrop-blur-md rounded-xl p-2.5 flex-1 text-center relative group flex flex-col justify-between">
+    <div :class="isThemeColorLight ? 'text-slate-600' : 'text-white/80'" class="text-[10px] mb-0.5">年度花費 / 預算</div>
+    
+    <div>
+        <div class="text-lg font-bold leading-tight">
+            {{ isYearlyPrivacy ? '****' : '$' + formatMoney(currentYearExpense) }}
+        </div>
+        
+        <div class="w-full h-1 bg-black/10 rounded-full mt-1 mb-1 overflow-hidden">
+            <div class="h-full bg-white transition-all duration-500" 
+                 :style="{ width: Math.min((currentYearExpense / yearlyBudget) * 100, 100) + '%' }"></div>
+        </div>
+        
+        <div class="text-[9px] font-medium opacity-90 truncate px-1" :style="{ color: isThemeColorLight ? '#475569' : '#f1f5f9' }">
+            {{ budgetNagging }}
+        </div>
+    </div>
+
+    <button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1 right-1 p-1">
+        <i class="ph text-xs" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
+    </button>
 </div>
-<button @click="isYearlyPrivacy = !isYearlyPrivacy" class="absolute top-1.5 right-1.5">
-    <i class="ph" :class="isYearlyPrivacy ? 'ph-eye-slash' : 'ph-eye'"></i>
-</button>
+
 
                 </div>
             </div>
@@ -814,6 +827,12 @@
                     <input type="text" v-model="customTitle" @change="updateAppTitle" placeholder="追星日記 ✨"
                            class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50 focus:border-primary/50">
                 </div>
+<div class="mb-6 border-b border-slate-100 pb-4">
+    <p class="text-xs font-medium text-slate-500 mb-2">年度預算 (TWD)</p>
+    <input type="number" v-model.number="yearlyBudget" placeholder="輸入年度預算"
+           class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2 text-sm text-slate-800 text-center focus:ring-primary/50">
+    <p class="text-[10px] text-slate-400 mt-2">設定後，首頁將根據花費進度給予提醒。</p>
+</div>
                 
    
               
@@ -1071,7 +1090,18 @@
                 const expandedEventId = ref(null);
                 const isYearlyPrivacy = ref(true); 
                 const isEventPrivacy = ref(true); 
-                const isStatsPrivacy = ref(true); 
+const isStatsPrivacy = ref(true); 
+const yearlyBudget = ref(Number(localStorage.getItem('idolYearlyBudget')) || 50000); 
+watch(yearlyBudget, (newVal) => localStorage.setItem('idolYearlyBudget', newVal));
+const budgetNagging = computed(() => {
+    const percent = (currentYearExpense.value / yearlyBudget.value) * 100;
+    if (percent >= 100) return "⚠️ 預算炸裂！請開始吃土模式"; // 級距 3：100% 以上
+    if (percent >= 80) return "🚨 亮紅燈！再買要喝西北風了"; // 級距 2：80% - 100%
+    if (percent >= 50) return "💡 預算過半，請謹慎評估行程"; // 級距 1：50% - 80%
+    return "✨ 預算充裕，記得存錢唷！"; // 50% 以下
+});
+
+
 
                 const isSearching = ref(false);
                 const searchError = ref('');
@@ -1320,8 +1350,10 @@ const totalDistance = computed(() => {
                     const savedTheme = localStorage.getItem('idolTheme');
                     if (savedTheme) themeColor.value = savedTheme;
                 });
+
+watch(yearlyBudget, (newVal) => localStorage.setItem('idolYearlyBudget', newVal));
                 
-                watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
+               watch(customTitle, (newVal) => localStorage.setItem('appTitle', newVal));
                 watch(events, (newVal) => localStorage.setItem('idolEvents', JSON.stringify(newVal)), { deep: true });
                 watch(themeColor, (newVal) => localStorage.setItem('idolTheme', newVal));
                 
@@ -2182,7 +2214,8 @@ const initMap = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, 
+selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, budgetNagging, 
+
 
                 };
             }
@@ -2190,12 +2223,6 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
-
-
-
-
-
-
 
 
 
