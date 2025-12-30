@@ -871,12 +871,10 @@
                     </button>
             
                 </div>
-        <div class="p-4 border-t border-slate-50 text-center">
-            <button @click="showSettingsModal = false" class="text-sm text-slate-400 hover:text-slate-600">完成</button>
-        </div>
-    </div>
-</div>
 
+                <button @click="showSettingsModal = false" class="mt-2 text-sm text-slate-400 hover:text-slate-600">完成</button>
+            </div>
+        </div>
         
         <transition name="slide-up">
             <div v-if="showFandomModal" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
