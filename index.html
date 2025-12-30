@@ -2071,41 +2071,30 @@ const initMap = () => {
                     reader.readAsDataURL(file);
                 };
 
-               
+const downloadShareCard = () => {
+    const card = document.querySelector("#share-card");
+    if (!card) return alert("找不到分享卡片元素"); // 增加防錯機制
+    
+    html2canvas(card, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: 2
+    }).then(canvas => {
+        const link = document.createElement('a');
+        const yearLabel = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
+        link.download = `IdolDiary_Recap_${yearLabel}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+};
+
+                
                 const formatMoney = (v) => v ? v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
                 const getDay = (d) => new Date(d).getDate();
                 const getMonth = (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()];
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
                 const getMapLink = (l) => l ?
                     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l)}` : '#';
-
-const downloadShareCard = () => {
-    isGeneratingImage.value = true; // 觸發手機端可見性
-    // 等待 Vue 渲染卡片後再截圖
-    setTimeout(() => {
-        const card = document.querySelector("#share-card");
-        if (!card) {
-            isGeneratingImage.value = false;
-            return alert("產生失敗");
-        }
-        html2canvas(card, {
-            useCORS: true,
-            scale: 3, // 提高手機端下載清晰度
-            borderRadius: 40
-        }).then(canvas => {
-            const link = document.createElement('a');
-            const fileName = selectedYear.value === 'ALL' ? 'AllTime' : selectedYear.value;
-            link.download = `追星回顧_${fileName}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            isGeneratingImage.value = false; // 下載後自動隱藏
-        }).catch(err => {
-            console.error(err);
-            isGeneratingImage.value = false;
-        });
-    }, 500); // 延遲確保渲染完成
-};
-
 
                 return {
                     events, activeTab, viewMode, themeColor, selectedYear, expandedEventId, isPrivacyMode, customTitle,
