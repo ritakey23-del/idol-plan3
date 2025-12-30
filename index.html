@@ -1067,7 +1067,7 @@
                 const themeColor = ref('#63b3b0'); 
           
  
-                const selectedYear = ref('ALL');
+             const selectedYear = ref(new Date().getFullYear().toString());
                 const expandedEventId = ref(null);
                 const isYearlyPrivacy = ref(true); 
                 const isEventPrivacy = ref(true); 
@@ -1590,13 +1590,17 @@ watch(activeTab, (newTab) => {
                     const y = new Date().getFullYear().toString();
                     return events.value.filter(e => e.date.startsWith(y)).reduce((sum, e) => sum + calculateTotal(e.expenses), 0);
                 });
-                const availableYears = computed(() => {
-                    const years = new Set(events.value.map(e => {
-                        const match = e.date.match(/^(\d{4})/);
-                        return match ? match[1] : null;
-                    }).filter(y => y !== null));
-                    return Array.from(years).sort((a, b) => b - a);
-                });
+const availableYears = computed(() => {
+    const currentYear = new Date().getFullYear().toString();
+    const years = new Set(events.value.map(e => {
+        const match = e.date.match(/^(\d{4})/);
+        return match ? match[1] : null;
+    }).filter(y => y !== null));
+
+    years.add(currentYear); 
+   return Array.from(years).sort((a, b) => b - a);
+});
+
                 const statsData = computed(() => {
                     let targetEvents = events.value;
       
