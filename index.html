@@ -2288,14 +2288,12 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 1. 僅出現正在繪製對話框
-    alert("正在繪製您的專屬追星卡片...🎨");
+    alert('正在繪製您的專屬追星卡片... 🎨');
 
     html2canvas(element, {
         useCORS: true,
         scale: 3, 
-        backgroundColor: '#f8fafc',
-        letterRendering: true,
+        backgroundColor: null,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
             clonedElement.style.top = '0';
@@ -2304,28 +2302,22 @@ const generateShareImage = () => {
         }
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
-        
-        // 2. 同時執行下載
         const link = document.createElement('a');
-        link.download = `${selectedYear.value}_追星成就回顧.png`;
+        link.download = `${selectedYear.value}_追星報告.png`;
         link.href = imageData;
         link.click();
 
-        // 3. 同時開啟新視窗（方便手機長按儲存）
         const imgWin = window.open("");
         if (imgWin) {
-            imgWin.document.write(`
-                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;">
-                    <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.1); border-radius:24px; margin-bottom:20px;"/>
-                    <p style="font-family:sans-serif; color:#64748b; font-size:14px; text-align:center;">✨ 已自動下載，或長按圖片儲存 ✨</p>
-                </body>
-            `);
+            imgWin.document.write(`<img src="${imageData}" style="width:100%; max-width:500px; display:block; margin:auto;"/>`);
+            imgWin.document.title = "長按儲存追星卡片";
         }
     }).catch(err => {
         console.error("生成失敗:", err);
-        alert("生成失敗，請再試一次");
+        alert("卡片生成失敗，請再試一次。");
     });
 };
+
 
 
 
