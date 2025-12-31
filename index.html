@@ -1368,7 +1368,7 @@ const totalDistance = computed(() => {
                 const openFandomModal = () => {
                     isFandomEditing.value = false;
                     editFandomIndex.value = null;
-                    fandomForm.value = {...defaultFandomForm, date: new Date().toISOString().split('T')[0], useUrl: false};
+                    fandomForm.value = {...defaultFandomForm, date: new Date().toLocaleDateString('sv-SE'), useUrl: false};
                     showFandomModal.value = true;
                 };
                 const editFandom = (fandom, index) => {
@@ -1712,7 +1712,7 @@ watch(activeTab, (newTab) => {
                     return baseMsg + msgs[Math.floor(Math.random() * msgs.length)];
                 });
                 const filteredEvents = computed(() => {
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = new Date().toLocaleDateString('sv-SE');
                     let sorted = [...events.value].sort((a, b) => new Date(a.date) - new Date(b.date));
                     
                     if (searchQuery.value) {
@@ -1733,7 +1733,7 @@ watch(activeTab, (newTab) => {
                         : sorted.filter(e => e.date < today).reverse();
                 });
 
-                const upcomingCount = computed(() => events.value.filter(e => e.date >= new Date().toISOString().split('T')[0]).length);
+                const upcomingCount = computed(() => events.value.filter(e => e.date >= new Date().toLocaleDateString('sv-SE')).length);
                 const currentYearExpense = computed(() => {
                     const y = new Date().getFullYear().toString();
                     return events.value.filter(e => e.date.startsWith(y)).reduce((sum, e) => sum + calculateTotal(e.expenses), 0);
@@ -1982,7 +1982,7 @@ const idolNagging = computed(() => {
                 const updateCustomTheme = (e) => setTheme(e.target.value);
                 const openModal = () => {
                     isEditing.value = false;
-                    form.value = { ...defaultForm, date: new Date().toISOString().split('T')[0], color: themeColor.value, expenses: [{item:'門票', amount:''}], checklist:[], memo:'', useUrl: false };
+                    form.value = { ...defaultForm, date: new Date().toLocaleDateString('sv-SE'), color: themeColor.value, expenses: [{item:'門票', amount:''}], checklist:[], memo:'', useUrl: false };
                     searchError.value = '';
                     showModal.value = true;
                 };
@@ -2181,7 +2181,7 @@ const initMap = () => {
                     const endHours = String(endDateObj.getHours()).padStart(2, '0');
                     const endMinutes = String(endDateObj.getMinutes()).padStart(2, '0');
                     const endSeconds = String(endDateObj.getSeconds()).padStart(2, '0');
-                    const end = endDateObj.toISOString().split('T')[0].replace(/-/g, '') + 'T' + endHours + endMinutes + endSeconds;
+                    const end = endDateObj.toLocaleDateString('sv-SE').replace(/-/g, '') + 'T' + endHours + endMinutes + endSeconds;
                     const gCalLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title + ' - ' + artist)}&dates=${start}/${end}&details=${encodeURIComponent('追星日記行程: ' + title)}&location=${encodeURIComponent(location)}&sf=true&output=xml`;
                     
                     window.open(gCalLink, '_blank');
@@ -2196,7 +2196,7 @@ const initMap = () => {
                     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events.value));
                     const downloadAnchorNode = document.createElement('a');
                     downloadAnchorNode.setAttribute("href", dataStr);
-                    downloadAnchorNode.setAttribute("download", "idol_tracker_backup_" + new Date().toISOString().split('T')[0] + ".json");
+                    downloadAnchorNode.setAttribute("download", "idol_tracker_backup_" + new Date().toLocaleDateString('sv-SE') + ".json");
                     document.body.appendChild(downloadAnchorNode);
                     downloadAnchorNode.click();
                     downloadAnchorNode.remove();
@@ -2243,7 +2243,7 @@ const initMap = () => {
                                 let rawDate = d.date || d['日期'] || '';
                    
                  
-                                let formattedDate = new Date().toISOString().split('T')[0];
+                                let formattedDate = new Date().toLocaleDateString('sv-SE');
                                 if (rawDate) {
                                     const str = String(rawDate).trim();
                                     if (/^\d{6}$/.test(str)) formattedDate = `20${str.substring(0, 2)}-${str.substring(2, 4)}-${str.substring(4, 6)}`;
@@ -2395,6 +2395,7 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
+
 
 
 
