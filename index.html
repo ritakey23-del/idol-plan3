@@ -653,11 +653,11 @@
                     <div class="text-3xl font-black my-1" :style="{ color: themeColor }">{{ statsData.series[0].count }}</div>
                     場
                 </div>
-                <div class="text-[10px] text-slate-400 mt-2 font-medium italic">有沒有發現不同的地方？</div>
+                <div class="text-[10px] text-slate-400 mt-2 font-medium italic">有沒有發現每場不同的地方？</div>
             </div>
         </div>
 
-        <div class="mx-auto w-[75%] p-3 rounded-xl text-center" :style="{ backgroundColor: themeColor + '15' }">
+        <div class="w-full p-3 rounded-xl text-center" :style="{ backgroundColor: themeColor + '15' }">
             <div class="font-bold text-[10px] w-full" :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" style="line-height: 1.4;">
                 💡 {{ idolNagging }}
             </div>
@@ -666,19 +666,20 @@
         <div v-if="statsData.series.length > 0" class="bg-white p-5 rounded-2xl border border-slate-100 text-center pb-8">
             <h3 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
             <div class="space-y-3">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-3 rounded-xl flex flex-col items-center justify-center min-h-[65px]">
-                    <div class="flex items-center gap-2 mb-1">
+                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-3 rounded-xl flex justify-between items-center px-4">
+                    <div class="flex items-center gap-2 truncate pr-4">
                         <div v-if="idx === 0" class="text-xl">🥇</div>
                         <div v-else-if="idx === 1" class="text-xl">🥈</div>
                         <div v-else-if="idx === 2" class="text-xl">🥉</div>
-                        <div class="font-bold text-slate-700 text-xs truncate px-1" style="line-height: 1.2;">{{ item.title }}</div>
+                        <div class="font-bold text-slate-700 text-xs truncate" style="line-height: 1.2;">{{ item.title }}</div>
                     </div>
-                    <div class="font-black text-base" :style="{ color: themeColor }" style="line-height: 1;">{{ item.count }}場</div>
+                    <div class="font-black text-base shrink-0" :style="{ color: themeColor }">{{ item.count }}場</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -2290,9 +2291,10 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 修正彈窗文字，使其與按鈕行為（好/取消）對應一致
-    const userChoice = confirm("✨ 追星報告已備好！\n\n點擊「好」：直接下載圖片到裝置\n點擊「取消」：在新分頁開啟檢視(可長按儲存)");
+    // 1. 初始提示語，按鈕為「確定」
+    alert('正在繪製您的專屬追星卡片... 🎨');
 
+    // 2. 開始執行繪製
     html2canvas(element, {
         useCORS: true,
         scale: 3, 
@@ -2307,14 +2309,16 @@ const generateShareImage = () => {
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
         
+        const userChoice = confirm("✨ 追星報告已備好！\n\n點擊「確定」：直接下載圖片到裝置\n點擊「取消」：在新頁面開啟檢視(可長按儲存)");
+        
         if (userChoice) {
-            // 使用者點擊「好」
+            // 使用者選擇下載
             const link = document.createElement('a');
             link.download = `${selectedYear.value}_追星報告.png`;
             link.href = imageData;
             link.click();
         } else {
-            // 使用者點擊「取消」
+            // 使用者選擇檢視，直接開新視窗
             const imgWin = window.open("");
             if (imgWin) {
                 imgWin.document.write(`
@@ -2323,8 +2327,12 @@ const generateShareImage = () => {
                         <p style="font-family:sans-serif; color:#94a3b8; font-size:14px; text-align:center;">✨ 長按上方圖片即可儲存至相簿 ✨</p>
                     </body>
                 `);
+            } else {
+                alert("瀏覽器阻擋了新分頁，請手動允許權限。");
             }
         }
+    }).catch(err => {
+        console.error("生成失敗:", err);
     });
 };
 
