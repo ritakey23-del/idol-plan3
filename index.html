@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 |
+    <title>1235我的追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -611,7 +611,7 @@
 </div>
 
 <div id="share-template" style="position: fixed;
-top: -9999px; width: 375px; min-height: 667px; padding: 30px; border-radius: 0px;
+top: -9999px; left: 0; width: 375px; padding: 30px; border-radius: 0px;
 z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8fafc' }">
 
     
@@ -2293,22 +2293,29 @@ const generateShareImage = () => {
     if (!element) return;
 
     console.log("正在生成圖片...");
-    
+
     html2canvas(element, {
         useCORS: true,
-        scale: 2,               // 設為 2 兼顧清晰度與手機上傳速度
+        scale: 2,               // 建議設為 2，避免手機上圖檔過大下載失敗
         backgroundColor: '#f8fafc',
-        windowWidth: 375,       // 強制模擬 375px 視窗寬度渲染
-        width: 375,             // 強制輸出寬度為 375px
-        letterRendering: true,
+        windowWidth: 375,       // 鎖定模擬視窗寬度
+        width: 375,             // 鎖定擷取範圍寬度
+        x: 0,                   // 強制從水平 0 的位置開始抓取
+        y: 0,                   // 強制從垂直 0 的位置開始抓取
+        scrollX: 0,
+        scrollY: 0,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
+            // 關鍵：在克隆的文件中將其置頂、靠左，並消除任何外距
+            clonedElement.style.position = 'fixed';
             clonedElement.style.top = '0';
             clonedElement.style.left = '0';
-            clonedElement.style.position = 'static'; // 改為 static 確保正常佈局
-            clonedElement.style.display = 'flex';   // 確保 flex 佈局生效
+            clonedElement.style.margin = '0';
+            clonedElement.style.padding = '30px'; // 保持你原本的內距
+            clonedElement.style.display = 'flex';
         }
     }).then(canvas => {
+
 
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
