@@ -610,11 +610,11 @@
     </button>
 </div>
 
-<div id="share-template" 
-     style="position: fixed; top: -9999px; width: 375px; min-height: 667px; display: flex; flex-direction: column;" 
-     :style="{ background: '#f8fafc' }">
-    </div>
-   
+<div id="share-template" style="position: fixed;
+top: -9999px; width: 375px; min-height: 667px; padding: 30px; border-radius: 0px;
+z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8fafc' }">
+
+    
     <div class="text-center mb-5">
         <h1 class="text-xl font-bold text-slate-800" style="margin-bottom: 2px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[9px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
@@ -2292,27 +2292,24 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 移除 alert 改用 console 紀錄或直接執行，避免手機系統彈窗衝突
     console.log("正在生成圖片...");
-
+    
     html2canvas(element, {
-    useCORS: true,
-    scale: 3,               // 保持高解析度
-    backgroundColor: '#f8fafc',
-    // 關鍵設定：強制模擬固定寬度的視窗進行渲染
-    windowWidth: 375,       // 模擬 iPhone 尺寸的寬度
-    width: 375,             // 輸出的畫布寬度
-    scrollX: 0,
-    scrollY: 0,
-    onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.getElementById('share-template');
-        clonedElement.style.top = '0';
-        clonedElement.style.left = '0';
-        clonedElement.style.position = 'relative';
-        clonedElement.style.display = 'block'; // 確保在複製出的文件中是顯示狀態
-    }
-})
-.then(canvas => {
+        useCORS: true,
+        scale: 2,               // 設為 2 兼顧清晰度與手機上傳速度
+        backgroundColor: '#f8fafc',
+        windowWidth: 375,       // 強制模擬 375px 視窗寬度渲染
+        width: 375,             // 強制輸出寬度為 375px
+        letterRendering: true,
+        onclone: (clonedDoc) => {
+            const clonedElement = clonedDoc.getElementById('share-template');
+            clonedElement.style.top = '0';
+            clonedElement.style.left = '0';
+            clonedElement.style.position = 'static'; // 改為 static 確保正常佈局
+            clonedElement.style.display = 'flex';   // 確保 flex 佈局生效
+        }
+    }).then(canvas => {
+
         canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -2366,6 +2363,7 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
+
 
 
 
