@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 |
+    <title>169我的追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -610,66 +610,62 @@
     </button>
 </div>
 
-<div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; padding: 25px; border-radius: 30px; z-index: -1;" :style="{ background: '#f8fafc' }">
+<div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; height: 667px; padding: 25px; border-radius: 0px; z-index: -1; display: flex; flex-direction: column; justify-content: space-between;" :style="{ background: '#f8fafc' }">
     
-    <div class="text-center mb-5">
+    <div class="text-center">
         <h1 class="text-xl font-bold text-slate-800" style="margin-bottom: 2px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[9px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
     </div>
 
-    <div class="p-4 rounded-2xl shadow-md mb-5 text-center flex items-center justify-center min-h-[75px]" :style="{ backgroundColor: themeColor }">
+    <div class="p-3 rounded-2xl shadow-sm text-center flex items-center justify-center min-h-[65px]" :style="{ backgroundColor: themeColor }">
         <div class="text-white font-bold italic text-[9px] leading-relaxed" style="margin: 0 auto; max-width: 90%;">"{{ emotionalSummary }}"</div>
     </div>
 
-    <div class="space-y-3.5">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 text-center">
-            <h3 class="text-lg font-black text-slate-700 mb-5 uppercase tracking-tighter border-b pb-2 inline-block mx-auto">🏆 年度成就</h3>
-            <div class="space-y-4 text-slate-600">
-                <div class="leading-tight text-xs">
-                    演出這一年你參與了<br>
-                    <div class="text-3xl font-black my-1" :style="{ color: themeColor }">{{ statsData.count }}</div>
-                    場
-                </div>
-                <div class="leading-tight text-xs">
-                    你跨越了<br>
-                    <div class="text-3xl font-black my-1" :style="{ color: themeColor }">{{ totalDistance }}</div>
-                    公里
-                </div>
-                <div v-if="statsData.topArtists.length > 0" class="leading-tight text-xs pt-4 border-t border-dashed border-slate-100">
-                    你與<br>
-                    <div class="text-2xl font-bold my-1" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</div>
-                    共創了<br>
-                    <div class="text-2xl font-black my-1" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</div>
-                    美好回憶
-                </div>
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 text-center flex-1 my-3 flex flex-col justify-center">
+        <h3 class="text-base font-black text-slate-700 mb-3 uppercase tracking-tighter border-b pb-1 inline-block mx-auto">🏆 年度成就</h3>
+        <div class="space-y-3 text-slate-600">
+            <div class="leading-tight text-[10px]">
+                演出這一年你參與了<br>
+                <div class="text-2xl font-black my-0.5" :style="{ color: themeColor }">{{ statsData.count }}</div>
+                場
+            </div>
+            <div class="leading-tight text-[10px]">
+                你跨越了<br>
+                <div class="text-2xl font-black my-0.5" :style="{ color: themeColor }">{{ totalDistance }}</div>
+                公里
+            </div>
+            <div v-if="statsData.topArtists.length > 0" class="leading-tight text-[10px] pt-2 border-t border-dashed border-slate-100">
+                你與<br>
+                <div class="text-xl font-bold my-0.5" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</div>
+                共創了 <b class="text-base" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</b> 次美好回憶
             </div>
         </div>
+    </div>
 
-        <div class="w-full p-3 rounded-xl text-center" :style="{ backgroundColor: themeColor + '15' }">
-            <div class="font-bold text-[9px] w-full" :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" style="line-height: 1.5; padding: 0 10px;">
-                💡 {{ idolNagging }}
-            </div>
+    <div class="w-full p-2.5 rounded-xl text-center mb-3" :style="{ backgroundColor: themeColor + '15' }">
+        <div class="font-bold text-[8px] w-full" :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" style="line-height: 1.4;">
+            💡 {{ idolNagging }}
         </div>
+    </div>
 
-        <div v-if="statsData.series.length > 0" class="bg-white p-5 rounded-2xl border border-slate-100 text-center pb-6">
-            <h3 class="text-lg font-black text-slate-700 mb-4 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
-            <div class="space-y-2.5">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-3.5 rounded-xl flex items-start text-left px-5 min-h-[70px]">
-                    <div class="shrink-0 mr-4 mt-1">
-                        <div v-if="idx === 0" class="text-2xl">🥇</div>
-                        <div v-else-if="idx === 1" class="text-2xl">🥈</div>
-                        <div v-else-if="idx === 2" class="text-2xl">🥉</div>
-                    </div>
-                    <div class="flex-1 flex flex-col justify-center">
-                        <div class="font-bold text-slate-700 text-[10px] break-words leading-snug mb-1">{{ item.title }}</div>
-                        <div class="font-black text-xs" :style="{ color: themeColor }" style="line-height: 1;">{{ item.count }}場</div>
-                    </div>
+    <div v-if="statsData.series.length > 0" class="bg-white p-4 rounded-2xl border border-slate-100 text-center">
+        <h3 class="text-base font-black text-slate-700 mb-3 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
+        <div class="space-y-2">
+            <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-2.5 rounded-lg flex items-center text-left min-h-[55px]">
+                <div class="shrink-0 mr-3">
+                    <div v-if="idx === 0" class="text-xl">🥇</div>
+                    <div v-else-if="idx === 1" class="text-xl">🥈</div>
+                    <div v-else-if="idx === 2" class="text-xl">🥉</div>
+                </div>
+                <div class="flex-1 flex flex-col justify-center min-w-0">
+                    <div class="font-bold text-slate-700 text-[9px] break-words line-clamp-2 leading-tight mb-0.5">{{ item.title }}</div>
+                    <div class="font-black text-[10px]" :style="{ color: themeColor }">{{ item.count }}場</div>
                 </div>
             </div>
         </div>
-        <div style="height: 10px;"></div>
     </div>
 </div>
+
 
 
 
@@ -2284,13 +2280,12 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 移除 alert 改用 console 紀錄或直接執行，避免手機系統彈窗衝突
-    console.log("正在生成圖片...");
-
     html2canvas(element, {
         useCORS: true,
-        scale: 3, 
+        scale: 4, // 提高 scale 以確保 9:16 在大螢幕下依舊清晰
         backgroundColor: '#f8fafc',
+        width: 375,  // 強制寬度
+        height: 667, // 強制 9:16 高度
         letterRendering: true,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
@@ -2303,14 +2298,10 @@ const generateShareImage = () => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${selectedYear.value}_追星成就回顧.png`;
-            
-            // 模擬點擊下載
+            link.download = `${selectedYear.value}_追星成就回顧_9x16.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // 釋放記憶體
             setTimeout(() => URL.revokeObjectURL(url), 100);
         }, 'image/png');
     }).catch(err => {
