@@ -613,72 +613,68 @@
 <div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; padding: 30px; border-radius: 30px; z-index: -1;" :style="{ background: 'linear-gradient(135deg, white 0%, ' + themeColor + '20 100%)' }">
     
     <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-slate-800" style="margin-bottom: 4px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
+        <h1 class="text-2xl font-bold text-slate-800" style="margin-bottom: 4px; line-height: 1.2;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[10px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
     </div>
 
-    <div class="p-6 rounded-2xl shadow-md mb-6 text-center" :style="{ backgroundColor: themeColor }">
-        <div class="text-white font-bold italic text-sm" style="line-height: 1.6;">"{{ emotionalSummary }}"</div>
+    <div class="p-6 rounded-2xl shadow-md mb-6 text-center flex items-center justify-center min-h-[100px]" :style="{ backgroundColor: themeColor }">
+        <div class="text-white font-bold italic text-sm" style="line-height: 1.5; margin: 0 auto;">"{{ emotionalSummary }}"</div>
     </div>
 
-    <div class="space-y-6">
-        <div class="bg-white/90 p-6 rounded-2xl shadow-sm border border-white text-center">
+    <div class="space-y-4">
+        <div class="bg-white/90 p-5 rounded-2xl shadow-sm border border-white text-center">
             <h3 class="text-xl font-black text-slate-700 mb-6 uppercase tracking-tighter border-b pb-2 inline-block mx-auto">🏆 年度成就</h3>
             
-            <div class="space-y-6 text-slate-600">
-                <div class="flex flex-col items-center justify-center">
-                    <div class="text-sm leading-none mb-3">這一年你為了看</div>
-                    <div class="text-4xl font-black leading-none" :style="{ color: themeColor }">{{ statsData.count }}</div>
-                    <div class="text-sm leading-none mt-3">場演唱會</div>
+            <div class="space-y-1 text-slate-600">
+                <div class="text-sm" style="margin-bottom: 2px;">這一年你為了看</div>
+                <div class="text-4xl font-black" :style="{ color: themeColor }" style="line-height: 1.1; margin-bottom: 2px;">{{ statsData.count }}</div>
+                <div class="text-sm" style="margin-bottom: 12px;">場演唱會</div>
+
+                <div class="text-sm" style="margin-bottom: 2px;">跨越了</div>
+                <div class="text-4xl font-black" :style="{ color: themeColor }" style="line-height: 1.1; margin-bottom: 2px;">{{ totalDistance }}</div>
+                <div class="text-sm" style="margin-bottom: 12px;">公里</div>
+                
+                <div v-if="statsData.topArtists.length > 0" class="pt-4 border-t border-dashed border-slate-100">
+                    <div class="text-sm" style="margin-bottom: 2px;">你與</div>
+                    <div class="text-3xl font-bold" :style="{ color: themeColor }" style="line-height: 1.2; margin-bottom: 2px;">{{ statsData.topArtists[0].name }}</div>
+                    <div class="text-sm" style="margin-bottom: 2px;">共創了</div>
+                    <div class="text-3xl font-black" :style="{ color: themeColor }" style="line-height: 1.1; margin-bottom: 2px;">{{ statsData.topArtists[0].count }}</div>
+                    <div class="text-sm" style="margin-bottom: 12px;">美好回憶</div>
                 </div>
 
-                <div class="flex flex-col items-center justify-center pt-4 border-t border-dashed border-slate-100">
-                    <div class="text-sm leading-none mb-3">跨越了</div>
-                    <div class="text-4xl font-black leading-none" :style="{ color: themeColor }">{{ totalDistance }}</div>
-                    <div class="text-sm leading-none mt-3">公里</div>
+                <div v-if="statsData.series.length > 0" class="pt-4 border-t border-dashed border-slate-100">
+                    <div class="text-sm" style="margin-bottom: 2px;">你最愛看</div>
+                    <div class="text-2xl font-bold" :style="{ color: themeColor }" style="line-height: 1.2; margin-bottom: 2px;">{{ statsData.series[0].title }}</div>
+                    <div class="text-sm" style="margin-bottom: 2px;">足足看了</div>
+                    <div class="text-3xl font-black" :style="{ color: themeColor }" style="line-height: 1.1; margin-bottom: 2px;">{{ statsData.series[0].count }}</div>
+                    <div class="text-sm">場</div>
                 </div>
                 
-                <div v-if="statsData.topArtists.length > 0" class="flex flex-col items-center justify-center pt-4 border-t border-dashed border-slate-100">
-                    <div class="text-sm leading-none mb-3">你與</div>
-                    <div class="text-3xl font-bold leading-none mb-2" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</div>
-                    <div class="text-sm leading-none mb-2">共創了</div>
-                    <div class="text-3xl font-black leading-none mb-2" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</div>
-                    <div class="text-sm leading-none">美好回憶</div>
-                </div>
-
-                <div v-if="statsData.series.length > 0" class="flex flex-col items-center justify-center pt-4 border-t border-dashed border-slate-100">
-                    <div class="text-sm leading-none mb-3">你最愛看</div>
-                    <div class="text-2xl font-bold leading-none mb-2" :style="{ color: themeColor }">{{ statsData.series[0].title }}</div>
-                    <div class="text-sm leading-none mb-2">足足看了</div>
-                    <div class="text-3xl font-black leading-none mb-2" :style="{ color: themeColor }">{{ statsData.series[0].count }}</div>
-                    <div class="text-sm leading-none">場</div>
-                </div>
-                
-                <div class="text-[10px] text-slate-400 mt-2 font-medium italic">有沒有發現不同的地方？</div>
+                <div class="text-[10px] text-slate-400 mt-4 font-medium italic">有沒有發現不同的地方？</div>
             </div>
         </div>
 
-        <div class="mx-auto p-4 rounded-xl text-center shadow-sm border-2" 
-             :style="{ borderColor: themeColor, backgroundColor: 'rgba(255, 255, 255, 0.6)', backdropBlur: '10px' }">
-            <div class="font-bold text-[11px] leading-relaxed" :style="{ color: adjustColor ? adjustColor(themeColor, -30) : themeColor }">
+        <div class="mx-auto w-[65%] p-3 rounded-xl text-center shadow-inner flex items-center justify-center min-h-[45px]" :style="{ border: '1px solid ' + themeColor, backgroundColor: themeColor + '10' }">
+            <div class="font-bold text-[9px] w-full" :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" style="line-height: 1.4; display: block;">
                 💡 {{ idolNagging }}
             </div>
         </div>
 
-        <div v-if="statsData.series.length > 0" class="bg-white/40 p-6 rounded-2xl border border-dashed border-slate-300 text-center">
-            <h3 class="text-xl font-black text-slate-700 mb-5 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
+        <div v-if="statsData.series.length > 0" class="bg-white/40 p-4 rounded-2xl border border-dashed border-slate-300 text-center" style="margin-bottom: 20px;">
+            <h3 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
             <div class="space-y-3">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-white/80 p-4 rounded-xl flex flex-col items-center justify-center min-h-[70px]">
-                    <div class="flex items-center gap-2 mb-2">
-                        <div v-if="idx === 0" class="text-2xl">🥇</div>
-                        <div v-else-if="idx === 1" class="text-2xl">🥈</div>
-                        <div v-else-if="idx === 2" class="text-2xl">🥉</div>
-                        <div class="font-bold text-slate-700 text-sm truncate px-1">{{ item.title }}</div>
+                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-white/80 p-3 rounded-xl flex flex-col items-center justify-center min-h-[70px]">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div v-if="idx === 0" class="text-xl">🥇</div>
+                        <div v-else-if="idx === 1" class="text-xl">🥈</div>
+                        <div v-else-if="idx === 2" class="text-xl">🥉</div>
+                        <div class="font-bold text-slate-700 text-[11px] px-1" style="line-height: 1.2;">{{ item.title }}</div>
                     </div>
-                    <div class="font-black text-lg" :style="{ color: themeColor }">{{ item.count }}場</div>
+                    <div class="font-black text-base" :style="{ color: themeColor }" style="line-height: 1;">{{ item.count }}場</div>
                 </div>
             </div>
         </div>
+        <div style="height: 20px; width: 100%;"></div>
     </div>
 </div>
 
