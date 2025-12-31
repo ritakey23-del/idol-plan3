@@ -2289,8 +2289,8 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 顯示繪製提示
-    alert("正在繪製您的專屬追星卡片...🎨");
+    // 1. 先彈出提示，這能幫助某些瀏覽器識別為使用者觸發行為
+    alert("正在繪製您的專屬追星卡片...🎨\n繪製完成後將自動下載。");
 
     html2canvas(element, {
         useCORS: true,
@@ -2304,22 +2304,25 @@ const generateShareImage = () => {
             clonedElement.style.position = 'relative';
         }
     }).then(canvas => {
+        // 2. 將 Canvas 轉為圖片數據
         const imageData = canvas.toDataURL('image/png');
         
-        // 直接執行下載邏輯
+        // 3. 建立隱藏的下載連結
         const link = document.createElement('a');
-        link.download = `${selectedYear.value}_追星成就回顧.png`;
         link.href = imageData;
+        link.download = `${selectedYear.value}_追星成就回顧.png`;
+        
+        // 4. 針對 iOS/手機端的特殊處理：直接點擊下載
+        document.body.appendChild(link);
         link.click();
-        
-        // 為了確保手機端也能下載，自動彈出新視窗預覽 (選用，若不需要可刪除)
-        // const imgWin = window.open("");
-        // if (imgWin) imgWin.document.write(`<img src="${imageData}" style="width:100%; max-width:375px; border-radius:24px;"/>`);
-        
+        document.body.removeChild(link);
+
     }).catch(err => {
         console.error("生成失敗:", err);
+        alert("產生圖片失敗，請嘗試更換瀏覽器 (建議使用 Safari 或 Chrome)。");
     });
 };
+
 
 
 
@@ -2353,7 +2356,6 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
-
 
 
 
