@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>111我的追星日記 🌟 |
+    <title>我的追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -615,12 +615,12 @@ top: -9999px; left: 0; width: 375px; padding: 30px; border-radius: 0px;
 z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8fafc' }">
 
     
-    <div class="text-center mb-5">
+    <div class="text-center mb-2">
         <h1 class="text-xl font-bold text-slate-800" style="margin-bottom: 2px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[9px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
     </div>
 
-<div class="px-3 py-1 rounded-2xl shadow-md mb-1 text-center flex items-center justify-center h-auto py-5" :style="{ backgroundColor: themeColor }">
+<div class="px-3 py-1 rounded-2xl shadow-md mb-1 text-center flex items-center justify-center h-auto pt-2" :style="{ backgroundColor: themeColor }">
     <div class="text-white font-bold italic text-xs leading-relaxed whitespace-pre-line" style="margin: 0 auto; max-width: 90%;">
         "{{ emotionalSummary }}"
     </div>
@@ -634,7 +634,7 @@ z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8f
         
         <div class="flex-1 min-w-[45%] mb-2 pt-1 leading-tight text-[12px]">
             今年看了
-            <div class="text-xl font-black my-0.5" :style="{ color: themeColor }">{{ statsData.count }}</div>
+            <div class="text-xl font-black my-0" :style="{ color: themeColor }">{{ statsData.count }}</div>
             場演唱會
         </div>
 
@@ -692,6 +692,9 @@ z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8f
         <div style="height: 10px;"></div>
     </div>
 </div>
+
+
+
 
 
 
@@ -2387,6 +2390,7 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
+
 
 
 
