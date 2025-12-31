@@ -2290,10 +2290,13 @@ const initMap = () => {
 
 const generateShareImage = () => {
     const element = document.getElementById('share-template');
-    if (!element) return;
+    if (!element) {
+        console.error("找不到 share-template 元素");
+        return;
+    }
 
-    [span_0](start_span)// 1. 僅出現正在繪製對話框[span_0](end_span)
-    alert("正在繪製您的專屬追星卡片...🎨");
+    // 1. 立即顯示繪製提示
+    alert("正在繪製您的專屬追星卡片...🎨\n請稍候，完成後將詢問您的儲存方式。");
 
     html2canvas(element, {
         useCORS: true,
@@ -2302,34 +2305,44 @@ const generateShareImage = () => {
         letterRendering: true,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
-            clonedElement.style.top = '0';
-            clonedElement.style.left = '0';
-            clonedElement.style.position = 'relative';
+            if (clonedElement) {
+                clonedElement.style.top = '0';
+                clonedElement.style.left = '0';
+                clonedElement.style.position = 'relative';
+            }
         }
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
         
-        [span_1](start_span)[span_2](start_span)// 2. 繪製完成後提供檢視或下載的選擇[span_1](end_span)[span_2](end_span)
-        const userChoice = confirm("卡片繪製完成！✨\n\n點擊「確定」：直接下載圖片\n點擊「取消」：在新分頁開啟檢視");
+        // 2. 繪製完成後，明確詢問使用者
+        // 使用 confirm 作為二選一的橋樑
+        const isDownload = confirm("✨ 卡片已繪製完成！\n\n點擊「確定」：直接下載圖片到裝置\n點擊「取消」：在新分頁開啟檢視(可長按儲存)");
 
-        if (userChoice) {
+        if (isDownload) {
+            // 執行下載
             const link = document.createElement('a');
             link.download = `${selectedYear.value}_追星成就回顧.png`;
             link.href = imageData;
             link.click();
         } else {
+            // 執行檢視
             const imgWin = window.open("");
             if (imgWin) {
                 imgWin.document.write(`
-                    <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;">
+                    <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; font-family:sans-serif;">
                         <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.1); border-radius:24px; margin-bottom:20px;"/>
-                        <p style="font-family:sans-serif; color:#64748b; font-size:14px; text-align:center;">✨ 長按上方圖片即可儲存至相簿 ✨</p>
+                        <p style="color:#64748b; font-size:14px; text-align:center; margin-bottom:20px;">✨ 長按上方圖片即可儲存至相簿 ✨</p>
+                        <button onclick="window.close()" style="padding:10px 30px; background:white; border:1px solid #e2e8f0; border-radius:30px; color:#64748b; font-weight:bold; cursor:pointer;">關閉檢視</button>
                     </body>
                 `);
+                imgWin.document.title = "您的追星卡片檢視";
+            } else {
+                alert("瀏覽器阻擋了檢視視窗，請嘗試再次點擊分享並選擇下載。");
             }
         }
     }).catch(err => {
         console.error("生成失敗:", err);
+        alert("抱歉，圖片生成過程發生錯誤，請重新整理頁面再試。");
     });
 };
 
