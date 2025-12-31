@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 |
+    <title>123我的追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -615,12 +615,12 @@ top: -9999px; left: 0; width: 375px; padding: 30px; border-radius: 0px;
 z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8fafc' }">
 
     
-       <div class="text-center mb-5">
+      <div class="text-center mb-5">
         <h1 class="text-xl font-bold text-slate-800" style="margin-bottom: 2px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[9px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
     </div>
 
-<div class="px-4 py-3 rounded-2xl shadow-md mb-4 text-center flex items-center justify-center h-auto py-5" :style="{ backgroundColor: themeColor }">
+<div class="px-4 py-1.5 rounded-2xl shadow-md mb-4 text-center flex items-center justify-center h-auto py-5" :style="{ backgroundColor: themeColor }">
     <div class="text-white font-bold italic text-xs leading-relaxed whitespace-pre-line" style="margin: 0 auto; max-width: 90%;">
         "{{ emotionalSummary }}"
     </div>
@@ -644,21 +644,21 @@ z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8f
             公里的距離
         </div>
 
-        <div v-if="statsData.topArtists.length > 0" class="flex-1 min-w-[45%] pt-4 border-t border-dashed border-slate-100 leading-tight text-[12px]">
+        <div v-if="statsData.topArtists.length > 0" class="flex-1 min-w-[45%] pt-2 border-t border-dashed border-slate-100 leading-tight text-[12px]">
             與
 <span class="text-xl font-black" :style="{ color: themeColor }">{{ statsData.topArtists[0].name }}</span> <br>
             共創 <span class="text-xl font-black" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</span> 
             場回憶
         </div>
 
-        <div v-if="statsData.topLocations.length > 0" class="flex-1 min-w-[45%] pt-4 border-t border-dashed border-slate-100 leading-tight text-[10px]">
-            你最常跑去 <br><span class="text-l font-black" :style="{ color: themeColor }">{{ statsData.topLocations[0].name }}</span>
+        <div v-if="statsData.topLocations.length > 0" class="flex-1 min-w-[45%] pt-2 border-t border-dashed border-slate-100 leading-tight text-[10px]">
+            你最常跑去 <br><span class="text-xl font-black" :style="{ color: themeColor }">{{ statsData.topLocations[0].name }}</span>
         </div>
         
     </div>
 </div>
 
-<div class="w-full px-4 py-3 rounded-xl text-center" :style="{ backgroundColor: themeColor + '15' }">
+<div class="w-full px-4 py-1.5 rounded-xl text-center" :style="{ backgroundColor: themeColor + '15' }">
     <div class="font-bold text-xs w-full whitespace-pre-line" 
          :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" 
          style="line-height: 1.6; padding: 0 5px;">
@@ -692,6 +692,7 @@ z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8f
         <div style="height: 10px;"></div>
     </div>
 </div>
+
 
 
 
@@ -2384,6 +2385,7 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
+
 
 
 
