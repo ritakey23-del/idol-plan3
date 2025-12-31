@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 |
+    <title>Ri我的追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -613,12 +613,12 @@
 <div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; padding: 30px; border-radius: 30px; z-index: -1;" :style="{ background: '#f8fafc' }">
     
     <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-slate-800" style="margin-bottom: 4px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
+        <h1 class="text-2xl font-bold text-slate-800" style="margin-bottom: 4px; display: block;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[10px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
     </div>
 
     <div class="p-5 rounded-2xl shadow-md mb-6 text-center flex items-center justify-center min-h-[80px]" :style="{ backgroundColor: themeColor }">
-        <div class="text-white font-bold italic text-xs leading-relaxed" style="margin: 0 auto; max-width: 90%;">"{{ emotionalSummary }}"</div>
+        <div class="text-white font-bold italic text-xs leading-relaxed" style="margin: 0 auto; max-width: 90%; display: block;">"{{ emotionalSummary }}"</div>
     </div>
 
     <div class="space-y-4">
@@ -642,18 +642,11 @@
                     <div class="text-3xl font-black my-1" :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</div>
                     美好回憶
                 </div>
-                <div v-if="statsData.series.length > 0" class="leading-tight text-sm pt-4 border-t border-dashed border-slate-100">
-                    你最愛看<br>
-                    <div class="text-2xl font-bold my-1" :style="{ color: themeColor }">{{ statsData.series[0].title }}</div>
-                    足足看了<br>
-                    <div class="text-3xl font-black my-1" :style="{ color: themeColor }">{{ statsData.series[0].count }}</div>
-                    場
-                </div>
             </div>
         </div>
 
         <div class="w-full p-3 rounded-xl text-center" :style="{ backgroundColor: themeColor + '15' }">
-            <div class="font-bold text-[9px] w-full" :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" style="line-height: 1.4; padding: 0 10px;">
+            <div class="font-bold text-[9px] w-full" :style="{ color: adjustColor ? adjustColor(themeColor, -40) : themeColor }" style="line-height: 1.4; padding: 0 10px; display: block;">
                 💡 {{ idolNagging }}
             </div>
         </div>
@@ -674,9 +667,10 @@
                 </div>
             </div>
         </div>
-        <div style="height: 20px;"></div>
+        <div style="height: 10px;"></div>
     </div>
 </div>
+
 
 
 
@@ -2289,8 +2283,8 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 1. 先彈出提示，這能幫助某些瀏覽器識別為使用者觸發行為
-    alert("正在繪製您的專屬追星卡片...🎨\n繪製完成後將自動下載。");
+    // 1. 顯示初步提示
+    alert("正在繪製您的專屬追星卡片...🎨");
 
     html2canvas(element, {
         useCORS: true,
@@ -2304,24 +2298,35 @@ const generateShareImage = () => {
             clonedElement.style.position = 'relative';
         }
     }).then(canvas => {
-        // 2. 將 Canvas 轉為圖片數據
         const imageData = canvas.toDataURL('image/png');
         
-        // 3. 建立隱藏的下載連結
+        // 2. 自動執行下載 (PC 與部分安卓適用)
         const link = document.createElement('a');
-        link.href = imageData;
         link.download = `${selectedYear.value}_追星成就回顧.png`;
-        
-        // 4. 針對 iOS/手機端的特殊處理：直接點擊下載
-        document.body.appendChild(link);
+        link.href = imageData;
         link.click();
-        document.body.removeChild(link);
 
+        // 3. 針對手機端：彈出選擇框詢問是否需要開新分頁檢視（方便長按儲存）
+        // 這樣可以避免直接用 window.open 被瀏覽器當成廣告阻擋
+        if (confirm("卡片已嘗試下載！✨\n\n手機用戶若未看到下載檔案，\n是否開啟新分頁以利「長按儲存」圖片？")) {
+            const imgWin = window.open("");
+            if (imgWin) {
+                imgWin.document.write(`
+                    <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; font-family:sans-serif;">
+                        <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.1); border-radius:24px; margin-bottom:20px;"/>
+                        <p style="color:#64748b; font-size:14px; text-align:center; margin-bottom:20px;">✨ 長按上方圖片即可儲存至相簿 ✨</p>
+                        <button onclick="window.close()" style="padding:10px 30px; background:white; border:1px solid #e2e8f0; border-radius:30px; color:#64748b; font-weight:bold; cursor:pointer;">返回日記</button>
+                    </body>
+                `);
+            } else {
+                alert("新分頁被瀏覽器阻擋了，請在瀏覽器設定中允許彈出視窗。");
+            }
+        }
     }).catch(err => {
         console.error("生成失敗:", err);
-        alert("產生圖片失敗，請嘗試更換瀏覽器 (建議使用 Safari 或 Chrome)。");
     });
 };
+
 
 
 
