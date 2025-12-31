@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>666我的追星日記 🌟 |
+    <title>777我的追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -2285,14 +2285,14 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 移除 alert 改用 console 紀錄或直接執行，避免手機系統彈窗衝突
-    console.log("正在生成圖片...");
-
     html2canvas(element, {
         useCORS: true,
         scale: 3, 
         backgroundColor: '#f8fafc',
         letterRendering: true,
+        // 強制設定截圖尺寸為 9:16 的比例 (375x667)
+        width: 375,
+        height: 667,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
             clonedElement.style.top = '0';
@@ -2304,20 +2304,17 @@ const generateShareImage = () => {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${selectedYear.value}_追星成就回顧.png`;
-            
-            // 模擬點擊下載
+            link.download = `${selectedYear.value}_追星成就回顧_916.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // 釋放記憶體
             setTimeout(() => URL.revokeObjectURL(url), 100);
         }, 'image/png');
     }).catch(err => {
         console.error("生成失敗:", err);
     });
 };
+
 
 
 
