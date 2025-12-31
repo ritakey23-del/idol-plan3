@@ -610,64 +610,60 @@
     </button>
 </div>
 
-<div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; padding: 30px; border-radius: 30px; z-index: -1;" :style="{ background: 'linear-gradient(135deg, white 0%, ' + themeColor + '20 100%)' }">
+<div id="share-template" style="position: fixed; top: -9999px; left: -9999px; width: 375px; padding: 25px; border-radius: 30px; z-index: -1;" :style="{ background: '#f1f5f9' }">
     
-    <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-slate-800" style="margin-bottom: 4px;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
+    <div class="text-center mb-5">
+        <h1 class="text-xl font-bold text-slate-800" style="margin-bottom: 4px; display: block;">{{ selectedYear === 'ALL' ? '追星全紀錄回顧' : selectedYear + ' 年度回顧' }}</h1>
         <p class="text-[10px] text-slate-500 tracking-widest uppercase">追星足跡由 ✨ 為您珍藏 ✨</p>
     </div>
 
-    <div class="p-6 rounded-2xl shadow-md mb-6 text-center flex items-center justify-center min-h-[100px]" :style="{ backgroundColor: themeColor }">
-        <div class="text-white font-bold italic text-sm" style="line-height: 1.6;">"{{ emotionalSummary }}"</div>
+    <div class="p-5 rounded-2xl shadow-sm mb-5 text-center flex items-center justify-center min-h-[80px]" :style="{ backgroundColor: themeColor }">
+        <div class="text-white font-bold italic text-xs" style="line-height: 1.8; margin: 0 auto; display: block;">"{{ emotionalSummary }}"</div>
     </div>
 
-    <div class="space-y-6">
-        <div class="bg-white/90 p-5 rounded-2xl shadow-sm border border-white text-center w-full">
-            <h3 class="text-xl font-black text-slate-700 mb-8 uppercase tracking-tighter border-b pb-2 inline-block mx-auto">🏆 年度成就</h3>
+    <div class="space-y-4">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 text-center">
+            <h3 class="text-sm font-black text-slate-700 mb-6 uppercase tracking-tighter border-b pb-2 inline-block mx-auto">🏆 年度成就</h3>
             
-            <div class="space-y-4">
-                <div class="h-24 flex flex-col justify-center border-b border-slate-50">
-                    <div class="text-sm text-slate-500 mb-1">這一年你為了看</div>
-                    <div class="text-3xl font-black" :style="{ color: themeColor }">{{ statsData.count }} 場演唱會</div>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <div class="text-[11px] text-slate-500 mb-1">演出這一年你參與了</div>
+                <div class="text-3xl font-black" :style="{ color: themeColor }" style="line-height: 1.2;">{{ statsData.count }}<small class="text-xs font-normal text-slate-400 ml-1">場</small></div>
+            </div>
 
-                <div class="h-24 flex flex-col justify-center border-b border-slate-50">
-                    <div class="text-sm text-slate-500 mb-1">跨越了</div>
-                    <div class="text-3xl font-black" :style="{ color: themeColor }">{{ totalDistance }} 公里</div>
-                </div>
-                
-                <div v-if="statsData.topArtists.length > 0" class="h-32 flex flex-col justify-center border-b border-slate-50">
-                    <div class="text-sm text-slate-500 mb-1">你與 {{ statsData.topArtists[0].name }}</div>
-                    <div class="text-3xl font-black" :style="{ color: themeColor }">共創了 {{ statsData.topArtists[0].count }} 次</div>
-                    <div class="text-sm text-slate-500">美好回憶</div>
-                </div>
-
-                <div v-if="statsData.series.length > 0" class="h-32 flex flex-col justify-center">
-                    <div class="text-sm text-slate-500 mb-1">你最愛看 {{ statsData.series[0].title }}</div>
-                    <div class="text-3xl font-black" :style="{ color: themeColor }">足足看了 {{ statsData.series[0].count }} 場</div>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <div class="text-[11px] text-slate-500 mb-1">你跨越了</div>
+                <div class="text-3xl font-black" :style="{ color: themeColor }" style="line-height: 1.2;">{{ totalDistance }}<small class="text-xs font-normal text-slate-400 ml-1">公里</small></div>
+            </div>
+            
+            <div v-if="statsData.topArtists.length > 0" class="pt-5 border-t border-dashed border-slate-100">
+                <div class="text-[11px] text-slate-500 mb-1">你與</div>
+                <div class="text-2xl font-bold" :style="{ color: themeColor }" style="line-height: 1.3; margin-bottom: 5px;">{{ statsData.topArtists[0].name }}</div>
+                <div class="text-sm text-slate-600">共創了 <b :style="{ color: themeColor }">{{ statsData.topArtists[0].count }}</b> 次美好回憶</div>
+                <div class="text-[10px] text-slate-400 mt-3 italic">有沒有發現不同的地方？</div>
             </div>
         </div>
 
-        <div class="w-full p-4 rounded-xl text-center shadow-inner flex items-center justify-center min-h-[50px]" :style="{ border: '1px solid ' + themeColor, backgroundColor: 'white', color: themeColor }">
-            <div class="font-bold text-[11px]" style="line-height: 1.5;">💡 {{ idolNagging }}</div>
+        <div class="w-full p-4 rounded-2xl text-center border-2 shadow-inner" :style="{ borderColor: themeColor, backgroundColor: 'white', color: themeColor }">
+            <div class="font-bold text-[11px]" style="line-height: 1.6; display: block;">
+                💡 {{ idolNagging }}
+            </div>
         </div>
 
-        <div v-if="statsData.series.length > 0" class="bg-white/40 p-5 rounded-2xl border border-dashed border-slate-300 text-center w-full">
-            <h3 class="text-xl font-black text-slate-700 mb-6 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
+        <div v-if="statsData.series.length > 0" class="bg-white p-6 rounded-2xl border border-slate-100 text-center">
+            <h3 class="text-sm font-black text-slate-700 mb-5 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
             <div class="space-y-3">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-white/80 p-3 rounded-xl flex flex-col items-center justify-center min-h-[80px]">
+                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-3 rounded-xl flex flex-col items-center justify-center min-h-[65px]">
                     <div class="flex items-center gap-2 mb-1">
-                        <div v-if="idx === 0" class="text-2xl">🥇</div>
-                        <div v-else-if="idx === 1" class="text-2xl">🥈</div>
-                        <div v-else-if="idx === 2" class="text-2xl">🥉</div>
-                        <div class="font-bold text-slate-700 text-xs">{{ item.title }}</div>
+                        <span v-if="idx === 0" class="text-xl">🥇</span>
+                        <span v-else-if="idx === 1" class="text-xl">🥈</span>
+                        <span v-else-if="idx === 2" class="text-xl">🥉</span>
+                        <div class="font-bold text-slate-700 text-[11px]" style="line-height: 1.4;">{{ item.title }}</div>
                     </div>
-                    <div class="font-black text-base" :style="{ color: themeColor }">{{ item.count }} 場</div>
+                    <div class="font-black text-sm" :style="{ color: themeColor }">{{ item.count }}場</div>
                 </div>
             </div>
         </div>
-        <div style="height: 20px;"></div>
+        <div style="height: 1px;"></div>
     </div>
 </div>
 
@@ -2281,13 +2277,14 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 1. 移除同步的 alert，避免阻塞渲染
-    console.log('繪製中...'); 
+    // 1. 詢問使用者意圖，防止流程卡住
+    const userChoice = confirm("✨ 追星報告已備好！\n確定：直接下載圖片到裝置\n取消：在新頁面開啟檢視(可長按儲存)");
 
     html2canvas(element, {
         useCORS: true,
         scale: 3, 
-        backgroundColor: null,
+        [span_13](start_span)backgroundColor: '#f1f5f9', // 實心背景解決重疊感[span_13](end_span)
+        letterRendering: true,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
             clonedElement.style.top = '0';
@@ -2297,27 +2294,28 @@ const generateShareImage = () => {
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
         
-        // 2. 自動執行下載
-        const link = document.createElement('a');
-        link.download = `${selectedYear.value}_追星成就回顧.png`;
-        link.href = imageData;
-        link.click();
-
-        // 3. 使用 setTimeout 延遲開啟新視窗，確保主頁面按鈕狀態重設
-        setTimeout(() => {
+        if (userChoice) {
+            [span_14](start_span)// 下載邏輯[span_14](end_span)
+            const link = document.createElement('a');
+            link.download = `${selectedYear.value}_我的追星成就回顧.png`;
+            link.href = imageData;
+            link.click();
+        } else {
+            [span_15](start_span)// 檢視邏輯：開啟新分頁[span_15](end_span)
             const imgWin = window.open("");
             if (imgWin) {
                 imgWin.document.write(`
-                    <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;">
-                        <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border-radius:30px; margin-bottom:20px;"/>
-                        <p style="font-family:sans-serif; color:#64748b; font-size:14px; background:white; padding:10px 20px; border-radius:20px;">長按上方卡片即可儲存至相簿</p>
+                    <body style="margin:0; background:#f8fafc; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;">
+                        <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.1); border-radius:24px; margin-bottom:20px;"/>
+                        <p style="font-family:sans-serif; color:#94a3b8; font-size:14px; text-align:center;">長按上方圖片儲存，或直接截圖分享 ✨</p>
                     </body>
                 `);
+            } else {
+                alert("瀏覽器阻擋了視窗彈出，請允許權限後再試。");
             }
-        }, 300); // 延遲 300ms 讓主視窗完成點擊反應
+        }
     });
 };
-
 
 
                 const getMapLink = (l) => l ?
