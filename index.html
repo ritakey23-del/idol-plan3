@@ -240,10 +240,14 @@
                          :class="{'ring-2 ring-primary/30': expandedEventId === event.id}">
                         
                  
-                        <div v-if="event.coverUrl" class="h-32 w-full bg-slate-100 relative overflow-hidden cursor-pointer" @click="toggleExpand(event.id)">
-   
-                            <img :src="event.coverUrl" class="w-full h-full object-cover opacity-95 hover:opacity-100 transition-opacity" alt="Event Cover" onerror="this.style.display='none'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                       <div v-if="event.coverUrl" class="h-32 w-full bg-slate-100 relative overflow-hidden cursor-pointer" @click="toggleExpand(event.id)">
+                           <img :src="event.coverUrl" class="w-full h-full object-cover opacity-95 hover:opacity-100 transition-opacity" alt="Event Cover" onerror="this.style.display='none'">
+                           <div v-if="getDaysDiff(event.date) >= 0 && viewMode === 'upcoming'" class="absolute top-2 right-2 z-10">
+                               <span class="bg-black/60 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-lg font-bold">
+                                   {{ getDaysDiff(event.date) === 0 ? 'D-DAY' : 'D-' + getDaysDiff(event.date) }}
+                               </span>
+                           </div>
+                           <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
              
                             <div class="absolute bottom-3 left-4 text-white right-4">
                                 <div class="flex justify-between items-end">
@@ -312,10 +316,12 @@
                                         <i class="ph ph-clock" :style="{ color: getEventColor(event) }"></i>
                                         <span>{{ event.time }}</span>
                               
-                                        <span v-if="!event.coverUrl && getDaysDiff(event.date) > 0 && viewMode === 'upcoming'" class="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">
-                                            還有 {{ getDaysDiff(event.date) }} 天
-                           
-                                        </span>
+                                        <span v-if="getDaysDiff(event.date) > 0 && viewMode === 'upcoming'" class="text-xs bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded">
+                                      還有 {{ getDaysDiff(event.date) }} 天
+                                      </span>
+                                      <span v-else-if="getDaysDiff(event.date) === 0" class="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded font-bold animate-pulse">
+                                          D-DAY TODAY! 🔥
+                                      </span>
     
                                     </div>
                                     <button @click.stop="showTicket(event)" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-500 px-2 py-0.5 rounded-md flex items-center gap-1 transition-colors shadow-sm">
