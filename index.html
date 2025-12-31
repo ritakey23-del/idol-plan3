@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>我的追星日記 🌟 |
+    <title>追星日記 🌟 |
 追星行程管理、費用紀錄與地圖足跡</title>
     
     <meta name="description" content="專為追星族設計的日記App。輕鬆紀錄偶像活動行程、演唱會費用、追星足跡地圖，並管理出發前必帶清單。讓每一份愛意都被珍藏！">
@@ -2311,16 +2311,7 @@ const generateShareImage = () => {
         link.download = `${selectedYear.value}_追星成就回顧.png`;
         link.href = imageData;
         link.click();
-        
-        // 為了確保手機端也能下載，自動彈出新視窗預覽 (選用，若不需要可刪除)
-        // const newWin = window.open('about:blank', '_blank');
- if (newWin) { 
-newWin.document.write(` 
-<body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; font-family:sans-serif;"> 
-<img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.1); border-radius:24px; margin-bottom:20px;"/> 
-<p style="color:#64748b; font-size:14px; text-align:center; margin-bottom:20px;">✨ 長按上方圖片即可儲存至相簿 ✨</p> <button onclick="window.close()" style="padding:10px 30px; background:white; border:1px solid #e2e8f0; border-radius:30px; color:#64748b; font-weight:bold;">關閉檢視</button> 
-</body>
-        
+          
     }).catch(err => {
         console.error("生成失敗:", err);
     });
