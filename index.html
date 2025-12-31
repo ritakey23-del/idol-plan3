@@ -666,7 +666,7 @@
         <div v-if="statsData.series.length > 0" class="bg-white p-5 rounded-2xl border border-slate-100 text-center pb-8">
             <h3 class="text-xl font-black text-slate-700 mb-4 uppercase tracking-widest inline-block mx-auto border-b pb-1">🎬 好看一直看</h3>
             <div class="space-y-4">
-                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-4 rounded-xl flex flex-col items-center justify-center min-h-[80px]">
+                <div v-for="(item, idx) in statsData.series.slice(0, 3)" :key="item.title" class="bg-slate-50 p-4 rounded-xl flex flex-col items-center justify-center min-h-[85px]">
                     <div class="flex items-center gap-2 mb-2">
                         <div v-if="idx === 0" class="text-xl">🥇</div>
                         <div v-else-if="idx === 1" class="text-xl">🥈</div>
@@ -677,6 +677,7 @@
                 </div>
             </div>
         </div>
+        <div style="height: 20px;"></div>
     </div>
 </div>
 
@@ -2290,7 +2291,7 @@ const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
 
-    // 1. 顯示繪製提示
+    [span_3](start_span)// 1. 顯示單向提示語[span_3](end_span)
     alert("正在繪製您的專屬追星卡片...🎨");
 
     html2canvas(element, {
@@ -2307,23 +2308,24 @@ const generateShareImage = () => {
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
         
-        [span_2](start_span)// 2. 繪製完成後提供選擇[span_2](end_span)
+        // 2. 繪製完成後提供自選
         const userChoice = confirm("卡片繪製完成！✨\n\n點擊「確定」：直接下載圖片\n點擊「取消」：在新分頁開啟檢視");
 
         if (userChoice) {
-            // 執行下載
+            [span_4](start_span)// 下載路徑[span_4](end_span)
             const link = document.createElement('a');
             link.download = `${selectedYear.value}_追星成就回顧.png`;
             link.href = imageData;
             link.click();
         } else {
-            // 開啟新分頁檢視
+            [span_5](start_span)// 檢視路徑：加入可點擊的關閉功能[span_5](end_span)
             const imgWin = window.open("");
             if (imgWin) {
                 imgWin.document.write(`
-                    <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;">
+                    <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; font-family:sans-serif;">
                         <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.1); border-radius:24px; margin-bottom:20px;"/>
-                        <p style="font-family:sans-serif; color:#64748b; font-size:14px; text-align:center;">✨ 長按上方圖片即可儲存至相簿 ✨</p>
+                        <p style="color:#64748b; font-size:14px; text-align:center; margin-bottom:20px;">✨ 長按上方圖片即可儲存至相簿 ✨</p>
+                        <button onclick="window.close()" style="padding:10px 30px; background:white; border:1px solid #e2e8f0; border-radius:30px; color:#64748b; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.05);">關閉檢視</button>
                     </body>
                 `);
             }
@@ -2332,6 +2334,7 @@ const generateShareImage = () => {
         console.error("生成失敗:", err);
     });
 };
+
 
 
                 const getMapLink = (l) => l ?
