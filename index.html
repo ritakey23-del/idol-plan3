@@ -696,13 +696,6 @@ z-index: -1; display: flex; flex-direction: column;" :style="{ background: '#f8f
 
 
 
-
-
-
-
-
-
-
                 </div>
                 <div class="space-y-4">
                     <div class="relative">
@@ -1323,11 +1316,17 @@ const totalDistance = computed(() => {
 
                 const changelogContent = ref([ 
 
-{ version: 'v1.0.5', date: '2025/12/28', items: [
-    '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
-    '優化地圖 UI 佈局，防止縮放按鈕與資訊卡片重疊。',
-    '新增地圖路徑標線繪製，直觀呈現追星歷史足跡。'
-] },
+{ 
+    version: 'v1.0.5', 
+    date: '2025/12/28', 
+    items: [
+        '新增地圖「追星里程」自動計算，累計所有行程間的移動距離。',
+        '新增追星成就「分享長圖」功能，一鍵生成年度回顧美圖。',
+        '新增年度追星預算設定與首頁進度條提醒。',
+        '優化地圖 UI 佈局與年度篩選功能，並繪製歷史足跡標線。',
+        '精細化隱私模式：可獨立切換首頁支出、行程細節與統計數據的金額屏蔽。'
+    ] 
+},
                     { version: 'v1.0.4', date: '2025/12/08', items: [
                         '新增封面圖片上傳彈性：行程與紀念日表單支援 Base64 檔案上傳（限制 1MB）或貼上圖片 URL 兩種模式。',
                         '優化 Base64 圖片預覽與清除邏輯。',
@@ -2390,16 +2389,6 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
 
 
 
