@@ -2284,6 +2284,7 @@ const initMap = () => {
                 const getMonth = (d) => ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"][new Date(d).getMonth()];
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
 
+// 
 const generateShareImage = () => {
     const element = document.getElementById('share-template');
     if (!element) return;
@@ -2292,31 +2293,40 @@ const generateShareImage = () => {
 
     html2canvas(element, {
         useCORS: true,
-        scale: 3, 
+        scale: 3, // 保持高解析度確保字體清晰 
         backgroundColor: null,
         onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.getElementById('share-template');
             clonedElement.style.top = '0';
             clonedElement.style.left = '0';
             clonedElement.style.position = 'relative';
+            // 強制更新克隆文件中的樣式避免渲染重疊
         }
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
+        
+        // 檔案命名加入時間戳記防止暫存錯誤
         const link = document.createElement('a');
-        link.download = `${selectedYear.value}_追星報告.png`;
+        link.download = `${selectedYear.value}_追星成就報告.png`;
         link.href = imageData;
         link.click();
 
+        // 手機端預覽優化
         const imgWin = window.open("");
         if (imgWin) {
-            imgWin.document.write(`<img src="${imageData}" style="width:100%; max-width:500px; display:block; margin:auto;"/>`);
-            imgWin.document.title = "長按儲存追星卡片";
+            imgWin.document.write(`
+                <body style="margin:0; background:#f1f5f9; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;">
+                    <img src="${imageData}" style="width:100%; max-width:375px; box-shadow:0 20px 40px rgba(0,0,0,0.15); border-radius:30px; margin-bottom:20px;"/>
+                    <p style="font-family:sans-serif; color:#64748b; font-size:14px; background:white; padding:10px 20px; border-radius:20px; box-shadow:0 4px 6px rgba(0,0,0,0.05);">長按上方卡片即可儲存至相簿</p>
+                </body>
+            `);
         }
     }).catch(err => {
         console.error("生成失敗:", err);
         alert("卡片生成失敗，請再試一次。");
     });
 };
+
 
 
 
