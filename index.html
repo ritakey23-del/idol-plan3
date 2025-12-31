@@ -2288,12 +2288,17 @@ const initMap = () => {
                 const getDaysDiff = (d) => Math.ceil((new Date(d).setHours(0,0,0,0) - new Date().setHours(0,0,0,0))/(1000*60*60*24));
 
 const generateShareImage = () => {
+    // 1. 確保模板存在
     const element = document.getElementById('share-template');
-    if (!element) return;
+    if (!element) {
+        console.error("找不到 share-template 元素");
+        return;
+    }
 
-    [span_3](start_span)// 1. 顯示單向提示語[span_3](end_span)
-    alert("正在繪製您的專屬追星卡片...🎨");
+    [span_0](start_span)// 2. 立即跳出提示，確保使用者知道程式有在運作[span_0](end_span)
+    alert("正在繪製您的專屬追星卡片...🎨\n(請稍候片刻，繪製完成後將詢問您的操作)");
 
+    // 3. 執行繪製
     html2canvas(element, {
         useCORS: true,
         scale: 3, 
@@ -2308,17 +2313,17 @@ const generateShareImage = () => {
     }).then(canvas => {
         const imageData = canvas.toDataURL('image/png');
         
-        // 2. 繪製完成後提供自選
-        const userChoice = confirm("卡片繪製完成！✨\n\n點擊「確定」：直接下載圖片\n點擊「取消」：在新分頁開啟檢視");
+        // 4. 繪製完成後才問要下載或檢視
+        const userChoice = confirm("卡片繪製完成！✨\n\n點擊「確定」：直接下載圖片\n點擊「取消」：在新分頁開啟檢視(可長按儲存)");
 
         if (userChoice) {
-            [span_4](start_span)// 下載路徑[span_4](end_span)
+            // 執行下載
             const link = document.createElement('a');
             link.download = `${selectedYear.value}_追星成就回顧.png`;
             link.href = imageData;
             link.click();
         } else {
-            [span_5](start_span)// 檢視路徑：加入可點擊的關閉功能[span_5](end_span)
+            // 開啟新分頁檢視
             const imgWin = window.open("");
             if (imgWin) {
                 imgWin.document.write(`
@@ -2328,10 +2333,13 @@ const generateShareImage = () => {
                         <button onclick="window.close()" style="padding:10px 30px; background:white; border:1px solid #e2e8f0; border-radius:30px; color:#64748b; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.05);">關閉檢視</button>
                     </body>
                 `);
+            } else {
+                alert("瀏覽器阻擋了彈出視窗，建議直接點擊下載。");
             }
         }
     }).catch(err => {
         console.error("生成失敗:", err);
+        alert("產生卡片時發生錯誤，請重新整理頁面再試一次。");
     });
 };
 
