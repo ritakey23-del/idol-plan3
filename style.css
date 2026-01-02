@@ -1,4 +1,3 @@
-    <style>
         :root {
             --primary-color: #63b3b0;
             --primary-dark: #4a8f8c;
@@ -85,4 +84,3 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid white;
             cursor: pointer;
         }
-    </style>
