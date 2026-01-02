@@ -1,5 +1,4 @@
-    <script>
-        
+       
         const { createApp, ref, computed, onMounted, watch, nextTick } = Vue;
         createApp({
             setup() {
@@ -1212,4 +1211,3 @@ selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEvent
                 };
             }
         }).mount('#app');
-    </script>
