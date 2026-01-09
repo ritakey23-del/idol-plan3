@@ -94,7 +94,7 @@ const totalDistance = computed(() => {
     const targetYear = selectedMapYear.value;
     const baseEvents = targetYear === 'ALL' 
         ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
+        : events.value.filter(e => e.date && e.date.startsWith(targetMapYear));
 
     const validPoints = [...baseEvents]
         .filter(e => e.lat && e.lng)
