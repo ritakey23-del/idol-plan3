@@ -68,36 +68,35 @@ const calculateKm = (lat1, lon1, lat2, lon2) => {
 
 // 新增：根據年份計算過濾後的點位數量
 const filteredMapEventsCount = computed(() => {
-    // 1. 先根據年度過濾資料
-    const target = selectedMapYear.value === 'ALL' 
+    // 取得選定年份的行程
+    const targetEvents = selectedMapYear.value === 'ALL' 
         ? events.value 
         : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
 
-    // 2. 建立一個 Set 來儲存唯一的經緯度組合字串
+    // 建立 Set 確保相同地點不重複計算
     const uniqueLocations = new Set();
-    
-    target.forEach(e => {
+    targetEvents.forEach(e => {
+        // 確保具有座標才計入場館
         if (e.lat && e.lng) {
-            // 將經緯度組合成字串作為 key，例如 "25.05_121.53"
             uniqueLocations.add(`${e.lat}_${e.lng}`);
         }
     });
-
-    // 3. 回傳 Set 的大小，即為不重複的地點數量
     return uniqueLocations.size;
 });
 
 
+
 // 更新：totalDistance 也要隨著年份變動
 const totalDistance = computed(() => {
-    // 根據統計頁面選擇的年份過濾
     const targetYear = selectedMapYear.value;
-    const baseEvents = targetYear === 'ALL' 
-        ? events.value 
-        : events.value.filter(e => e.date && e.date.startsWith(targetMapYear));
-
-    const validPoints = [...baseEvents]
-        .filter(e => e.lat && e.lng)
+    
+    // 1. 同步過濾年份與座標有效性
+    const validPoints = events.value
+        .filter(e => {
+            const yearMatch = targetYear === 'ALL' || (e.date && e.date.startsWith(targetYear));
+            return yearMatch && e.lat && e.lng;
+        })
+        // 2. 必須按日期排序，里程計算才符合邏輯
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
     let dist = 0;
@@ -107,8 +106,9 @@ const totalDistance = computed(() => {
             validPoints[i+1].lat, validPoints[i+1].lng
         );
     }
-    return Math.round(dist); // 依照您的要求取整數位
+    return Math.round(dist); 
 });
+
 
 
                 const defaultForm = {
@@ -774,7 +774,13 @@ const idolNagging = computed(() => {
 });
 
                 const mappedEventsCount = computed(() => events.value.filter(e => e.lat && e.lng).length);
-                const missingCoordsCount = computed(() => events.value.length - mappedEventsCount.value);
+                const missingCoordsCount = computed(() => {
+    const targetEvents = selectedMapYear.value === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date && e.date.startsWith(selectedMapYear.value));
+        
+    return targetEvents.filter(e => !e.lat || !e.lng).length;
+});
                 const calculateTotal = (expenses) => expenses ? expenses.reduce((sum, i) => sum + (Number(i.amount)||0), 0) : 0;
                 const getTicketPrice = (expenses) => {
                     if (!expenses || !Array.isArray(expenses)) return 0;
@@ -1045,7 +1051,7 @@ const initMap = () => {
                 const processImport = () => {
                     try {
                         const data = JSON.parse(importJson.value);
-                        if (Array.isArray(data)) {
+                        if (Array.isArray(data)) {ㄧ
                             const newEvts = data.map(d => {
                                 let title = d.title || d['活動名稱'] || '未命名活動';
                                 let artist = d.artist || d['歌手'] || '';
