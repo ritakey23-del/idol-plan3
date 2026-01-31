@@ -86,28 +86,38 @@ const filteredMapEventsCount = computed(() => {
 
 
 
-// 更新：totalDistance 也要隨著年份變動
+// app.js 修改後
+
+// 1. 修正地圖用的里程（修正變數名稱）
 const totalDistance = computed(() => {
     const targetYear = selectedMapYear.value;
+    const baseEvents = targetYear === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date && e.date.startsWith(targetYear)); // 已修正為 targetYear
     
-    // 1. 同步過濾年份與座標有效性
-    const validPoints = events.value
-        .filter(e => {
-            const yearMatch = targetYear === 'ALL' || (e.date && e.date.startsWith(targetYear));
-            return yearMatch && e.lat && e.lng;
-        })
-        // 2. 必須按日期排序，里程計算才符合邏輯
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-
+    const validPoints = [...baseEvents].filter(e => e.lat && e.lng).sort((a, b) => new Date(a.date) - new Date(b.date));
     let dist = 0;
     for (let i = 0; i < validPoints.length - 1; i++) {
-        dist += calculateKm(
-            validPoints[i].lat, validPoints[i].lng,
-            validPoints[i+1].lat, validPoints[i+1].lng
-        );
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
     }
-    return Math.round(dist); 
+    return Math.round(dist);
 });
+
+// 2. 新增：回顧分享圖專用的里程（綁定 selectedYear）
+const statsDistance = computed(() => {
+    const targetYear = selectedYear.value; // 改用回顧分頁的年份
+    const baseEvents = targetYear === 'ALL' 
+        ? events.value 
+        : events.value.filter(e => e.date && e.date.startsWith(targetYear));
+
+    const validPoints = [...baseEvents].filter(e => e.lat && e.lng).sort((a, b) => new Date(a.date) - new Date(b.date));
+    let dist = 0;
+    for (let i = 0; i < validPoints.length - 1; i++) {
+        dist += calculateKm(validPoints[i].lat, validPoints[i].lng, validPoints[i+1].lat, validPoints[i+1].lng);
+    }
+    return Math.round(dist);
+});
+
 
 
 
@@ -1211,8 +1221,7 @@ const generateShareImage = () => {
                     isColorLight, isThemeColorLight, headerTextColor, appVersion, changelogContent, calculateFandomDays, fandomMessageStatic, calculateDaysToNextDate, calculateYearsAndDaysSinceDebut, getBirthdayCongrats, 
                     getDebutCongrats,
                     handleFileUpload, 
-selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, budgetNagging, 
-
+selectedMapYear, filteredMapEventsCount, totalDistance, isYearlyPrivacy, isEventPrivacy, isStatsPrivacy, yearlyBudget, budgetNagging, statsDistance, 
                 };
             }
         }).mount('#app');
